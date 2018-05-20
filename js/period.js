@@ -3,13 +3,14 @@ class Period {
   /**
    * Class for representing a period in a day
    * @constructor
-   * @param {string} periodLetter - Letter of the period I represent.
-   * @param {Object} periodData - Object with information about the period I represent.
+   * @param {string} periodLetter - Letter of the period.
+   * @param {Object} periodData - Object with information about the period.
    * @param {string} periodData.displayName - Custom name of the period.
    * @param {number} periodData.start - Time when the period starts in minutes since 00:00 of the day.
    * @param {number} periodData.end - Time when the period ends in minutes since 00:00 of the day.
    */
   constructor(periodLetter, periodData) {
+    this.period = periodLetter.toUpperCase();
     this.startTime = periodData.start;
     this.endTime = periodData.end;
     this.name = createElement('span', {
@@ -19,7 +20,7 @@ class Period {
     this.wrapper = createElement('div', {
       classes: ['period'],
       data: {
-        period: periodLetter.toUpperCase()
+        period: this.period
       },
       content: [
         this.name,
@@ -64,6 +65,14 @@ class Period {
       this.toStart.classList.remove('previewed');
       this.toEnd.classList.add('previewed');
     }
+  }
+
+  /**
+   * Sets the custom name of the period.
+   * @param {string} name - The new custom name of the period.
+   */
+  setDisplayName(name) {
+    this.name.textContent = name;
   }
 
 }
