@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fullscreen Design - Ugwa 2</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ugwa 2"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+    <style media="screen">
+      body {
+        font-size: 0;
+        font-family: 'Roboto', sans-serif;
+        line-height: 1;
+      }
+      .class {
+        padding: 0.1em 0.3em;
+        border-radius: 0.1em;
+      }
+
+      .fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        background-color: black;
+        color: white;
+        background-image: url('https://source.unsplash.com/featured/1600x900/?nature');
+        /* background-image: url('https://images.unsplash.com/photo-1502472584811-0a2f2feb8968?crop=entropy&w=1600&h=900&fit=crop'); */
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+
+      .fullscreen .time {
+        font-size: 7.5rem;
+        font-weight: lighter;
+        margin: 0;
+        position: absolute;
+        bottom: 3.5rem;
+        left: 3.5rem;
+        text-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.3), 0 0 0.3125rem rgba(0, 0, 0, 0.1);
+      }
+      .fullscreen .timer {
+        max-width: 250px;
+        margin: 0;
+        font-size: 1.5rem;
+        position: absolute;
+        bottom: 13rem;
+        left: 3.5rem;
+        text-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.4), 0 0 0.25rem rgba(0, 0, 0, 0.3);
+        line-height: 1.5;
+        margin-bottom: -0.5em;
+      }
+
+      .fullscreen .todo {
+        display: table;
+        max-width: 250px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        position: absolute;
+        bottom: 3.5rem;
+        right: 3.5rem;
+      }
+      .fullscreen .todo .heading {
+        font-size: 1rem;
+        text-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.4), 0 0 0.25rem rgba(0, 0, 0, 0.3);
+      }
+      .fullscreen .todo .todo-item {
+        padding: 1.25rem;
+        margin-top: 1rem;
+        border-radius: 0.125rem;
+      }
+      .dark .fullscreen .todo .todo-item {
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+      }
+      .light .fullscreen .todo .todo-item {
+        background-color: rgba(255, 255, 255, 0.8);
+        color: black;
+      }
+      .fullscreen .todo .todo-item .content {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.2;
+        margin-bottom: 0.3em;
+      }
+      .fullscreen .todo .todo-item .todo-date {
+        margin: 0;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        margin-bottom: -0.5em;
+      }
+
+      @media (max-width: 680px) {
+
+        .fullscreen .time {
+          bottom: unset;
+          top: 1rem;
+          left: 1rem;
+          right: 1rem;
+          text-align: center;
+        }
+        .fullscreen .timer {
+          max-width: unset;
+          text-align: center;
+          bottom: unset;
+          top: 9.5rem;
+          left: 1rem;
+          right: 1rem;
+        }
+
+        .fullscreen .todo {
+          display: block;
+          max-width: unset;
+          left: 1rem;
+          right: 1rem;
+          bottom: 1rem;
+        }
+
+      }
+
+      /* temporary */
+      .period-a {
+        color: white;
+        background-color: #f44336;
+      }
+      .period-b {
+        color: white;
+        background-color: #3F51B5;
+      }
+    </style>
+  </head>
+  <body class="dark">
+    <div class="fullscreen">
+      <h1 class="time am">8:07</h1>
+      <p class="timer"><span class="class period-a">World History</span> starts in <strong class="timer-time">18 minutes</strong></p>
+      <ul class="todo">
+        <li class="heading">Upcoming</li>
+        <li class="todo-item"><p class="content">ID terms</p><p class="todo-date">Due next <span class="class period-a">World History</span></p></li>
+        <li class="todo-item"><p class="content">bio packet</p><p class="todo-date">Due next <span class="class period-b">Biology</span></p></li>
+        <li class="todo-item"><p class="content">CLEAN DOWNLOADS</p><p class="todo-date">By next <span class="todo-time">Biology</span></p></li>
+      </ul>
+    </div>
+  </body>
+</html>
