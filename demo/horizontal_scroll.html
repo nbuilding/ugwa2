@@ -14,31 +14,63 @@
         height: 100%;
         font-size: 0;
       }
-      div {
+      body > div {
         display: inline-block;
-        margin: 0 200vw;
+        margin: 0 1000vw;
+        height: 100%;
+      }
+      div > div {
+        display: inline-block;
         height: 100%;
         width: 500px;
-        background-color: rgba(255,255,255,0.3);
+        background-color: rgba(255,255,255,0.1);
         font-size: 50px;
+        text-align: center;
+        line-height: 100vh;
+        transition: background-color .2s;
+      }
+      .current {
+        background-color: rgba(255,255,255,0.3);
       }
     </style>
   </head>
   <body>
-    <div>0</div>
+    <div>
+      <div>-1</div>
+      <div class="current">0</div>
+      <div>1</div>
+    </div>
     <script type="text/javascript">
-      const div = document.querySelector('div');
-      let page = 0;
-      setTimeout(() => window.scrollTo(innerWidth * 1.5 + 250, 0), 0);
+      let page = 0,
+      timeout = null,
+      interval = setInterval(() => {
+        window.scrollTo(document.documentElement.scrollWidth / 2 - innerWidth / 2, 0);
+        if (Math.abs(pageXOffset - document.documentElement.scrollWidth / 2 + innerWidth / 2) < 1) {
+          if (!timeout) timeout = setTimeout(() => clearInterval(interval), 0);
+        } else if (timeout) clearTimeout(timeout);
+        console.log(':(');
+      }, 0);
       window.onscroll = e => {
-        if (pageXOffset <= innerWidth * 1.5) {
+        if (pageXOffset < document.documentElement.scrollWidth / 2 - innerWidth / 2 - 250) {
           page--;
           window.scrollBy(500, 0);
-          div.textContent = page;
-        } else if (pageXOffset >= innerWidth * 1.5 + 500) {
+          const current = document.querySelector('.current');
+          current.classList.remove('current');
+          current.previousElementSibling.classList.add('current');
+          current.parentNode.removeChild(current.nextElementSibling);
+          const before = document.createElement('div');
+          before.textContent = page - 1;
+          current.parentNode.insertBefore(before, current.previousElementSibling);
+        } else if (pageXOffset > document.documentElement.scrollWidth / 2 - innerWidth / 2 + 250) {
           page++;
           window.scrollBy(-500, 0);
-          div.textContent = page;
+          const current = document.querySelector('.current');
+          current.classList.remove('current');
+          current.nextElementSibling.classList.add('current');
+          current.parentNode.removeChild(current.previousElementSibling);
+          const after = document.createElement('div');
+          after.textContent = page + 1;
+          current.parentNode.appendChild(after);
         }
       };
     </script>
