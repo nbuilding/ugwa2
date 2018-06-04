@@ -20,14 +20,22 @@ class Period {
     this.wrapper = createElement('div', {
       classes: ['period'],
       data: {
-        period: this.period
+        period: this.period.length === 1 && this.period
       },
       content: [
         this.name,
-        createElement('span', {content: SomeFormatter.formatTime(periodData.start) + '–' + SomeFormatter.formatTime(periodData.end)}),
+        createElement('span', {content: Formatter.time(periodData.start) + '–' + Formatter.time(periodData.end)}),
         this.toStart = createElement('span', {}),
         this.toEnd = createElement('span', {}),
-        createElement('span', {content: SomeFormatter.formatDuration(periodData.end - periodData.start)})
+        createElement('span', {
+          content: Formatter.phrase(
+            'lasts',
+            Formatter.duration(periodData.end - periodData.start)
+          )
+        }),
+        this.note = createElement('textarea', {
+          value: 'todo'
+        })
       ]
     });
   }
@@ -47,13 +55,13 @@ class Period {
      */
 
     let timeToStart = this.startTime - minutes;
-    this.toStart.innerHTML = SomeFormatter.translate(
+    this.toStart.innerHTML = Formatter.phrase(
       timeToStart === 0 ? 'juststarted' : timeToStart < 0 ? 'started' : 'starting',
       `<em>${Math.abs(timeToStart)}</em>`
     );
 
     let timeToEnd = this.endTime - minutes;
-    this.toEnd.innerHTML = SomeFormatter.translate(
+    this.toEnd.innerHTML = Formatter.phrase(
       timeToEnd === 0 ? 'justended' : timeToEnd < 0 ? 'ended' : 'ending',
       `<em>${Math.abs(timeToEnd)}</em>`
     );
@@ -73,6 +81,20 @@ class Period {
    */
   setDisplayName(name) {
     this.name.textContent = name;
+  }
+
+  /**
+   * Expands the period card.
+   */
+  expand() {
+    this.wrapper.classList.add('open');
+  }
+
+  /**
+   * Collapses the period card.
+   */
+  collapse() {
+    this.wrapper.classList.remove('open');
   }
 
 }

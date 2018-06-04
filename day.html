@@ -5,8 +5,24 @@
     <meta charset="utf-8">
     <meta name="description" content="day"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <script src="./js/dayviewer.js" charset="utf-8"></script>
+    <script src="./js/period.js" charset="utf-8"></script>
+    <script src="./js/dom-ambassador.js" charset="utf-8"></script>
+    <script src="./js/formatter.js" charset="utf-8"></script>
+    <script src="./js/prefs.js" charset="utf-8"></script>
   </head>
   <body class="light">
-    <div class="day-todo-come-up-with-a-better-name"></div>
+    <script type="text/javascript">
+      const customNames = {
+        A: 'a period',
+        brunch: 'brunch'
+      };
+      let test = new DayViewer(new Date(), [
+        {period: 'A', start: 500, end: 600},
+        {period: 'brunch', start: 610, end: 650}
+      ]);
+      document.body.appendChild(test.wrapper);
+    </script>
   </body>
 </html>
