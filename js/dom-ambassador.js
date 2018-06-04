@@ -9,10 +9,12 @@
 function createElement(tag, attributes) {
   let elem = document.createElement(tag);
   if (attributes.classes) attributes.classes.forEach(c => elem.classList.add(c));
-  if (attributes.data) Object.keys(attributes.data).forEach(d => typeof attributes.data[d] === 'string' && (elem.dataset[d] = attributes.data[d]));
+  if (attributes.data)
+    Object.keys(attributes.data).forEach(d => typeof attributes.data[d] === 'string' && (elem.dataset[d] = attributes.data[d]));
+  if (attributes.styles) Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
   if (typeof attributes.content === 'string') elem.appendChild(createElementFromHTML(attributes.content));
   else if (attributes.content)
-    attributes.content.forEach(e => elem.appendChild(typeof e === 'string' ? document.createTextNode(e) : e));
+    attributes.content.forEach(e => elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
   if (attributes.value) elem.value = attributes.value;
   return elem;
 }

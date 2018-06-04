@@ -3,41 +3,39 @@ class Period {
   /**
    * Class for representing a period in a day
    * @constructor
-   * @param {string} periodLetter - Letter of the period.
-   * @param {Object} periodData - Object with information about the period.
-   * @param {string} periodData.displayName - Custom name of the period.
-   * @param {number} periodData.start - Time when the period starts in minutes since 00:00 of the day.
-   * @param {number} periodData.end - Time when the period ends in minutes since 00:00 of the day.
+   * @param {string} period - The period's letter
+   * @param {number} start - Time when the period starts in minutes since 00:00 of the day.
+   * @param {number} end - Time when the period ends in minutes since 00:00 of the day.
    */
-  constructor(periodLetter, periodData) {
-    this.period = periodLetter.toUpperCase();
-    this.startTime = periodData.start;
-    this.endTime = periodData.end;
-    this.name = createElement('span', {
-      classes: ['name'],
-      content: [periodData.displayName]
-    });
+  constructor(period, start, end) {
+    this.period = period = period.toUpperCase();
+    this.startTime = start;
+    this.endTime = end;
     this.wrapper = createElement('div', {
       classes: ['period'],
       data: {
-        period: this.period.length === 1 && this.period
+        period: period.length === 1 && period
       },
       content: [
-        this.name,
-        createElement('span', {content: Formatter.time(periodData.start) + '–' + Formatter.time(periodData.end)}),
+        this.name = createElement('span', {
+          classes: ['name'],
+          content: [Prefs.getPdName(period)]
+        }),
+        createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
         this.toStart = createElement('span', {}),
         this.toEnd = createElement('span', {}),
         createElement('span', {
           content: Formatter.phrase(
             'lasts',
-            Formatter.duration(periodData.end - periodData.start)
+            Formatter.duration(end - start)
           )
         }),
         this.note = createElement('textarea', {
-          value: 'todo'
+          value: Prefs.getPdDesc(period)
         })
       ]
     });
+    Period.setColourOf(this.wrapper, Prefs.getPdColour(period));
   }
 
   /**
@@ -77,10 +75,11 @@ class Period {
 
   /**
    * Sets the custom name of the period.
-   * @param {string} name - The new custom name of the period.
    */
-  setDisplayName(name) {
-    this.name.textContent = name;
+  update() {
+    this.name.textContent = Prefs.getPdName(this.period);
+    this.note.value = Prefs.getPdDesc(this.period);
+    Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
   }
 
   /**
@@ -95,6 +94,16 @@ class Period {
    */
   collapse() {
     this.wrapper.classList.remove('open');
+  }
+
+  static setColourOf(element, colour) {
+    if (typeof colour === 'string') {
+      element.style.backgroundColor = colour;
+      element.classList.remove('clear');
+    } else {
+      element.style.backgroundColor = null;
+      element.classList.add('clear');
+    }
   }
 
 }

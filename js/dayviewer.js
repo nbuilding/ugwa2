@@ -11,11 +11,7 @@ class DayViewer {
    */
   constructor(date, schedule) {
     this.date = date;
-    this.periods = schedule.map(p => new Period(p.period, {
-      displayName: customNames[p.period],
-      start: p.start,
-      end: p.end
-    }));
+    this.periods = schedule.map(p => new Period(p.period, p.start, p.end));
     this.wrapper = createElement('div', {
       classes: ['day'],
       content: this.periods.map(p => p.wrapper)
@@ -36,7 +32,16 @@ class DayViewer {
    */
   newName(affectedPeriod) {
     let period = affectedPeriod.toUpperCase();
-    this.periods.filter(p => p.period === period).forEach(p => p.setDisplayName(customNames[period]));
+    this.periods.filter(p => p.period === period).forEach(p => p.setDisplayName(Prefs.getPdName(period)));
+  }
+
+  /**
+   * Updates the names of the respective period.
+   * @param {string} affectedPeriod - Letter of the period with the new custom name.
+   */
+  newNote(affectedPeriod) {
+    let period = affectedPeriod.toUpperCase();
+    this.periods.filter(p => p.period === period).forEach(p => p.updateNote(Prefs.getPdDesc(period)));
   }
 
 }

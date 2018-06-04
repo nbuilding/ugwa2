@@ -1,0 +1,82 @@
+.period {
+  padding: 20px;
+  margin: 10px;
+  border-radius: 2px;
+  position: relative;
+  transition: all .2s;
+}
+.period.open {
+  margin: 15px 5px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+.period.clear.open {
+  box-shadow: none;
+}
+.period::before {
+  content: attr(data-period);
+  position: absolute;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  font-size: 80px;
+  opacity: 0.4;
+  margin: 10px 20px;
+}
+.period .name {
+  font-size: 36px;
+  margin-bottom: 5px;
+  height: 1.2em;
+}
+/* TODO: support multiline expansion (use JS) */
+.period span {
+  display: block;
+  white-space: pre;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  height: 0;
+  transition: all .2s;
+}
+.period .previewed {
+  height: 1.2em;
+}
+.period.open span:not(.name) {
+  height: 1.2em;
+  padding-top: 10px;
+}
+.period em {
+  font-style: normal;
+}
+.period.light, .day.light .periods li.transparent {
+  color: rgba(0,0,0,0.64);
+  stroke: rgba(0,0,0,0.8);
+}
+.period.dark, .day.dark .periods li.transparent {
+  color: rgba(255,255,255,0.72);
+  stroke: rgba(255,255,255,0.9);
+}
+.period.light .name, .period.light em, .day.light .periods li.transparent .name, .day.light .periods li.transparent em {
+  color: rgba(0,0,0,0.8);
+}
+.period.dark .name, .period.dark em, .day.dark .periods li.transparent .name, .day.dark .periods li.transparent em {
+  color: rgba(255,255,255,0.9);
+}
+.period svg {
+  width: 40px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  fill: none;
+}
+.period svg path {
+  transform-origin: center;
+  transform: translate(0,-4px) rotate(-45deg);
+  stroke-dasharray: 10;
+  stroke-dashoffset: 10;
+  transition: all .2s;
+}
+.period.open svg path {
+  transform: translate(0,4px) rotate(-45deg);
+  stroke-dashoffset: 0;
+}

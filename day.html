@@ -6,6 +6,13 @@
     <meta name="description" content="day"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
+    <link rel="stylesheet" href="./css/period.css">
+    <style media="screen">
+      .day {
+        width: 500px;
+      }
+    </style>
+
     <script src="./js/dayviewer.js" charset="utf-8"></script>
     <script src="./js/period.js" charset="utf-8"></script>
     <script src="./js/dom-ambassador.js" charset="utf-8"></script>
@@ -14,15 +21,13 @@
   </head>
   <body class="light">
     <script type="text/javascript">
-      const customNames = {
-        A: 'a period',
-        brunch: 'brunch'
-      };
       let test = new DayViewer(new Date(), [
         {period: 'A', start: 500, end: 600},
-        {period: 'brunch', start: 610, end: 650}
+        {period: 'brunch', start: 610, end: 650},
+        {period: 'B', start: 670, end: 675}
       ]);
       document.body.appendChild(test.wrapper);
+      test.setTime(620);
     </script>
   </body>
 </html>
