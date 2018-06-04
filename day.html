@@ -28,6 +28,17 @@
       ]);
       document.body.appendChild(test.wrapper);
       test.setTime(620);
+
+      let currentPd = -1;
+      document.onkeydown = e => {
+        if (currentPd >= 0) test.periods[currentPd].collapse();
+        if (e.keyCode === 40 || e.keyCode === 9 && !e.shiftKey) {
+          currentPd = (currentPd + 1) % 3;
+        } else if (e.keyCode === 38 || e.keyCode === 9 && e.shiftKey) {
+          currentPd = (currentPd + 2) % 3;
+        }
+        test.periods[currentPd].expand();
+      };
     </script>
   </body>
 </html>
