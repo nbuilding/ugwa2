@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Date picker - Ugwa 2</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ugwa 2"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <style media="screen">
+      path {
+        fill: transparent;
+        transition: fill .2s;
+      }
+      path:hover {
+        fill: rgba(0, 0, 0, 0.1);
+      }
+    </style>
+
+    <script src="../js/datepicker.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div class="datepicker" tabindex="0"></div>
+
+    <script type="text/javascript">
+      const months = ['January',   'February', 'March',    'April',
+                      'May',       'June',     'July',     'August',
+                      'September', 'October',  'November', 'December'];
+
+      const pickerWrapper = document.querySelector('.datepicker');
+      const picker = new DatePicker(pickerWrapper, {
+        weekStart: 0,
+        width: 300,
+        range: [new Date(2018, 7, 13), new Date(2019, 4, 31)],
+        dayStrings: 'SMTWΘFS',
+        formatMonth(year, month) {
+          return months[month] + ' ' + year;
+        }
+      });
+    </script>
+  </body>
+</html>
