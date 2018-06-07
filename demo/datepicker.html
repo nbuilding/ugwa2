@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <style media="screen">
+      .datepicker {
+        display: inline-block;
+        height: 260px;
+        overflow: auto;
+        resize: vertical;
+      }
       path {
         fill: transparent;
         transition: fill .2s;
@@ -32,6 +38,7 @@
         width: 300,
         range: [new Date(2018, 7, 13), new Date(2019, 4, 31)],
         dayStrings: 'SMTWΘFS',
+        noUnselected: true,
         formatMonth(year, month) {
           return months[month] + ' ' + year;
         }

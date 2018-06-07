@@ -17,6 +17,7 @@ class DatePicker {
       options.range = [new Date(currentYear, 0, 1), new Date(currentYear, 11, 31)];
     }
     this.options = options;
+    this.days = (options.range[1].getTime() - options.range[0].getTime()) / MS_PER_DAY;
 
     let baseDate = options.range[0];
     this.baseYear = baseDate.getFullYear();
@@ -43,7 +44,7 @@ class DatePicker {
     const monthHighlights = document.createElementNS(SVG_NS, 'g');
 
     const offset = (options.range[0].getDay() + 7 - options.weekStart) % 7;
-    let days = (options.range[1].getTime() - options.range[0].getTime()) / MS_PER_DAY + 1;
+    let days = this.days + 1;
     let pos = offset - 1;
     let lastMonth = null;
     while (days--) {
@@ -96,9 +97,58 @@ class DatePicker {
     const svg = this.svg;
     this.svg.addEventListener('click', e => {
       const box = svg.getBoundingClientRect();
-      this.value = Math.floor((e.clientX - box.left) / options.dateWidth)
+      this.offset = Math.floor((e.clientX - box.left) / options.dateWidth)
         + Math.floor((e.clientY - box.top) / options.dateHeight) * 7
         - this.visualOffset;
+    }, false);
+    this.wrapper.addEventListener('keydown', e => {
+      const date = this.date;
+      if (!date) return;
+      const month = date.getMonth();
+      const year = date.getFullYear();
+
+      let preventScroll = true;
+      switch (e.keyCode) {
+        case 37:
+          this.offset--;
+          break;
+        case 38:
+          this.offset -= 7;
+          break;
+        case 39:
+          this.offset++;
+          break;
+        case 40:
+          this.offset += 7;
+          break;
+        case 36:
+          this.date = new Date(year, date.getMonth(), 1);
+          break;
+        case 35:
+          this.date = new Date(year, month, DatePicker.getMonthLength(year, month));
+          break;
+        case 33:
+          if (month === 0) {
+            this.date = new Date(year - 1, 11,
+              Math.min(date.getDate(), DatePicker.getMonthLength(year - 1, 11)));
+          } else {
+            this.date = new Date(year, month - 1,
+              Math.min(date.getDate(), DatePicker.getMonthLength(year, month - 1)));
+          }
+          break;
+        case 34:
+          if (month === 11) {
+            this.date = new Date(year + 1, 0,
+              Math.min(date.getDate(), DatePicker.getMonthLength(year + 1, 0)));
+          } else {
+            this.date = new Date(year, month + 1,
+              Math.min(date.getDate(), DatePicker.getMonthLength(year, month + 1)));
+          }
+          break;
+        default:
+          preventScroll = false;
+      }
+      if (preventScroll) e.preventDefault();
     }, false);
   }
 
@@ -106,28 +156,45 @@ class DatePicker {
     return new Date(this.baseYear, this.baseMonth, this.baseDate + offset);
   }
 
-  get value() {
-    return this.selected || null;
+  get date() {
+    return this.selectedDate || null;
   }
 
-  set value(newDate) {
+  set date(newDate) {
+    if (newDate === null) {
+      this.offset = null;
+      return;
+    }
+    this.offset = (newDate.getTime() - this.options.range[0].getTime()) / MS_PER_DAY;
+  }
+
+  get offset() {
+    return this.selected;
+  }
+
+  set offset(newOffset) {
     const options = this.options;
     const circle = this.circle;
-    if (typeof newDate === 'number') newDate = this.getDateFromOffset(newDate);
-    if (newDate.getTime() < options.range[0].getTime()) {
-      newDate = options.noUnselected ? options.range[0] : null;
-    } else if (newDate.getTime() > options.range[1].getTime()) {
-      newDate = options.noUnselected ? options.range[1] : null;
+    if (newOffset !== null) {
+      if (newOffset < 0) {
+        newOffset = options.noUnselected ? 0 : null;
+      } else if (newOffset > this.days) {
+        newOffset = options.noUnselected ? this.days : null;
+      }
     }
-    if (newDate) {
+    if (newOffset !== null) {
+      this.selectedDate = this.getDateFromOffset(newOffset);
+
+      let pos = newOffset + this.visualOffset;
       circle.style.display = null;
-      const offset = (newDate.getTime() - options.range[0].getTime()) / MS_PER_DAY + this.visualOffset;
-      circle.setAttributeNS(null, 'cx', (offset % 7 + 0.5) * options.dateWidth);
-      circle.setAttributeNS(null, 'cy', (Math.floor(offset / 7) + 0.5) * options.dateHeight);
+      circle.setAttributeNS(null, 'cx', (pos % 7 + 0.5) * options.dateWidth);
+      circle.setAttributeNS(null, 'cy', (Math.floor(pos / 7) + 0.5) * options.dateHeight);
     } else {
+      this.selectedDate = null;
+
       circle.style.display = 'none';
     }
-    this.selected = newDate;
+    this.selected = newOffset;
   }
 
   static getMonthLength(year, month) {
