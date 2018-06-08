@@ -24,41 +24,11 @@ class DatePicker {
     this.baseMonth = baseDate.getMonth();
     this.baseDate = baseDate.getDate();
 
-    this.makeBar();
-
     this.makeDates();
 
     this.makeInteractive();
 
     if (options.noUnselected) this.date = new Date();
-  }
-
-  makeBar() {
-    const options = this.options;
-    const bar = document.createElement('div');
-    bar.classList.add('bar');
-
-    if (options.formatMonth) {
-      const monthBar = document.createElement('div');
-      monthBar.classList.add('month-name');
-      bar.appendChild(monthBar);
-      this.monthNameBar = monthBar;
-    } else {
-      this.monthNameBar = null;
-    }
-
-    if (options.dayStrings) {
-      const dayBar = document.createElement('div');
-      dayBar.classList.add('weekday-names');
-      for (let i = 0; i < options.dayStrings.length; i++) {
-        const day = document.createElement('span');
-        day.textContent = options.dayStrings[i];
-        dayBar.appendChild(day);
-      }
-      bar.appendChild(dayBar);
-    }
-
-    this.wrapper.appendChild(bar);
   }
 
   makeDates() {
@@ -72,11 +42,11 @@ class DatePicker {
 
     const dateLabels = document.createElementNS(SVG_NS, 'g');
     dateLabels.style.textAnchor = 'middle';
-    dateLabels.style.dominantBaseline = 'middle';
+    dateLabels.style.dominantBaseline = 'central';
     dateLabels.classList.add('dates');
 
     const monthHighlights = document.createElementNS(SVG_NS, 'g');
-    dateLabels.classList.add('month-highlights');
+    monthHighlights.classList.add('month-highlights');
 
     const offset = (options.range[0].getDay() + 7 - options.weekStart) % 7;
     let days = this.days + 1;
@@ -113,9 +83,10 @@ class DatePicker {
         path.setAttributeNS(null, 'd', lastMonth.path);
         monthHighlights.appendChild(path);
         this.monthHighlights.push({
-          name: options.formatMonth ? options.formatMonth(year, month) : '',
-          top: lastMonth.top,
-          path: path
+          year,
+          month,
+          path,
+          top: lastMonth.top
         });
       }
     }
@@ -123,7 +94,6 @@ class DatePicker {
 
     const circle = document.createElementNS(SVG_NS, 'circle');
     circle.style.display = 'none';
-    circle.setAttributeNS(null, 'r', 10); // TEMP
     circle.classList.add('selected');
 
     svg.appendChild(circle);
@@ -199,10 +169,10 @@ class DatePicker {
       if (preventScroll) e.preventDefault();
     }, false);
 
-    if (options.formatMonth) {
+    if (options.changeMonthLabel) {
       const monthHighlights = this.monthHighlights;
       const onscroll = e => {
-        const threshold = wrapper.scrollTop + options.dateHeight;
+        const threshold = wrapper.scrollTop + options.dateHeight * 2;
         let i = monthHighlights.length;
         while (i--) if (monthHighlights[i].top < threshold) break;
         if (this.currentHighlight !== i) {
@@ -211,7 +181,7 @@ class DatePicker {
           }
           this.currentHighlight = i;
           monthHighlights[i].path.classList.add('highlight');
-          this.monthNameBar.textContent = monthHighlights[i].name;
+          options.changeMonthLabel(monthHighlights[i].year, monthHighlights[i].month);
         }
       };
       onscroll();
