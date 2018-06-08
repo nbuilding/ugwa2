@@ -8,13 +8,24 @@ class DayViewer {
    * @param {string} schedule[].period - The period letter.
    * @param {number} schedule[].start - The period's start time in minutes since 00:00 of the day.
    * @param {number} schedule[].end - The period's end time in minutes since 00:00 of the day.
+   * @param {boolean} today - If this represents today.
    */
-  constructor(date, schedule) {
+  constructor(date, schedule, today) {
     this.date = date;
-    this.periods = schedule.map(p => new Period(p.period, p.start, p.end));
+    this.periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
     this.wrapper = createElement('div', {
       classes: ['day'],
-      content: this.periods.map(p => p.wrapper)
+      content: [
+        createElement('h1', {
+          classes: ['date'],
+          content: [Formatter.date(date.getMonth(), date.getDate())]
+        }),
+        createElement('h3', {
+          classes: ['weekday'],
+          content: [Formatter.weekday(date.getDay())]
+        }),
+        ...this.periods.map(p => p.wrapper)
+      ]
     });
   }
 

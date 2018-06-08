@@ -14,7 +14,7 @@ function createElement(tag, attributes) {
   if (attributes.styles) Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
   if (typeof attributes.content === 'string') elem.appendChild(createElementFromHTML(attributes.content));
   else if (attributes.content)
-    attributes.content.forEach(e => elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
+    attributes.content.forEach(e => e && elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
   if (attributes.value) elem.value = attributes.value;
   return elem;
 }

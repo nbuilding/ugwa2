@@ -6,8 +6,9 @@ class Period {
    * @param {string} period - The period's letter
    * @param {number} start - Time when the period starts in minutes since 00:00 of the day.
    * @param {number} end - Time when the period ends in minutes since 00:00 of the day.
+   * @param {boolean} today - If the period is representing a period today.
    */
-  constructor(period, start, end) {
+  constructor(period, start, end, today) {
     this.period = period = period.toUpperCase();
     this.startTime = start;
     this.endTime = end;
@@ -21,9 +22,9 @@ class Period {
           classes: ['name'],
           content: [Prefs.getPdName(period)]
         }),
-        createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
-        this.toStart = createElement('span', {}),
-        this.toEnd = createElement('span', {}),
+        this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
+        today && (this.toStart = createElement('span', {})),
+        today && (this.toEnd = createElement('span', {})),
         createElement('span', {
           content: Formatter.phrase(
             'lasts',
@@ -36,6 +37,9 @@ class Period {
       ]
     });
     Period.setColourOf(this.wrapper, Prefs.getPdColour(period));
+    if (!today) {
+      this.timeRange.classList.add('previewed');
+    }
   }
 
   /**
