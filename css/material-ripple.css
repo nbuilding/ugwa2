@@ -1,0 +1,16 @@
+.ripple {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  transition-property: opacity, transform;
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+  transform: scale(0);
+  transform-origin: center center;
+}
+[has-ripple] {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}

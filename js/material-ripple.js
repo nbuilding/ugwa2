@@ -1,22 +1,19 @@
-const FADE_LENGTH = 500; // fades in x ms
-const GROW_SPEED = 3; // would grow x ms/px
-
 class Ripple {
 
   constructor() {
     const ripple = document.createElement('span');
     ripple.classList.add('ripple');
-    ripple.style.transform = 'scale(0)';
-    ripple.style.transformOrigin = 'center center';
-    ripple.style.transitionProperty = 'transform, opacity';
     this.ripple = ripple;
+
+    this.growthEnded = false;
+    this.needToFadeSoon = false;
   }
 
   addTo(parent, originX, originY) {
     const ripple = this.ripple;
     parent.appendChild(ripple);
 
-    const boundingRect = parent.getBoundingClientRect(); // must be after the ripple is added
+    const boundingRect = parent.getBoundingClientRect();
 
     this.growDistance = Math.hypot(
       Math.max(boundingRect.right - originX, originX - boundingRect.left),
@@ -25,25 +22,29 @@ class Ripple {
     ripple.style.left = (originX - boundingRect.left - this.growDistance / 2) + 'px';
     ripple.style.top = (originY - boundingRect.top - this.growDistance / 2) + 'px';
     ripple.style.width = ripple.style.height = this.growDistance + 'px';
-    ripple.style.transitionDuration = this.growDistance * GROW_SPEED + 'ms, '
-      + FADE_LENGTH + 'ms';
   }
 
   startAnimation() {
-    this.ripple.style.transform = 'scale(1)';
+    const ripple = this.ripple;
+    ripple.style.transform = 'scale(1)';
+    ripple.addEventListener('transitionend', e => {
+      this.growthEnded = true;
+      if (this.needToFadeSoon) this.startFading();
+    }, {once: true});
+  }
+
+  canFadeNow() {
+    if (this.growthEnded) this.startFading();
+    else this.needToFadeSoon = true; // my variable names are degrading again
   }
 
   startFading() {
     const ripple = this.ripple;
     ripple.style.opacity = 0;
     ripple.addEventListener('transitionend', e => {
+      this.growthEnded = true;
       ripple.parentNode.removeChild(ripple);
     }, {once: true});
-  }
-
-  static cubicEaseOut(percent) {
-    percent--;
-    return percent * percent * percent + 1;
   }
 
 }
@@ -60,7 +61,7 @@ function hasMaterialRipple(elem) {
     ripple.startAnimation();
 
     document.addEventListener(touch ? 'touchend' : 'mouseup', e => {
-      ripple.startFading();
+      ripple.canFadeNow();
     }, {once: true});
   }
 
