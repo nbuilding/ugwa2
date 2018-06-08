@@ -1,67 +1,44 @@
 const FADE_LENGTH = 500; // fades in x ms
-const GROW_SPEED = 31; // would grow x ms/px
+const GROW_SPEED = 3; // would grow x ms/px
 
 class Ripple {
 
   constructor() {
     const ripple = document.createElement('span');
     ripple.classList.add('ripple');
+    ripple.style.transform = 'scale(0)';
+    ripple.style.transformOrigin = 'center center';
+    ripple.style.transitionProperty = 'transform, opacity';
     this.ripple = ripple;
-
-    this.growStartTime = Date.now();
-    this.growDistance = null;
-    this.growDuration = null;
-
-    this.fading = false;
-    this.fadeStartTime = null;
   }
 
   addTo(parent, originX, originY) {
-    parent.appendChild(this.ripple);
+    const ripple = this.ripple;
+    parent.appendChild(ripple);
 
-    const boundingRect = parent.getBoundingClientRect();
-
-    this.ripple.style.left = (originX - boundingRect.left) + 'px';
-    this.ripple.style.top = (originY - boundingRect.top) + 'px';
+    const boundingRect = parent.getBoundingClientRect(); // must be after the ripple is added
 
     this.growDistance = Math.hypot(
       Math.max(boundingRect.right - originX, originX - boundingRect.left),
       Math.max(boundingRect.bottom - originY, originY - boundingRect.top)
-    ) / 5;
-    this.growDuration = this.growDistance * GROW_SPEED;
-  }
-
-  updateRippleSize() {
-    const ripple = this.ripple;
-    const currentTime = Date.now();
-
-    const elapsedTime = currentTime - this.growStartTime;
-    if (elapsedTime > this.growDuration) {
-      ripple.style.transform = `scale(${this.growDistance})`;
-    } else {
-      const position = Ripple.cubicEaseOut(elapsedTime / this.growDuration);
-      ripple.style.transform = `scale(${position * this.growDistance})`;
-    }
-
-    if (this.fading) {
-      let fade = 1 - (currentTime - this.fadeStartTime) / FADE_LENGTH;
-      if (fade < 0) {
-        ripple.parentNode.removeChild(ripple);
-        return;
-      }
-      else ripple.style.opacity = fade;
-    }
-
-    window.requestAnimationFrame(() => this.updateRippleSize());
+    ) * 2;
+    ripple.style.left = (originX - boundingRect.left - this.growDistance / 2) + 'px';
+    ripple.style.top = (originY - boundingRect.top - this.growDistance / 2) + 'px';
+    ripple.style.width = ripple.style.height = this.growDistance + 'px';
+    ripple.style.transitionDuration = this.growDistance * GROW_SPEED + 'ms, '
+      + FADE_LENGTH + 'ms';
   }
 
   startAnimation() {
-    this.updateRippleSize();
+    this.ripple.style.transform = 'scale(1)';
   }
 
   startFading() {
-    this.fading = true;
-    this.fadeStartTime = Date.now();
+    const ripple = this.ripple;
+    ripple.style.opacity = 0;
+    ripple.addEventListener('transitionend', e => {
+      ripple.parentNode.removeChild(ripple);
+    }, {once: true});
   }
 
   static cubicEaseOut(percent) {
