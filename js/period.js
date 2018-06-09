@@ -80,7 +80,7 @@ class Period {
   /**
    * Sets the custom name of the period.
    */
-  update() {
+  updateCustomisation() {
     this.name.textContent = Prefs.getPdName(this.period);
     this.note.value = Prefs.getPdDesc(this.period);
     Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
