@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Possible settings - Ugwa 2</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ugwa 2"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <style media="screen">
+      body {
+        background-color: black;
+        filter: invert(1) hue-rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Settings</h1>
+    <h2>Appearance</h2>
+    <h3>Theme</h3>
+    <p><input type="radio" name="theme" value="light" id="light"><label for="light">light</label></p>
+    <p><input type="radio" name="theme" value="dark" id="dark" checked><label for="dark">dark</label></p>
+    <p><input type="radio" name="theme" value="neither" id="neither"><label for="neither">neither</label></p>
+    <h2>Functionality</h2>
+    <p><input type="checkbox" id="work" checked disabled><label for="work">Be functional?</label></p>
+    <p><input type="checkbox" id="offline" checked><label for="offline">Be functional offline?</label></p>
+    <h2>Periods</h2>
+    <!-- TODO: allow people to select "transparent" (would use a custom colour picker anyways) -->
+    <p><label>Period A</label><input type="color" value="#3F51B5"><input type="text" placeholder="Class name" value="Period A"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period B</label><input type="color" value="#2196F3"><input type="text" placeholder="Class name" value="Period B"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period C</label><input type="color" value="#CDDC39"><input type="text" placeholder="Class name" value="Period C"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period D</label><input type="color" value="#673AB7"><input type="text" placeholder="Class name" value="Period D"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period E</label><input type="color" value="#009688"><input type="text" placeholder="Class name" value="Period E"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period F</label><input type="color" value="#f44336"><input type="text" placeholder="Class name" value="Period F"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Period G</label><input type="color" value="#E91E63"><input type="text" placeholder="Class name" value="Period G"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Flex</label><input type="color" value="#607D8B"><input type="text" placeholder="Class name" value="Flex"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Brunch</label><input type="color" value="#4CAF50"><input type="text" placeholder="Class name" value="Brunch"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><label>Lunch</label><input type="color" value="#FFC107"><input type="text" placeholder="Class name" value="Lunch"></p>
+    <p><textarea rows="2" cols="40" placeholder="Notes"></textarea></p>
+    <p><input type="checkbox" id="zeroperiod"><label for="zeroperiod">show period H</label></p>
+    <p><input type="checkbox" id="staffperiods"><label for="staffperiods">show staff periods</label></p>
+    <h2>Locales</h2>
+    <p>
+      <label for="language">language:</label>
+      <select>
+        <option value="en-GB">English (traditional)</option>
+        <option value="en-US">English (simplified)</option>
+        <option value="temp">█████</option>
+      </select>
+    </p>
+    <h3>Time format</h3>
+    <p><input type="radio" name="timeformat" value="twelve-ln" id="twelve-ln" checked><label for="twelve-ln">10:54pm</label></p>
+    <p><input type="radio" name="timeformat" value="twelve-un" id="twelve-un"><label for="twelve-un">10:54PM</label></p>
+    <p><input type="radio" name="timeformat" value="twelve-ls" id="twelve-ls"><label for="twelve-ls">10:54 pm</label></p>
+    <p><input type="radio" name="timeformat" value="twelve-us" id="twelve-us"><label for="twelve-us">10:54 PM</label></p>
+    <p><input type="radio" name="timeformat" value="twenty-four" id="twenty-four"><label for="twenty-four">22:54</label></p>
+    <p><input type="radio" name="timeformat" value="questionmarks" id="questionmarks"><label for="questionmarks">???</label></p>
+    <h3>Duration format</h3>
+    <p><input type="radio" name="durationformat" value="hoursminutes-comma" id="hoursminutes-comma"><label for="hoursminutes-comma">4 hours, 20 minutes</label></p>
+    <p><input type="radio" name="durationformat" value="hoursminutes-and" id="hoursminutes-and" checked><label for="hoursminutes-and">4 hours and 20 minutes</label></p>
+    <p><input type="radio" name="durationformat" value="minutes" id="minutes"><label for="minutes">260 minutes</label></p>
+    <p><input type="radio" name="durationformat" value="simple" id="simple"><label for="simple">4:20 hours</label></p>
+    <p><input type="radio" name="durationformat" value="simple" id="simple"><label for="simple">-260 comment karma</label></p>
+    <h3>Date format</h3>
+    <p><input type="radio" name="dateformat" value="mmslashdd" id="mmslashdd"><label for="mmslashdd">03-14</label></p>
+    <p><input type="radio" name="dateformat" value="mslashd" id="mslashd"><label for="mslashd">3/14</label></p>
+    <p><input type="radio" name="dateformat" value="mmmddpd" id="mmmddperiod"><label for="mmmddperiod">Mar. 14</label></p>
+    <p><input type="radio" name="dateformat" value="mmmdd" id="mmmdd"><label for="mmmdd">Mar 14</label></p>
+    <p><input type="radio" name="dateformat" value="mmmmdd" id="mmmmdd" checked><label for="mmmmdd">March 14</label></p>
+    <p><input type="radio" name="dateformat" value="mmmmddth" id="mmmmddth"><label for="mmmmddth">March 14<sup>th</sup></label></p>
+    <p><input type="radio" name="dateformat" value="dslashm" id="dslashm"><label for="dslashm">14/3</label></p>
+    <p><input type="radio" name="dateformat" value="ddmmmpd" id="ddmmmperiod"><label for="ddmmmperiod">14 Mar.</label></p>
+    <p><input type="radio" name="dateformat" value="ddmmm" id="ddmmm"><label for="ddmmm">14 Mar</label></p>
+    <p><input type="radio" name="dateformat" value="ddmmmm" id="ddmmmm"><label for="ddmmmm">14 March</label></p>
+    <p><input type="radio" name="dateformat" value="ddthofmmmm" id="ddthofmmmm"><label for="ddthofmmmm">14<sup>th</sup> of March</label></p>
+    <p><input type="radio" name="dateformat" value="truth" id="truth"><label for="truth">3 + 14 = 5</label></p>
+    <h3>Format of the days of the week</h3>
+    <p><input type="radio" name="dayformat" value="ipa" id="ipa"><label for="ipa">SMTWΘFS</label></p>
+    <p><input type="radio" name="dayformat" value="initials" id="initials"><label for="initials">SMTWTFS</label></p>
+    <p><input type="radio" name="dayformat" value="three" id="three"><label for="three">Sun Mon Tue Wed Thu Fri Sat</label></p>
+    <p><input type="radio" name="dayformat" value="threepd" id="threepd"><label for="threepd">Sun. Mon. Tue. Wed. Thu. Fri. Sat.</label></p>
+    <p><input type="radio" name="dayformat" value="abbrev" id="abbrev"><label for="abbrev">Sun Mon Tues Wed Thurs Fri Sat</label></p>
+    <p><input type="radio" name="dayformat" value="abbrevpd" id="abbrevpd"><label for="abbrevpd">Sun. Mon. Tues. Wed. Thurs. Fri. Sat.</label></p>
+    <p><input type="radio" name="dayformat" value="abbrevpd" id="abbrevpd"><label for="abbrevpd">Sun. Mon. Tues. Wed. Thurs. Fri. Sat.</label></p>
+    <p><input type="radio" name="dayformat" value="yes" id="yes"><label for="yes">SOOHAAM</label></p>
+    <h3>The week starts on</h3>
+    <p><input type="radio" name="dayformat" value="sun" id="sun"><label for="sun">Sunday</label></p>
+    <p><input type="radio" name="dayformat" value="mon" id="mon"><label for="mon">Monday</label></p>
+    <p><input type="radio" name="dayformat" value="thu" id="thu"><label for="thu">Thursday</label></p>
+  </body>
+</html>
