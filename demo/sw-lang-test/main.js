@@ -5,9 +5,10 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
     navigator.serviceWorker.ready.then(regis => {
       console.log(regis);
+      console.log(regis.active);
       console.log(navigator.serviceWorker);
       console.log(navigator.serviceWorker.controller);
-      navigator.serviceWorker.controller.postMessage(lang);
+      regis.active.postMessage(lang);
     });
   }, {once: true});
 }
