@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title data-translated>TITLE</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Seeing if service workers can be used to load different language JS files."/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="./main.js" charset="utf-8"></script>
+    <!-- BEGIN: LANG SCRIPT -->
+    <script src="./temp.js" charset="utf-8"></script>
+    <!-- END: LANG SCRIPT -->
+  </head>
+  <body>
+    <h1 data-translated>HEADING</h1>
+    <p><span data-translated>DIALECTAL_SPELLING</span><strong data-translated>COLOUR</strong></p>
+    <p>
+      <span data-translated>SELECT_LANG</span>
+      <select id="lang">
+        <option value="en-US">English (simplified)</option>
+        <option value="en-GB">English (traditional)</option>
+        <option value="temp" selected>█████</option>
+      </select>
+    </p>
+  </body>
+</html>
