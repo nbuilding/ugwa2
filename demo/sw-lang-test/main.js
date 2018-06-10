@@ -1,15 +1,20 @@
+let lang = localStorage.getItem('[ugwa2] demos.lang') || 'temp';
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
+    navigator.serviceWorker.register('./sw.js').then(() => {
+      navigator.serviceWorker.postMessage(lang);
+    });
   }, {once: true});
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const langSelect = document.getElementById('lang');
-  langSelect.value = localStorage.getItem('[ugwa2] demos.lang') || 'temp';
+  langSelect.value = lang;
   langSelect.addEventListener('change', () => {
-    localStorage.setItem('[ugwa2] demos.lang', langSelect.value);
-    navigator.serviceWorker.postMessage(langSelect.value);
+    lang = langSelect.value;
+    localStorage.setItem('[ugwa2] demos.lang', lang);
+    navigator.serviceWorker.postMessage(lang);
     window.location.reload();
   });
 

@@ -5,7 +5,7 @@ urlsToCache = [
 ],
 FIND_LANG = /(<script src=")\.\/temp\.js(" charset="utf-8">)/;
 
-let lang = localStorage.getItem('[ugwa2] demos.lang') || 'temp';
+let lang = 'temp';
 
 function getLangUrl() {
   return `./${lang}.js`;
@@ -16,7 +16,6 @@ self.addEventListener('install', e => {
 });
 self.addEventListener('message', ({data}) => {
   lang = data;
-  localStorage.setItem('[ugwa2] demos.lang', lang);
   caches.open(CACHE_NAME).then(cache => cache.add(getLangUrl()));
 });
 self.addEventListener('fetch', e => {
