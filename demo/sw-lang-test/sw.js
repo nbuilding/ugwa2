@@ -1,5 +1,6 @@
 const CACHE_NAME = 'ugwa2-lang-sw-test-v01', // change cache name to force update
 urlsToCache = [
+  './',
   './index.html',
   './main.js'
 ],
@@ -23,7 +24,7 @@ self.addEventListener('message', ({data}) => {
 self.addEventListener('fetch', e => {
   e.respondWith(caches.match(e.request).then(response => {
     if (!response) return fetch(e.request);
-    else if (!response.url.includes('index.html')) return response;
+    else if (response.url.includes('.js')) return response;
     else return response.text().then(html => new Response(
       html.replace(FIND_LANG, (m, p1, p2) => p1 + getLangUrl() + p2),
       {headers: {'Content-Type': 'text/html'}}
