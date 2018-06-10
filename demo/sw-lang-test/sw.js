@@ -31,7 +31,6 @@ self.addEventListener('fetch', e => {
   }));
 });
 self.addEventListener('activate', e => {
-  client.postMessage('ready');
   e.waitUntil(caches.keys()
     .then(names => Promise.all(names.map(cache => CACHE_NAME !== cache && caches.delete(cache))))
     .then(() => self.clients.claim())
