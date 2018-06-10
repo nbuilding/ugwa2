@@ -3,7 +3,7 @@ let lang = localStorage.getItem('[ugwa2] demos.lang') || 'temp';
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then(() => {
-      navigator.serviceWorker.postMessage(lang);
+      navigator.serviceWorker.controller.postMessage(lang);
     });
   }, {once: true});
 }
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   langSelect.addEventListener('change', () => {
     lang = langSelect.value;
     localStorage.setItem('[ugwa2] demos.lang', lang);
-    navigator.serviceWorker.postMessage(lang);
+    navigator.serviceWorker.controller.postMessage(lang);
     window.location.reload();
   });
 

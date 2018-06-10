@@ -12,7 +12,9 @@ function getLangUrl() {
 }
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+  e.waitUntil(caches.open(CACHE_NAME)
+    .then(cache => cache.addAll(urlsToCache))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('message', ({data}) => {
   lang = data;
@@ -29,5 +31,7 @@ self.addEventListener('fetch', e => {
   }));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(names => Promise.all(names.map(cache => CACHE_NAME !== cache && caches.delete(cache)))));
+  e.waitUntil(caches.keys()
+    .then(names => Promise.all(names.map(cache => CACHE_NAME !== cache && caches.delete(cache))))
+    .then(() => self.clients.claim()));
 });
