@@ -4,10 +4,6 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js');
     navigator.serviceWorker.ready.then(regis => {
-      console.log(regis);
-      console.log(regis.active);
-      console.log(navigator.serviceWorker);
-      console.log(navigator.serviceWorker.controller);
       regis.active.postMessage(lang);
     });
   }, {once: true});
