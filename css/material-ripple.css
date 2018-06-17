@@ -2,8 +2,9 @@
   position: absolute;
   pointer-events: none;
   border-radius: 50%;
-  transition-property: opacity, transform;
-  transition-duration: 0.4s;
+  transition-property: transform, opacity;
+  /* TODO: timings */
+  transition-duration: 0.3s, 0.6s;
   transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
   transform: scale(0);
   transform-origin: center center;

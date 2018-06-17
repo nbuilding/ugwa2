@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Material components - Ugwa 2</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Some HTML5 material thingies for the settings. Does not include the colour picker."/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="../css/material.css">
+    <link rel="stylesheet" href="../css/material-ripple.css">
+
+    <script src="../js/dom-ambassador.js" charset="utf-8"></script>
+    <script src="../js/material.js" charset="utf-8"></script>
+    <script src="../js/material-ripple.js" charset="utf-8"></script>
+  </head>
+  <body class="dark">
+    <script type="text/javascript">
+      const radios = new RadioGroup('Theme', ['Light', 'Dark', 'Neither']);
+      document.body.appendChild(radios.wrapper);
+      radios.choice = 1;
+      radios.onchange = theme => {
+        switch (theme) {
+          case 0:
+            document.body.className = 'light';
+            break;
+          case 1:
+            document.body.className = 'dark';
+            break;
+          case 2:
+            document.body.className = '';
+            break;
+        }
+      };
+
+      const showH = new Switch('Show period H');
+      document.body.appendChild(showH.wrapper);
+
+      const showStaff = new Switch('Show staff periods');
+      document.body.appendChild(showStaff.wrapper);
+
+      const periodName = new TextField('Period name');
+      document.body.appendChild(createElement('p', {content: [periodName.wrapper]}));
+
+      const language = new Dropdown('Language', ['eenglish', 'jonge wun', 'ehspahnyol'], 0);
+      document.body.appendChild(createElement('p', {content: [language.wrapper]}));
+      language.initialise();
+
+      const testmenu = new Menu(['sdgf', 'dfhgfdg fdghjdfigh fdghfdgh', '.']);
+      document.body.appendChild(testmenu.wrapper);
+    </script>
+  </body>
+</html>
