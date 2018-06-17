@@ -15,6 +15,7 @@
     <script src="../js/material-ripple.js" charset="utf-8"></script>
   </head>
   <body class="dark">
+    <p><button class="button contained" has-ripple>say hello</button></p>
     <script type="text/javascript">
       const radios = new RadioGroup('Theme', ['Light', 'Dark', 'Neither']);
       document.body.appendChild(radios.wrapper);
@@ -45,9 +46,6 @@
       const language = new Dropdown('Language', ['eenglish', 'jonge wun', 'ehspahnyol'], 0);
       document.body.appendChild(createElement('p', {content: [language.wrapper]}));
       language.initialise();
-
-      const testmenu = new Menu(['sdgf', 'dfhgfdg fdghjdfigh fdghfdgh', '.']);
-      document.body.appendChild(testmenu.wrapper);
     </script>
   </body>
 </html>

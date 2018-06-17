@@ -13,7 +13,7 @@ class RadioGroup {
           tabindex: -1,
           content: [
             createElement('span', {
-              classes: 'button',
+              classes: 'radio-button',
               ripple: true,
               roundRipple: true,
               content: [
