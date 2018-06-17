@@ -176,6 +176,7 @@ class TextField {
       this.line.style.transitionDelay = '0s';
       this.line.style.setProperty('--click-x', (e.clientX - this.wrapper.getBoundingClientRect().left) + 'px');
       this.input.focus();
+      if (this.onclick) this.onclick(e);
     });
     this.input.addEventListener('focus', e => {
       this.wrapper.classList.add('focused');
@@ -279,8 +280,18 @@ class Dropdown extends TextField {
     this.menu.onchoice = (c, i) => {
       this.choice = i;
       this.value = c;
-      this.menu.close(); // QUESTION: should we blur to close the dropdown?
+      this.menu.close();
     }
+    // TODO: selection indicator thing and allow esc to cancel (will require revamp)
+    this.input.addEventListener('keydown', e => {
+      if (e.keyCode === 13 || e.keyCode === 32)
+        this.menu.close();
+      else if ((e.keyCode === 37 || e.keyCode === 38) && this.choice > 0) {
+        this.value = choices[--this.choice];
+      } else if ((e.keyCode === 39 || e.keyCode === 40) && this.choice < choices.length - 1) {
+        this.value = choices[++this.choice];
+      }
+    });
     this.wrapper.appendChild(this.menu.wrapper);
   }
 
@@ -291,10 +302,14 @@ class Dropdown extends TextField {
 
   onfocus() {
     const inputRect = this.wrapper.getBoundingClientRect();
-    console.log(inputRect.top - this.choice * 48 + 3);
     this.menu.at(inputRect.left, inputRect.top - this.choice * 48 + 3);
+    // TODO: scrolling within options (likely will be important), prevent off-screen dropdown
     this.menu.from(inputRect.left + inputRect.width / 2, inputRect.top + inputRect.height / 2);
     this.menu.appear();
+  }
+
+  onclick(e) {
+    if (!this.menu.wrapper.contains(e.target)) this.onfocus();
   }
 
   onblur() {

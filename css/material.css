@@ -354,6 +354,14 @@ body.dark {
   height: 32px;
   line-height: 32px;
 }
+.textfield .menu {
+  transform: scale(0.8);
+  transition: opacity 75ms var(--go-out), transform 75ms;
+}
+.textfield .menu.open {
+  transform: scale(1);
+  transition: opacity 150ms var(--go-in);
+}
 .textfield .menu li {
   padding-left: 12px;
   padding-right: 68px;
