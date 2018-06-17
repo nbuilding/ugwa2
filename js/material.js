@@ -20,7 +20,7 @@ class RadioGroup {
                 createElement('span', {classes: 'icon'})
               ]
             }),
-            createElement('span', {classes: 'label', content: [c]})
+            createElement('label', {content: [c]})
           ]
         })))
       ]
@@ -35,9 +35,11 @@ class RadioGroup {
       });
 
       radioWrapper.addEventListener('mousedown', e => {
+        if (e.target === radioWrapper) return;
         this.choice = i;
       });
       radioWrapper.addEventListener('touchstart', e => {
+        if (e.target === radioWrapper) return;
         this.choice = i;
       });
       radioWrapper.addEventListener('keydown', e => {
@@ -90,7 +92,7 @@ class Switch {
       classes: 'switch',
       tabindex: 0,
       content: [
-        createElement('span', {classes: 'label', content: [label]}),
+        createElement('label', {content: [label]}),
         createElement('span', {
           classes: 'track',
           content: [
@@ -112,6 +114,7 @@ class Switch {
     });
 
     this.wrapper.addEventListener('click', e => {
+      if (e.target === this.wrapper) return;
       this.checked = !this.checked;
     });
     this.wrapper.addEventListener('keydown', e => {
@@ -141,12 +144,25 @@ class TextField {
   constructor(label, options = {}) {
     this.wrapper = createElement('div', {
       classes: 'textfield',
+      tabindex: options.nottext && 0,
       content: [
         createElement('label', {content: [label]}),
-        this.input = createElement('input'),
+        this.input = createElement('input', {disabled: options.nottext}),
         createElement('span', {content: [
           this.line = createElement('span')
-        ]})
+        ]}),
+        options.icon && createElement('button', {
+          content: [
+            createElement('svg', {
+              ns: createElement.svgNS,
+              attr: {
+                width: 18,
+                height: 18
+              },
+              content: [createElement('path', {attr: {d: options.icon}})]
+            })
+          ]
+        })
       ]
     });
 
@@ -156,7 +172,14 @@ class TextField {
     this.wrapper.addEventListener('click', e => {
       this.line.style.transitionDelay = '0s';
       this.line.style.setProperty('--click-x', (e.clientX - this.wrapper.getBoundingClientRect().left) + 'px');
-      this.input.focus();
+    });
+    this.wrapper.addEventListener('focus', e => {
+      this.wrapper.classList.add('focused');
+    });
+    this.wrapper.addEventListener('blur', e => {
+      this.wrapper.classList.remove('focused');
+      this.line.style.setProperty('--click-x', null);
+      this.line.style.transitionDelay = null;
     });
     this.input.addEventListener('focus', e => {
       this.wrapper.classList.add('focused');
@@ -175,6 +198,16 @@ class TextField {
       if (this.input.value) this.wrapper.classList.add('filled');
       else this.wrapper.classList.remove('filled');
     });
+  }
+
+  get value() {
+    return this.input.value;
+  }
+
+  set value(val) {
+    this.input.value = val;
+    if (val) this.wrapper.classList.add('filled');
+    else this.wrapper.classList.remove('filled');
   }
 
 }

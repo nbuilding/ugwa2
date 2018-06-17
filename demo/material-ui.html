@@ -41,6 +41,13 @@
 
       const periodName = new TextField('Period name');
       document.body.appendChild(periodName.wrapper);
+
+      const language = new TextField('Language', {
+        nottext: true,
+        icon: 'M7 10l5 5 5-5z'
+      });
+      language.value = 'boof';
+      document.body.appendChild(language.wrapper);
     </script>
   </body>
 </html>

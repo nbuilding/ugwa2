@@ -1,3 +1,5 @@
+// TODO: make the types more regular
+
 /**
  * @param {string} tag - Tag name of the desired HTML element.
  * @param {Object} attributes - Extra enformation about the desired element.
@@ -8,17 +10,22 @@
  * @returns {HTMLElement} - The created element.
  */
 function createElement(tag, attributes) {
-  let elem = document.createElement(tag);
-
   if (typeof attributes !== 'object') attributes = {};
+
+  console.log(attributes.ns, tag);
+
+  let elem = attributes.ns ? document.createElementNS(attributes.ns, tag) : document.createElement(tag);
 
   if (typeof attributes.classes === 'string')
     elem.className = attributes.classes;
   else if (attributes.classes)
-    attributes.classes.forEach(c => elem.classList.add(c));
+    attributes.classes.forEach(c => c && elem.classList.add(c));
 
   if (attributes.data)
     Object.keys(attributes.data).forEach(d => typeof attributes.data[d] === 'string' && (elem.dataset[d] = attributes.data[d]));
+
+  if (attributes.attr)
+    Object.keys(attributes.attr).forEach(d => attributes.attr[d] !== undefined && (attributes.ns === undefined ? elem.setAttribute(d, attributes.attr[d]) : elem.setAttributeNS(null, d, attributes.attr[d])));
 
   if (attributes.styles)
     Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
@@ -28,11 +35,14 @@ function createElement(tag, attributes) {
     attributes.content.forEach(e => e && elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
 
   if (attributes.value !== undefined) elem.value = attributes.value;
-  if (attributes.tabindex !== undefined) elem.setAttribute('tabindex', attributes.tabindex);
+  if (attributes.tabindex !== undefined && typeof attributes.tabindex !== 'boolean')
+    elem.setAttribute('tabindex', attributes.tabindex);
+  if (attributes.disabled !== undefined) elem.disabled = attributes.disabled;
   if (attributes.ripple) hasMaterialRipple(elem, attributes.roundRipple);
 
   return elem;
 }
+createElement.svgNS = 'http://www.w3.org/2000/svg';
 
 /**
  * @param {string} html - The HTML.

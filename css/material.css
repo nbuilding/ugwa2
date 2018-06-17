@@ -29,6 +29,7 @@ body.light {
   --ripple: rgba(0, 0, 0, 0.16);
   --input-back: rgba(0, 0, 0, 0.06);
   --input-hover: rgba(0, 0, 0, 0.15);
+  --icon-theme: '-black.svg';
   color: var(--primary-text);
 }
 body.dark {
@@ -46,6 +47,7 @@ body.dark {
   --ripple: rgba(255, 255, 255, 0.32);
   --input-back: rgba(255, 255, 255, 0.1);
   --input-hover: rgba(255, 255, 255, 0.2);
+  --icon-theme: '-white.svg';
   color: var(--primary-text);
 }
 
@@ -214,6 +216,9 @@ body.dark {
   position: relative;
   transition: background-color .2s var(--go-places);
 }
+.textfield:focus, .textfield input:focus {
+  outline: none;
+}
 .textfield.focused {
   cursor: auto;
 }
@@ -239,10 +244,8 @@ body.dark {
   bottom: 0;
   height: 1em;
   cursor: inherit;
+  width: calc(100% - 24px);
   transition: opacity .2s var(--go-places);
-}
-.textfield input:focus {
-  outline: none;
 }
 .textfield > span {
   opacity: 0;
@@ -281,4 +284,23 @@ body.dark {
   transition-duration: .2s;
   transition-timing-function: var(--go-in);
   transition-delay: 0s;
+}
+.textfield button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+}
+.textfield svg {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.textfield path {
+  fill: var(--active-icon);
 }
