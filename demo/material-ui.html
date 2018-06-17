@@ -40,14 +40,14 @@
       document.body.appendChild(showStaff.wrapper);
 
       const periodName = new TextField('Period name');
-      document.body.appendChild(periodName.wrapper);
+      document.body.appendChild(createElement('p', {content: [periodName.wrapper]}));
 
-      const language = new TextField('Language', {
-        nottext: true,
-        icon: 'M7 10l5 5 5-5z'
-      });
-      language.value = 'boof';
-      document.body.appendChild(language.wrapper);
+      const language = new Dropdown('Language', ['eenglish', 'jonge wun', 'ehspahnyol'], 0);
+      document.body.appendChild(createElement('p', {content: [language.wrapper]}));
+      language.initialise();
+
+      const testmenu = new Menu(['sdgf', 'dfhgfdg fdghjdfigh fdghfdgh', '.']);
+      document.body.appendChild(testmenu.wrapper);
     </script>
   </body>
 </html>

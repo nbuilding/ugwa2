@@ -143,55 +143,58 @@ class TextField {
 
   constructor(label, options = {}) {
     this.wrapper = createElement('div', {
-      classes: 'textfield',
-      tabindex: options.nottext && 0,
+      classes: ['textfield', options.readOnly && 'has-icon'],
       content: [
         createElement('label', {content: [label]}),
-        this.input = createElement('input', {disabled: options.nottext}),
+        this.input = createElement('input', {readOnly: options.readOnly}),
         createElement('span', {content: [
           this.line = createElement('span')
         ]}),
-        options.icon && createElement('button', {
+        options.icon && (this.icon = createElement('button', {
           content: [
             createElement('svg', {
-              ns: createElement.svgNS,
+              svg: true,
               attr: {
                 width: 18,
                 height: 18
               },
-              content: [createElement('path', {attr: {d: options.icon}})]
+              content: [createElement('path', {svg: true, attr: {d: options.icon}})]
             })
           ]
-        })
+        }))
       ]
     });
 
     this.wrapper.addEventListener('mousedown', e => {
-      if (document.activeElement === this.input) e.preventDefault();
+      if (document.activeElement === this.input
+           && e.target !== this.input) {
+        // this prevents a weird blurfocus flicker when clicking on the label
+        e.preventDefault();
+      }
     });
     this.wrapper.addEventListener('click', e => {
       this.line.style.transitionDelay = '0s';
       this.line.style.setProperty('--click-x', (e.clientX - this.wrapper.getBoundingClientRect().left) + 'px');
-    });
-    this.wrapper.addEventListener('focus', e => {
-      this.wrapper.classList.add('focused');
-    });
-    this.wrapper.addEventListener('blur', e => {
-      this.wrapper.classList.remove('focused');
-      this.line.style.setProperty('--click-x', null);
-      this.line.style.transitionDelay = null;
+      this.input.focus();
     });
     this.input.addEventListener('focus', e => {
       this.wrapper.classList.add('focused');
+      if (this.onfocus) this.onfocus();
     });
     this.input.addEventListener('blur', e => {
       this.wrapper.classList.remove('focused');
       this.line.style.setProperty('--click-x', null);
       this.line.style.transitionDelay = null;
+      if (this.onblur) this.onblur();
     });
     if (options.onchange) {
       this.input.addEventListener('input', e => {
-        this.onchange(this.input.value);
+        options.onchange(this.input.value);
+      });
+    }
+    if (options.icon && options.oniconclick) {
+      this.icon.addEventListener('click', e => {
+        options.oniconclick();
       });
     }
     this.input.addEventListener('change', e => {
@@ -208,6 +211,104 @@ class TextField {
     this.input.value = val;
     if (val) this.wrapper.classList.add('filled');
     else this.wrapper.classList.remove('filled');
+  }
+
+}
+
+class Menu {
+
+  constructor(choices) {
+    // TODO: add keyboard support
+    this.wrapper = createElement('ul', {
+      classes: 'menu shadow8',
+      content: choices.map(c => createElement('li', {content: [c], ripple: true}))
+    });
+    this.wrapper.addEventListener('click', e => {
+      if (this.onchoice && e.target !== this.wrapper)
+        this.onchoice(e.target.textContent, choices.indexOf(e.target.textContent));
+    });
+  }
+
+  appear() {
+    this.wrapper.classList.add('open');
+  }
+
+  at(menuX, menuY) {
+    this.wrapper.style.left = menuX + 'px';
+    this.wrapper.style.top = menuY + 'px';
+  }
+
+  getRect() {
+    this.wrapper.style.transform = 'scale(1)';
+    this.wrapper.style.transition = 'none';
+    const rect = this.wrapper.getBoundingClientRect();
+    this.wrapper.style.transform = null;
+    this.wrapper.getBoundingClientRect(); // force css refresh thing
+    this.wrapper.style.transition = null;
+    return rect;
+  }
+
+  from(fromX, fromY) {
+    const rect = this.getRect();
+    this.wrapper.style.transformOrigin = `${fromX - rect.left}px ${fromY - rect.top}px`;
+  }
+
+  appearAtFrom(menuX, menuY, fromX, fromY) {
+    this.at(menuX, menuY);
+    this.from(fromX, fromY);
+    this.appear();
+  }
+
+  close() {
+    this.wrapper.classList.remove('open');
+  }
+
+}
+
+class Dropdown extends TextField {
+
+  constructor(label, choices, defaultVal) {
+    super(label, {
+      readOnly: true,
+      icon: 'M7 10l5 5 5-5z'
+    });
+    this.value = defaultVal === undefined ? 'Select' : choices[defaultVal];
+    this.choices = choices;
+    this.choice = defaultVal;
+    this.menu = new Menu(choices);
+    this.menu.onchoice = (c, i) => {
+      this.choice = i;
+      this.value = c;
+      this.menu.close(); // QUESTION: should we blur to close the dropdown?
+    }
+    this.wrapper.appendChild(this.menu.wrapper);
+  }
+
+  initialise() {
+    const menuRect = this.menu.getRect();
+    this.wrapper.style.width = Math.floor(menuRect.width) + 'px';
+  }
+
+  onfocus() {
+    const inputRect = this.wrapper.getBoundingClientRect();
+    console.log(inputRect.top - this.choice * 48 + 3);
+    this.menu.at(inputRect.left, inputRect.top - this.choice * 48 + 3);
+    this.menu.from(inputRect.left + inputRect.width / 2, inputRect.top + inputRect.height / 2);
+    this.menu.appear();
+  }
+
+  onblur() {
+    this.menu.close();
+  }
+
+  get choiceName() {
+    return this.choices[this.choice];
+  }
+
+  set choiceName(id) {
+    if (typeof id === 'number') this.choice = id;
+    else this.choice = this.choices.indexOf(id);
+    this.value = this.choices[this.choice];
   }
 
 }

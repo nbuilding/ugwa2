@@ -1,5 +1,7 @@
 // TODO: make the types more regular
 
+const svgNS = 'http://www.w3.org/2000/svg';
+
 /**
  * @param {string} tag - Tag name of the desired HTML element.
  * @param {Object} attributes - Extra enformation about the desired element.
@@ -12,9 +14,7 @@
 function createElement(tag, attributes) {
   if (typeof attributes !== 'object') attributes = {};
 
-  console.log(attributes.ns, tag);
-
-  let elem = attributes.ns ? document.createElementNS(attributes.ns, tag) : document.createElement(tag);
+  let elem = attributes.svg ? document.createElementNS(svgNS, tag) : document.createElement(tag);
 
   if (typeof attributes.classes === 'string')
     elem.className = attributes.classes;
@@ -25,7 +25,7 @@ function createElement(tag, attributes) {
     Object.keys(attributes.data).forEach(d => typeof attributes.data[d] === 'string' && (elem.dataset[d] = attributes.data[d]));
 
   if (attributes.attr)
-    Object.keys(attributes.attr).forEach(d => attributes.attr[d] !== undefined && (attributes.ns === undefined ? elem.setAttribute(d, attributes.attr[d]) : elem.setAttributeNS(null, d, attributes.attr[d])));
+    Object.keys(attributes.attr).forEach(d => attributes.attr[d] !== undefined && (attributes.svg ? elem.setAttributeNS(null, d, attributes.attr[d]) : elem.setAttribute(d, attributes.attr[d])));
 
   if (attributes.styles)
     Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
@@ -38,11 +38,11 @@ function createElement(tag, attributes) {
   if (attributes.tabindex !== undefined && typeof attributes.tabindex !== 'boolean')
     elem.setAttribute('tabindex', attributes.tabindex);
   if (attributes.disabled !== undefined) elem.disabled = attributes.disabled;
+if (attributes.readOnly !== undefined) elem.readOnly = attributes.readOnly;
   if (attributes.ripple) hasMaterialRipple(elem, attributes.roundRipple);
 
   return elem;
 }
-createElement.svgNS = 'http://www.w3.org/2000/svg';
 
 /**
  * @param {string} html - The HTML.
