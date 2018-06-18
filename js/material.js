@@ -7,7 +7,7 @@ class RadioGroup {
       content: [
         createElement('span', {
           classes: 'title caption',
-          content: [title]
+          content: title
         }),
         ...(this.choices = choices.map(c => createElement('div', {
           classes: 'radio',
@@ -21,7 +21,7 @@ class RadioGroup {
                 createElement('span', {classes: 'icon'})
               ]
             }),
-            createElement('label', {content: [c]})
+            createElement('label', {content: c})
           ]
         })))
       ]
@@ -97,7 +97,7 @@ class Switch {
       classes: 'switch',
       tabindex: 0,
       content: [
-        createElement('label', {content: [label]}),
+        createElement('label', {content: label}),
         createElement('span', {
           classes: 'track',
           content: [
@@ -151,7 +151,7 @@ class TextField {
     this.wrapper = createElement('div', {
       classes: ['textfield', options.icon && 'has-icon', options.type],
       content: [
-        createElement('label', {content: [label]}),
+        createElement('label', {content: label}),
         this.input = createElement(
           options.type !== 'single-line' ? 'textarea' : 'input',
           {
@@ -237,7 +237,7 @@ class Menu {
     this.choices = choices;
     this.wrapper = createElement('ul', {
       classes: 'menu shadow8',
-      content: this.choiceElements = choices.map(c => createElement('li', {content: [c], ripple: true})),
+      content: this.choiceElements = choices.map(c => createElement('li', {content: c, ripple: true})),
       tabindex: -1
     });
     this.wrapper.addEventListener('click', e => {

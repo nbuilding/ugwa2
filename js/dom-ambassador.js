@@ -30,7 +30,7 @@ function createElement(tag, attributes) {
   if (attributes.styles)
     Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
 
-  if (typeof attributes.content === 'string') elem.appendChild(createElementFromHTML(attributes.content));
+  if (typeof attributes.content === 'string') elem.innerHTML = attributes.content;
   else if (attributes.content)
     attributes.content.forEach(e => e && elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
 
@@ -38,7 +38,8 @@ function createElement(tag, attributes) {
   if (attributes.tabindex !== undefined && typeof attributes.tabindex !== 'boolean')
     elem.setAttribute('tabindex', attributes.tabindex);
   if (attributes.disabled !== undefined) elem.disabled = attributes.disabled;
-if (attributes.readOnly !== undefined) elem.readOnly = attributes.readOnly;
+  if (attributes.readOnly !== undefined) elem.readOnly = attributes.readOnly;
+  if (attributes.type !== undefined) elem.type = attributes.type;
   if (attributes.ripple) hasMaterialRipple(elem, attributes.roundRipple);
 
   return elem;
