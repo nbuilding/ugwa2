@@ -234,19 +234,46 @@ class TextField {
 class Menu {
 
   constructor(choices) {
-    // TODO: add keyboard support
+    this.choices = choices;
     this.wrapper = createElement('ul', {
       classes: 'menu shadow8',
-      content: choices.map(c => createElement('li', {content: [c], ripple: true}))
+      content: this.choiceElements = choices.map(c => createElement('li', {content: [c], ripple: true})),
+      tabindex: -1
     });
     this.wrapper.addEventListener('click', e => {
       if (this.onchoice && e.target !== this.wrapper)
-        this.onchoice(e.target.textContent, choices.indexOf(e.target.textContent));
+        this.returnChoice(e.target.textContent);
     });
+    this.wrapper.addEventListener('keydown', e => {
+      if (e.keyCode === 13 || e.keyCode === 32)
+        this.returnChoice(this.cursor);
+      else if (e.keyCode === 37 || e.keyCode === 38)
+        this.showCursor((this.cursor + choices.length - 1) % choices.length);
+      else if (e.keyCode === 39 || e.keyCode === 40)
+        this.showCursor((this.cursor + 1) % choices.length);
+    });
+    this.wrapper.addEventListener('blur', e => {
+      this.close();
+    });
+  }
+
+  returnChoice(choice) {
+    if (typeof choice === 'number') this.onchoice(this.choices[choice], choice);
+    else this.onchoice(choice, this.choices.indexOf(choice));
+    this.close();
+  }
+
+  showCursor(cursor) {
+    if (this.cursor !== null) this.choiceElements[this.cursor].classList.remove('selected');
+    if (cursor !== null) this.choiceElements[cursor].classList.add('selected');
+    this.cursor = cursor;
   }
 
   appear() {
     this.wrapper.classList.add('open');
+    this.wrapper.setAttribute('tabindex', 0);
+    this.wrapper.focus();
+    this.cursor = 0;
   }
 
   at(menuX, menuY) {
@@ -277,6 +304,9 @@ class Menu {
 
   close() {
     this.wrapper.classList.remove('open');
+    // this.wrapper.blur();
+    this.wrapper.setAttribute('tabindex', -1);
+    this.showCursor(null);
   }
 
 }
@@ -296,17 +326,13 @@ class Dropdown extends TextField {
       this.choice = i;
       this.value = c;
       if (this.onchange) this.onchange(i, c);
-      this.menu.close();
+      // this.menu.close();
+      this.input.focus();
     }
     // TODO: selection indicator thing and allow esc to cancel (will require revamp)
     this.input.addEventListener('keydown', e => {
       if (e.keyCode === 13 || e.keyCode === 32)
-        this.menu.close();
-      else if ((e.keyCode === 37 || e.keyCode === 38) && this.choice > 0) {
-        this.value = choices[--this.choice];
-      } else if ((e.keyCode === 39 || e.keyCode === 40) && this.choice < choices.length - 1) {
-        this.value = choices[++this.choice];
-      }
+        this.focus();
     });
     this.wrapper.appendChild(this.menu.wrapper);
   }
@@ -316,21 +342,22 @@ class Dropdown extends TextField {
     this.wrapper.style.width = Math.floor(menuRect.width) + 'px';
   }
 
-  onfocus() {
+  focus() {
     const inputRect = this.wrapper.getBoundingClientRect();
     this.menu.at(inputRect.left, inputRect.top - this.choice * 48 + 3);
     // TODO: scrolling within options (likely will be important), prevent off-screen dropdown
     this.menu.from(inputRect.left + inputRect.width / 2, inputRect.top + inputRect.height / 2);
     this.menu.appear();
+    this.menu.cursor = this.choice;
   }
 
   onclick(e) {
-    if (!this.menu.wrapper.contains(e.target)) this.onfocus();
+    if (!this.menu.wrapper.contains(e.target)) this.focus();
   }
 
-  onblur() {
-    this.menu.close();
-  }
+  // onblur() {
+  //   this.menu.close();
+  // }
 
   get choiceName() {
     return this.choices[this.choice];

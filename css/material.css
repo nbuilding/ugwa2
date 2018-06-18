@@ -394,6 +394,9 @@ a.button {
   opacity: 0;
   transition: opacity 75ms var(--go-out), transform 0s 75ms;
 }
+.menu:focus {
+  outline: none;
+}
 .menu.open {
   pointer-events: all;
   opacity: 1;
@@ -410,6 +413,9 @@ a.button {
   padding: 0 16px;
   /* font-size: 14px; */
   cursor: pointer;
+}
+.menu li.selected {
+  background-color: var(--off-select-focus);
 }
 .menu.mouse li {
   height: 32px;
