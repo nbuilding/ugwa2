@@ -3,17 +3,13 @@
 }
 body {
   font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  letter-spacing: 0.03125rem;
+  font-size: 0;
   line-height: 1;
   --primary: #f44336;
   --switch-on-track: rgba(244, 67, 54, 0.5);
   --go-in: cubic-bezier(0.0, 0.0, 0.2, 1);
   --go-out: cubic-bezier(0.4, 0.0, 1, 1);
   --go-places: cubic-bezier(0.4, 0.0, 0.2, 1);
-  margin: 16px;
-
-  max-width: 500px; /* TEMP */
 }
 body.light {
   background-color: #FAFAFA;
@@ -58,6 +54,10 @@ body.dark {
   color: var(--primary-text);
 }
 
+.body1, .textfield, .radios, .switch {
+  font-size: 1rem;
+  letter-spacing: 0.03125rem;
+}
 .subtitle1 {
   font-size: 1rem;
   letter-spacing: 0.009375rem;
