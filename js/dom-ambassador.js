@@ -8,7 +8,7 @@ const svgNS = 'http://www.w3.org/2000/svg';
  * @param {(string|Array.<string>)} [attributes.classes] - The element's class names.
  * @param {Object} [attributes.data] - The element's data attributes.
  * @param {Object} [attributes.styles] - The element's styles.
- * @param {Array.<(string|HTMLElement)>} [attributes.content] - The element's child nodes.
+ * @param {Array.<(string|Node)>} [attributes.content] - The element's child nodes.
  * @returns {HTMLElement} - The created element.
  */
 function createElement(tag, attributes) {
@@ -54,4 +54,35 @@ function createElementFromHTML(html) {
   tempDiv.innerHTML = html;
   Array.from(tempDiv.childNodes).forEach(e => fragment.appendChild(e));
   return fragment;
+}
+
+/**
+ * @param {string} text - the text to measure
+ * @param {HTMLElement} fontStyle - the element to base the styles of
+ * @param {(boolean)} wrap - whether it should account for wrapping
+ * @returns {Object} - the height and width of the text
+ * @returns {Object.height} - the height of the text in pixels
+ * @returns {Object.width} - the width of the text in pixels
+ */
+function getTextSize(text, fontStyle, wrap) {
+  const styles = window.getComputedStyle(fontStyle);
+  const dummy = createElement('text-size-measurer', {
+    styles: {
+      font: styles.font,
+      letterSpacing: styles.letterSpacing,
+      whiteSpace: wrap ? 'pre-wrap' : 'pre',
+      display: 'inline-block',
+      position: 'fixed',
+      overflow: 'auto',
+      width: wrap ? styles.width : null
+    },
+    content: [text]
+  });
+  document.body.appendChild(dummy);
+  const rect = dummy.getBoundingClientRect();
+  document.body.removeChild(dummy);
+  return {
+    width: rect.width,
+    height: rect.height
+  };
 }

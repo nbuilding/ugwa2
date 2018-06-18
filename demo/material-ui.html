@@ -6,7 +6,7 @@
     <meta name="description" content="Some HTML5 material thingies for the settings. Does not include the colour picker."/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
     <link rel="stylesheet" href="../css/material.css">
     <link rel="stylesheet" href="../css/material-ripple.css">
 
@@ -32,20 +32,43 @@
             document.body.className = '';
             break;
         }
+        updateLog();
       };
 
       const showH = new Switch('Show period H');
+      showH.onchange = updateLog;
       document.body.appendChild(showH.wrapper);
 
       const showStaff = new Switch('Show staff periods');
+      showStaff.onchange = updateLog;
       document.body.appendChild(showStaff.wrapper);
 
       const periodName = new TextField('Period name');
+      periodName.onchange = updateLog;
       document.body.appendChild(createElement('p', {content: [periodName.wrapper]}));
 
+      const periodNote = new TextField('Period note', {type: 'multi-line'});
+      periodNote.onchange = updateLog;
+      document.body.appendChild(createElement('p', {content: [periodNote.wrapper]}));
+
       const language = new Dropdown('Language', ['eenglish', 'jonge wun', 'ehspahnyol'], 0);
+      language.onchange = updateLog;
       document.body.appendChild(createElement('p', {content: [language.wrapper]}));
       language.initialise();
+
+      const log = new TextField('logger', {type: 'textarea', readOnly: true});
+      document.body.appendChild(createElement('p', {content: [log.wrapper]}));
+
+      function updateLog() {
+        log.value = [
+          ['theme', radios.choiceName],
+          ['showH', showH.checked],
+          ['showStaff', showStaff.checked],
+          ['periodName', periodName.value],
+          ['periodNote', periodNote.value],
+          ['language', language.value]
+        ].map(a => a.join(': ')).join('\n');
+      }
     </script>
   </body>
 </html>

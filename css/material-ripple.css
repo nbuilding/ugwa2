@@ -15,3 +15,7 @@
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
+
+text-size-measurer::after {
+  content: '\a';
+}

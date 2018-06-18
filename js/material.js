@@ -1,6 +1,7 @@
 class RadioGroup {
 
   constructor(title, choices) {
+    this.choiceNames = choices;
     this.wrapper = createElement('div', {
       classes: 'radios',
       content: [
@@ -83,6 +84,10 @@ class RadioGroup {
     if (this.onchange) this.onchange(newChoice);
   }
 
+  get choiceName() {
+    return this.choiceNames[this._choice];
+  }
+
 }
 
 class Switch {
@@ -142,11 +147,18 @@ class Switch {
 class TextField {
 
   constructor(label, options = {}) {
+    options.type = options.type || 'single-line';
     this.wrapper = createElement('div', {
-      classes: ['textfield', options.readOnly && 'has-icon'],
+      classes: ['textfield', options.icon && 'has-icon', options.type],
       content: [
         createElement('label', {content: [label]}),
-        this.input = createElement('input', {readOnly: options.readOnly}),
+        this.input = createElement(
+          options.type !== 'single-line' ? 'textarea' : 'input',
+          {
+            classes: 'input',
+            readOnly: options.readOnly
+          }
+        ),
         createElement('span', {content: [
           this.line = createElement('span')
         ]}),
@@ -188,9 +200,12 @@ class TextField {
       this.line.style.transitionDelay = null;
       if (this.onblur) this.onblur();
     });
-    if (options.onchange) {
+    if (options.onchange || options.type === 'multi-line') {
       this.input.addEventListener('input', e => {
-        options.onchange(this.input.value);
+        if (this.onchange) this.onchange(this.input.value);
+        if (options.type === 'multi-line') {
+          this.input.style.height = Math.ceil(2 + getTextSize(this.input.value, this.input).height) + 'px';
+        }
       });
     }
     if (options.icon && options.oniconclick) {
@@ -280,6 +295,7 @@ class Dropdown extends TextField {
     this.menu.onchoice = (c, i) => {
       this.choice = i;
       this.value = c;
+      if (this.onchange) this.onchange(i, c);
       this.menu.close();
     }
     // TODO: selection indicator thing and allow esc to cancel (will require revamp)

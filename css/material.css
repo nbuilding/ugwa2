@@ -77,7 +77,7 @@ a.button {
   text-decoration: none;
   color: inherit;
 }
-.button {
+.button, a.button, button.button {
   font-size: 0.875rem;
   letter-spacing: 0.046875rem;
   text-transform: uppercase;
@@ -253,7 +253,6 @@ a.button {
 .textfield {
   display: inline-block;
   width: 280px;
-  height: 56px;
   background-color: var(--input-back);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
@@ -264,6 +263,9 @@ a.button {
   cursor: pointer;
   position: relative;
   transition: background-color .2s var(--go-places);
+}
+.textfield.single-line {
+  height: 56px;
 }
 .textfield.has-icon {
   width: 312px;
@@ -276,12 +278,11 @@ a.button {
 }
 .textfield label {
   position: absolute;
-  bottom: 20px;
+  top: 20px;
   color: var(--disabled-text);
   transition: all .2s var(--go-places);
 }
-.textfield input {
-  position: absolute;
+.textfield .input {
   pointer-events: none;
   opacity: 0;
   font: inherit;
@@ -290,17 +291,31 @@ a.button {
   background: none;
   border: none;
   padding: 0;
+  padding-top: 26px;
   padding-bottom: 12px;
-  bottom: 0;
-  height: 1em;
   cursor: inherit;
-  width: calc(100% - 24px);
+  width: 100%;
+  resize: none;
+  height: 1em;
   transition: opacity .2s var(--go-places);
 }
-.textfield input:focus {
+.textfield.single-line .input {
+  position: absolute;
+  bottom: 0;
+  padding-top: 0;
+  margin-bottom: 1px;
+  width: calc(100% - 24px);
+}
+.textfield.textarea .input {
+  padding: 0;
+  margin-top: 26px;
+  margin-bottom: 12px;
+  height: 4em;
+}
+.textfield .input:focus {
   outline: none;
 }
-.textfield.has-icon input {
+.textfield.has-icon .input {
   width: calc(100% - 80px);
 }
 .textfield > span {
@@ -320,12 +335,12 @@ a.button {
 }
 .textfield.filled label, .textfield.focused label {
   font-size: 12px;
-  bottom: 36px;
+  top: 8px;
 }
 .textfield.focused label {
   color: var(--primary);
 }
-.textfield.filled input, .textfield.focused input {
+.textfield.filled .input, .textfield.focused .input {
   opacity: 1;
   pointer-events: all;
 }
