@@ -17,10 +17,11 @@ class Period {
       data: {
         period: period.length === 1 && period
       },
+      ripple: true,
       content: [
-        this.name = createElement('span', {
+        this.name = createElement('textarea', {
           classes: ['name'],
-          content: [Prefs.getPdName(period)]
+          value: Prefs.getPdName(period)
         }),
         this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
         today && (this.toStart = createElement('span', {})),
@@ -81,7 +82,7 @@ class Period {
    * Sets the custom name of the period.
    */
   updateCustomisation() {
-    this.name.textContent = Prefs.getPdName(this.period);
+    this.name.value = Prefs.getPdName(this.period);
     this.note.value = Prefs.getPdDesc(this.period);
     Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
   }

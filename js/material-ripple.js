@@ -1,8 +1,7 @@
 class Ripple {
 
   constructor() {
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
+    const ripple = document.createElement('material-ripple');
     this.ripple = ripple;
 
     this.growthEnded = false;

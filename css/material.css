@@ -98,7 +98,7 @@ a.button {
   color: white;
   background-color: var(--primary);
 }
-.button.contained .ripple {
+.button.contained material-ripple {
   background-color: rgba(255, 255, 255, 0.32);
 }
 
@@ -115,7 +115,7 @@ a.button {
   z-index: 8;
 }
 
-.ripple {
+material-ripple {
   background-color: var(--ripple);
 }
 
@@ -138,7 +138,7 @@ a.button {
   cursor: pointer;
   font-size: 0;
 }
-.radio .ripple {
+.radio material-ripple {
   background-color: var(--primary);
   opacity: 0.3;
 }
@@ -240,7 +240,7 @@ a.button {
   margin-left: 16px;
   background-color: var(--primary);
 }
-.switch.checked .ripple {
+.switch.checked material-ripple {
   background-color: var(--on-select-focus);
 }
 .switch.checked .track:hover .rippler {
