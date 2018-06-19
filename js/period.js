@@ -34,7 +34,8 @@ class Period {
         }),
         this.note = createElement('textarea', {
           classes: 'note',
-          value: Prefs.getPdDesc(period)
+          value: Prefs.getPdDesc(period),
+          tabindex: -1
         })
       ]
     });
@@ -50,9 +51,16 @@ class Period {
     this.name.addEventListener('input', e => {
       if (this.name.value.includes('\n'))
         this.name.value = this.name.value.replace(/\r?\n/g, '');
-      dynamicTextareaFitter(e);
+      this.name.style.height = 0;
+      this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
     });
-    this.note.addEventListener('input', dynamicTextareaFitter);
+    this.note.addEventListener('input', e => {
+      this.note.style.transition = 'none';
+      this.note.style.height = 0;
+      this.note.style.height = this.note.scrollHeight + 'px';
+      this.note.offsetHeight; // force CSS refresh
+      this.note.style.transition = null;
+    });
   }
 
   /**
@@ -104,12 +112,17 @@ class Period {
    */
   expand() {
     if (this.wrapper.classList.contains('open')) return;
-    this.wrapper.classList.add('open');
     this.spans.forEach(span => {
       span.style.height = span.scrollHeight + 'px';
     });
+    this.note.style.transition = 'none';
     this.note.style.height = 0;
-    this.note.style.height = this.note.scrollHeight + 'px';
+    this.note.style.height = this.note.scrollHeight + 20 + 'px';
+    this.note.style.transition = null;
+    this.note.offsetHeight;
+    this.note.style.padding = null;
+    this.note.setAttribute('tabindex', 0);
+    this.wrapper.classList.add('open');
   }
 
   /**
@@ -121,6 +134,7 @@ class Period {
       span.style.height = null;
     });
     this.note.style.height = null;
+    this.note.setAttribute('tabindex', -1);
   }
 
   /**
@@ -128,7 +142,7 @@ class Period {
    */
   initialize() {
     this.name.style.height = 0;
-    this.name.style.height = this.name.scrollHeight + 2 + 'px';
+    this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
   }
 
   static setColourOf(element, colour) {

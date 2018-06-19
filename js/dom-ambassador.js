@@ -87,12 +87,3 @@ function getTextSize(text, fontStyle, wrap) {
     height: rect.height
   };
 }
-
-/**
- * Event listener for textareas to dynamically fit their content.
- * @param {HTMLElement} target - the textarea
- */
-function dynamicTextareaFitter({target}) {
-  target.style.height = 0;
-  target.style.height = target.scrollHeight + 'px';
-}

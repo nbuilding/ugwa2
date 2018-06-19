@@ -14,17 +14,20 @@ class DayViewer {
     this.date = date;
     this.periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
     this.wrapper = createElement('div', {
-      classes: ['day'],
+      classes: 'day',
       content: [
         createElement('h1', {
-          classes: ['date'],
+          classes: 'date',
           content: [Formatter.date(date.getMonth(), date.getDate())]
         }),
         createElement('h3', {
-          classes: ['weekday'],
+          classes: 'weekday',
           content: [Formatter.weekday(date.getDay())]
         }),
-        ...this.periods.map(p => p.wrapper)
+        createElement('div', {
+          classes: 'margin-catcher',
+          content: this.periods.map(p => p.wrapper)
+        })
       ]
     });
   }

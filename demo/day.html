@@ -18,6 +18,9 @@
         width: 100%;
         max-width: 500px;
       }
+      .day .margin-catcher {
+        padding: 1px 0;
+      }
     </style>
 
     <script src="../js/dayviewer.js" charset="utf-8"></script>
@@ -30,9 +33,12 @@
   <body class="dark">
     <script type="text/javascript">
       let test = new DayViewer(new Date(), [
-        {period: 'A', start: 500, end: 600},
-        {period: 'brunch', start: 610, end: 650},
-        {period: 'B', start: 670, end: 675}
+        {period: "B", start: 505, end: 590},
+        {period: "brunch", start: 590, end: 605},
+        {period: "C", start: 605, end: 685},
+        {period: "D", start: 695, end: 775},
+        {period: "lunch", start: 775, end: 815},
+        {period: "F", start: 815, end: 895}
       ], true);
       document.body.appendChild(test.wrapper);
       test.initialize();
@@ -42,9 +48,9 @@
       document.onkeydown = e => {
         let oldPd = currentPd;
         if (e.keyCode === 40) {
-          currentPd = (currentPd + 1) % 3;
+          currentPd = (currentPd + 1) % test.periods.length;
         } else if (e.keyCode === 38) {
-          currentPd = (currentPd + 2) % 3;
+          currentPd = (currentPd + test.periods.length - 1) % test.periods.length;
         } else return;
         e.preventDefault();
         if (oldPd >= 0) test.periods[oldPd].collapse();

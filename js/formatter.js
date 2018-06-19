@@ -2,10 +2,10 @@
 
 const Formatter = {
   time(minutes) {
-    return minutes + " minutes";
+    return `at <em>${minutes}</em> minutes`;
   },
   duration(minutes) {
-    return minutes + " minutes";
+    return `for <em>${minutes}</em> minutes`;
   },
   date(month, date) {
     return 'month ' + month + ', date ' + date;
