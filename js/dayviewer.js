@@ -55,4 +55,11 @@ class DayViewer {
     this.periods.filter(p => p.period === period).forEach(p => p.updateNote(Prefs.getPdDesc(period)));
   }
 
+  /**
+   * Does stuff now knowing that it is in the DOM.
+   */
+  initialize() {
+    this.periods.forEach(p => p.initialize());
+  }
+
 }

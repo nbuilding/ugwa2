@@ -13,6 +13,11 @@ body {
 }
 body.light {
   background-color: #FAFAFA;
+}
+body.dark {
+  background-color: #303030;
+}
+.light {
   --dialogs: #FFFFFF;
   --primary-text: rgba(0, 0, 0, 0.87);
   --secondary-text: rgba(0, 0, 0, 0.54);
@@ -28,13 +33,11 @@ body.light {
   --ripple: rgba(0, 0, 0, 0.16);
   --input-back: rgba(0, 0, 0, 0.06);
   --input-hover: rgba(0, 0, 0, 0.15);
-  --icon-theme: '-black.svg';
   --hover: rgba(0, 0, 0, 0.04);
   --primary-ripple: rgba(244, 67, 54, 0.12);
   color: var(--primary-text);
 }
-body.dark {
-  background-color: #303030;
+.dark {
   --dialogs: #424242;
   --primary-text: rgb(255, 255, 255);
   --secondary-text: rgba(255, 255, 255, 0.7);
@@ -50,7 +53,6 @@ body.dark {
   --ripple: rgba(255, 255, 255, 0.32);
   --input-back: rgba(255, 255, 255, 0.1);
   --input-hover: rgba(255, 255, 255, 0.2);
-  --icon-theme: '-white.svg';
   --hover: rgba(255, 255, 255, 0.08);
   --primary-ripple: rgba(244, 67, 54, 0.24);
   color: var(--primary-text);
@@ -333,8 +335,8 @@ material-ripple {
   background: none;
   border: none;
   padding: 0;
-  padding-top: 26px;
-  padding-bottom: 12px;
+  margin-top: 26px;
+  margin-bottom: 12px;
   cursor: inherit;
   width: 100%;
   resize: none;
@@ -347,11 +349,12 @@ material-ripple {
   padding-top: 0;
   margin-bottom: 1px;
   width: calc(100% - 24px);
+  padding-top: 26px;
+  padding-bottom: 12px;
+  margin: 0;
 }
 .textfield.textarea .input {
   padding: 0;
-  margin-top: 26px;
-  margin-bottom: 12px;
   height: 4em;
 }
 .textfield .input:focus {

@@ -204,7 +204,8 @@ class TextField {
       this.input.addEventListener('input', e => {
         if (this.onchange) this.onchange(this.input.value);
         if (options.type === 'multi-line') {
-          this.input.style.height = Math.ceil(2 + getTextSize(this.input.value, this.input).height) + 'px';
+          this.input.style.height = 0;
+          this.input.style.height = this.input.scrollHeight + 1 + 'px';
         }
       });
     }

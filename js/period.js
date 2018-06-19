@@ -20,27 +20,39 @@ class Period {
       ripple: true,
       content: [
         this.name = createElement('textarea', {
-          classes: ['name'],
+          classes: 'name',
           value: Prefs.getPdName(period)
         }),
         this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
         today && (this.toStart = createElement('span', {})),
         today && (this.toEnd = createElement('span', {})),
-        createElement('span', {
+        this.duration = createElement('span', {
           content: Formatter.phrase(
             'lasts',
             Formatter.duration(end - start)
           )
         }),
         this.note = createElement('textarea', {
+          classes: 'note',
           value: Prefs.getPdDesc(period)
         })
       ]
     });
+    this.spans = [this.timeRange, this.toStart, this.toEnd, this.duration].filter(a => a);
     Period.setColourOf(this.wrapper, Prefs.getPdColour(period));
     if (!today) {
       this.timeRange.classList.add('previewed');
     }
+
+    this.name.addEventListener('keydown', e => {
+      if (e.keyCode === 13) e.preventDefault();
+    })
+    this.name.addEventListener('input', e => {
+      if (this.name.value.includes('\n'))
+        this.name.value = this.name.value.replace(/\r?\n/g, '');
+      dynamicTextareaFitter(e);
+    });
+    this.note.addEventListener('input', dynamicTextareaFitter);
   }
 
   /**
@@ -91,7 +103,13 @@ class Period {
    * Expands the period card.
    */
   expand() {
+    if (this.wrapper.classList.contains('open')) return;
     this.wrapper.classList.add('open');
+    this.spans.forEach(span => {
+      span.style.height = span.scrollHeight + 'px';
+    });
+    this.note.style.height = 0;
+    this.note.style.height = this.note.scrollHeight + 'px';
   }
 
   /**
@@ -99,6 +117,18 @@ class Period {
    */
   collapse() {
     this.wrapper.classList.remove('open');
+    this.spans.forEach(span => {
+      span.style.height = null;
+    });
+    this.note.style.height = null;
+  }
+
+  /**
+   * Prepares the width of the period name
+   */
+  initialize() {
+    this.name.style.height = 0;
+    this.name.style.height = this.name.scrollHeight + 2 + 'px';
   }
 
   static setColourOf(element, colour) {
