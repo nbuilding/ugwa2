@@ -9,7 +9,7 @@ material-ripple {
   transform: scale(0);
   transform-origin: center center;
 }
-[has-ripple] {
+[data-ripple] {
   cursor: pointer;
   position: relative;
   overflow: hidden;
