@@ -87,5 +87,5 @@ function hasMaterialRipple(elem, round) {
 }
 
 document.addEventListener('DOMContentLoaded', e => {
-  document.querySelectorAll('[data-ripple]').forEach(btn => hasMaterialRipple(btn));
+  document.querySelectorAll('[g=-ripple]').forEach(btn => hasMaterialRipple(btn));
 }, {once: true});
