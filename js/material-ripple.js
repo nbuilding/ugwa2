@@ -57,12 +57,8 @@ function hasMaterialRipple(elem, round) {
   function prepare() {
     if (ready) return;
     const currentStyles = window.getComputedStyle(elem);
-    if (currentStyles.position !== 'fixed'
-        && currentStyles.position !== 'absolute'
-        && currentStyles.position !== 'relative')
-      elem.style.position = 'relative';
     if (currentStyles.display === 'inline') elem.style.display = 'inline-block';
-    if (currentStyles.overflow !== 'hidden') elem.style.overflow = 'hidden';
+    elem.setAttribute('data-ripple', '');
     ready = true;
   }
 
@@ -78,7 +74,7 @@ function hasMaterialRipple(elem, round) {
 
   elem.addEventListener('mousedown', e => {
     prepare();
-    if (!e.sourceCapabilities.firesTouchEvents) onMouseDown(e.clientX, e.clientY, false);
+    if (!e.sourceCapabilities || !e.sourceCapabilities.firesTouchEvents) onMouseDown(e.clientX, e.clientY, false);
   }, false);
   elem.addEventListener('touchstart', e => {
     prepare();
