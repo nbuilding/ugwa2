@@ -14,6 +14,7 @@ material-ripple {
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
 }
 
 text-size-measurer::after {
