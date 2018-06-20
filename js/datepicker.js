@@ -41,8 +41,6 @@ class DatePicker {
     svg.classList.add('calendar');
 
     const dateLabels = document.createElementNS(SVG_NS, 'g');
-    dateLabels.style.textAnchor = 'middle';
-    dateLabels.style.dominantBaseline = 'central';
     dateLabels.classList.add('dates');
 
     const monthHighlights = document.createElementNS(SVG_NS, 'g');
