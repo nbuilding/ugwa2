@@ -25,7 +25,7 @@
         display: inline-block;
         width: 56px;
         height: 56px;
-        border-radius: 2px;
+        border-radius: var(--border-radius);
         margin-right: 16px;
         cursor: pointer;
       }
@@ -46,6 +46,20 @@
       <button class="contained button" data-ripple>save</button><button class="text button" data-ripple>cancel</button>
     </div>
     <script type="text/javascript">
+      class PeriodCustomizerSet {
+
+        constructor(switchOption, pdNames) {
+          this.periods = pdNames.map(pd => new PeriodCustomizer(pd));
+          this.wrapper = createElement('div', {content: this.periods.map(pd => pd.wrapper)});
+
+          if (switchOption) {
+            (switchOption.onchange = () => {
+              this.wrapper.style.display = switchOption.checked ? 'block' : 'none';
+            })();
+          }
+        }
+
+      }
       class PeriodCustomizer {
 
         constructor(pdName) {
@@ -72,17 +86,19 @@
 
       }
 
-      const theme = new RadioGroup('Theme', ['light', 'dark', 'neither']),
-            normalPds = 'ABCDEFG'.split('').map(l => new PeriodCustomizer('Period ' + l)),
-            breaks = ['Brunch', 'Lunch'].map(pd => new PeriodCustomizer(pd)),
-            flex = new PeriodCustomizer('Flex'),
-            self = new PeriodCustomizer('SELF'),
-            pdH = new PeriodCustomizer('Period H'),
-            staffPds = ['Staff collaboration', 'Staff meetings'].map(pd => new PeriodCustomizer(pd)),
+      const theme = new RadioGroup('Colour theme', ['light', 'dark', 'neither']),
+            roundclasses = ['sharp', 'roundish', 'round']
+            roundedness = new RadioGroup('Rounded corners', ['sharp', 'modestly round', 'overly round']),
             showBreaks = new Switch('show brunch and lunch'),
             showSELF = new Switch('show SELF'),
             showH = new Switch('show period H'),
             showStaff = new Switch('show staff periods'),
+            normalPds = new PeriodCustomizerSet(null, 'ABCDEFG'.split('').map(l => 'Period ' + l)),
+            breaks = new PeriodCustomizerSet(showBreaks, ['Brunch', 'Lunch']),
+            flex = new PeriodCustomizerSet(null, ['Flex']),
+            self = new PeriodCustomizerSet(showSELF, ['SELF']),
+            pdH = new PeriodCustomizerSet(showH, ['Period H']),
+            staffPds = new PeriodCustomizerSet(showStaff, ['Staff collaboration', 'Staff meetings']),
             language = new Dropdown('Language', ['English (traditional)', 'English (simplified)', '█████'], 0),
             time = new RadioGroup('Time format', ['10:54pm', '10:54PM', '10:54 pm', '10:54 PM', '22:54', '???']),
             duration = new RadioGroup('Duration format', ['4 hours, 20 minutes', '4 hours and 20 minutes', '260 minutes', '4:20 hours', '-260 comment karma']),
@@ -92,10 +108,11 @@
             saveBtn = document.getElementById('save');
 
       showBreaks.checked = true;
-      theme.onchange = () => {
-        document.body.className = theme.choiceName;
+      theme.onchange = roundedness.onchange = () => {
+        document.body.className = theme.choiceName + ' ' + roundclasses[roundedness.choice];
       };
       theme.choice = 1;
+      roundedness.choice = 2;
       time.choice = 0;
       duration.choice = 1;
       date.choice = 4;
@@ -107,31 +124,14 @@
           createElement('h4', {content: ['Settings']}),
           createElement('h5', {content: ['Appearance']}),
           theme.wrapper,
+          roundedness.wrapper,
           createElement('h5', {content: ['Periods']}),
-          createElement('div', {
-            classes: 'normal',
-            content: normalPds.map(pd => pd.wrapper)
-          }),
-          createElement('div', {
-            classes: 'breaks',
-            content: breaks.map(pd => pd.wrapper)
-          }),
-          createElement('div', {
-            classes: 'flex',
-            content: [flex.wrapper]
-          }),
-          createElement('div', {
-            classes: 'self',
-            content: [self.wrapper]
-          }),
-          createElement('div', {
-            classes: 'pd-h',
-            content: [pdH.wrapper]
-          }),
-          createElement('div', {
-            classes: 'staff',
-            content: staffPds.map(pd => pd.wrapper)
-          }),
+          normalPds.wrapper,
+          breaks.wrapper,
+          flex.wrapper,
+          self.wrapper,
+          pdH.wrapper,
+          staffPds.wrapper,
           showSELF.wrapper,
           showBreaks.wrapper,
           showH.wrapper,

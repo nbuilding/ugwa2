@@ -10,6 +10,7 @@ body {
   --go-in: cubic-bezier(0.0, 0.0, 0.2, 1);
   --go-out: cubic-bezier(0.4, 0.0, 1, 1);
   --go-places: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --border-radius: 4px;
 }
 body.light {
   background-color: #FAFAFA;
@@ -56,6 +57,12 @@ body.dark {
   --hover: rgba(255, 255, 255, 0.08);
   --primary-ripple: rgba(244, 67, 54, 0.24);
   color: var(--primary-text);
+}
+.sharp {
+  --border-radius: 0;
+}
+.roundish {
+  --border-radius: 2px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -115,7 +122,7 @@ a.button {
   letter-spacing: 0.046875rem;
   text-transform: uppercase;
   font-weight: 500;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   transition: all;
   min-width: 64px;
   padding: 0 16px;
@@ -298,8 +305,8 @@ material-ripple {
   max-width: 280px;
   width: 100%;
   background-color: var(--input-back);
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
   border-bottom: 1px solid;
   border-color: var(--input-back);
   box-sizing: border-box;
@@ -431,7 +438,7 @@ material-ripple {
   min-width: 112px;
   max-width: 280px;
   background-color: var(--dialogs);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   pointer-events: none;
   transform: scale(0);
   transform-origin: center;

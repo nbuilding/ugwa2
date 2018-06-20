@@ -1,3 +1,6 @@
+const expandLessPath = 'M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z';
+const blackThreshold = 140;
+
 class Period {
 
   /**
@@ -17,11 +20,10 @@ class Period {
       data: {
         period: period.length === 1 && period
       },
-      ripple: true,
       content: [
         this.name = createElement('textarea', {
           classes: 'name',
-          value: Prefs.getPdName(period)
+          attr: {placeholder: 'A class undeserving of a name', spellcheck: false}
         }),
         this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
         today && (this.toStart = createElement('span', {})),
@@ -34,13 +36,23 @@ class Period {
         }),
         this.note = createElement('textarea', {
           classes: 'note',
-          value: Prefs.getPdDesc(period),
-          tabindex: -1
+          tabindex: -1,
+          attr: {placeholder: 'Class description'}
+        }),
+        createElement('svg', {
+          svg: true,
+          attr: {
+            width: 24,
+            height: 24
+          },
+          content: [createElement('path', {
+            svg: true,
+            attr: {d: expandLessPath}
+          })]
         })
       ]
     });
     this.spans = [this.timeRange, this.toStart, this.toEnd, this.duration].filter(a => a);
-    Period.setColourOf(this.wrapper, Prefs.getPdColour(period));
     if (!today) {
       this.timeRange.classList.add('previewed');
     }
@@ -61,6 +73,8 @@ class Period {
       this.note.offsetHeight; // force CSS refresh
       this.note.style.transition = null;
     });
+
+    this.updateCustomisation();
   }
 
   /**
@@ -145,10 +159,17 @@ class Period {
     this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
   }
 
+  static useBlack([r, g, b]) {
+    return r * 0.299 + g * 0.587 + b * 0.114 > blackThreshold;
+  }
+
   static setColourOf(element, colour) {
-    if (typeof colour === 'string') {
-      element.style.backgroundColor = colour;
+    element.classList.remove('light');
+    element.classList.remove('dark');
+    if (Array.isArray(colour)) {
+      element.style.backgroundColor = `rgb(${colour.join(',')})`;
       element.classList.remove('clear');
+      element.classList.add(this.useBlack(colour) ? 'light' : 'dark');
     } else {
       element.style.backgroundColor = null;
       element.classList.add('clear');

@@ -16,14 +16,14 @@ class DayViewer {
     this.wrapper = createElement('div', {
       classes: 'day',
       content: [
-        createElement('h1', {
+        /*createElement('h1', {
           classes: 'date',
           content: [Formatter.date(date.getMonth(), date.getDate())]
         }),
         createElement('h3', {
           classes: 'weekday',
           content: [Formatter.weekday(date.getDay())]
-        }),
+        }),*/
         createElement('div', {
           classes: 'margin-catcher',
           content: this.periods.map(p => p.wrapper)

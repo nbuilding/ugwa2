@@ -1,11 +1,32 @@
+/* LIGHT/DARK COLOURS */
+.light {
+  --span-colour: rgba(0,0,0,0.64);
+  --colour: rgba(0,0,0,0.8);
+  --textbox-background: rgba(0,0,0,0.05);
+  --focused-textbox-background: rgba(0,0,0,0.1);
+  --focused-textbox-border: rgba(0,0,0,0.6);
+}
+.dark {
+  --span-colour: rgba(255,255,255,0.72);
+  --colour: rgba(255,255,255,0.9);
+  --textbox-background: rgba(255,255,255,0.1);
+  --focused-textbox-background: rgba(255,255,255,0.3);
+  --focused-textbox-border: rgba(255,255,255,0.8);
+}
+.period textarea::-webkit-input-placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+/* WRAPPER */
 .period {
   padding: 20px;
   margin: 10px;
   border-radius: 2px;
   position: relative;
-  transition: all .2s;
   color: var(--colour);
   fill: var(--colour);
+  transition: all .2s;
 }
 .period.open {
   margin: 15px 5px;
@@ -14,6 +35,8 @@
 .period.clear.open {
   box-shadow: none;
 }
+
+/* LETTER */
 .period::before {
   content: attr(data-period);
   position: absolute;
@@ -24,6 +47,8 @@
   opacity: 0.4;
   margin: 10px 20px;
 }
+
+/* NAME */
 .period .name {
   font: inherit;
   color: inherit;
@@ -41,11 +66,16 @@
   border-radius: 2px;
   overflow: hidden;
 }
+.period .name:hover {
+  background-color: var(--textbox-background);
+}
 .period .name:focus {
   outline: none;
-  background-color: rgba(255,255,255,0.3);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+  background-color: var(--focused-textbox-background);
+  box-shadow: inset 0 0 0 1px var(--focused-textbox-border);
 }
+
+/* DETAILS */
 .period span {
   display: block;
   width: 100%;
@@ -66,23 +96,10 @@
   font-style: normal;
   color: var(--colour);
 }
-.light {
-  --span-colour: rgba(0,0,0,0.64);
-  --colour: rgba(0,0,0,0.8);
-}
-.dark {
-  --span-colour: rgba(255,255,255,0.72);
-  --colour: rgba(255,255,255,0.9);
-}
-.period svg {
-  width: 40px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  fill: none;
-}
+
+/* NOTES */
 .period .note {
-  background-color: rgba(255,255,255,0.1);
+  background-color: var(--textbox-background);
   border: none;
   resize: none;
   display: block;
@@ -104,13 +121,22 @@
   margin-top: 10px;
   padding: 10px;
 }
-.period ::-webkit-input-placeholder {
-  color: inherit;
-  opacity: 0.5;
-}
 .period .note:focus {
   outline: none;
   cursor: auto;
-  background-color: rgba(255,255,255,0.3);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+  background-color: var(--focused-textbox-background);
+  box-shadow: inset 0 0 0 1px var(--focused-textbox-border);
+}
+
+/* ICON */
+.period svg {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
+  transform: rotate(-180deg);
+  transition: transform .2s;
+}
+.period.open svg {
+  transform: rotate(0deg);
 }
