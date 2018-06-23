@@ -23,6 +23,19 @@
       .day.alt {
         border-color: var(--primary);
       }
+      .note {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        margin: 10px;
+        max-width: 300px;
+        white-space: normal;
+        line-height: 1.5;
+        color: var(--secondary-text);
+      }
+      a {
+        color: var(--primary);
+      }
       @media (max-width: 500px) {
         .day {
           width: 100vw;
@@ -35,6 +48,7 @@
     <script src="../js/default-schedule.js" charset="utf-8"></script>
   </head>
   <body class="dark">
+    <span class="body1 note">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
     <script type="text/javascript">
 const altSchedules = (() => { // TEMP
   const ugwitaToUgwa2 = {
