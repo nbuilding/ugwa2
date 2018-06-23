@@ -46,11 +46,21 @@ function createElement(tag, attributes) {
 }
 
 /**
+ * @param {Node[]} elems - The elements to be put in the fragment.
+ * @returns {DocumentFragment} - The fragment.
+ */
+function createFragment(elems) {
+  const fragment = document.createDocumentFragment();
+  elems.forEach(elem => fragment.appendChild(elem));
+  return fragment;
+}
+
+/**
  * @param {string} html - The HTML.
  * @returns {DocumentFragment} - The elements.
  */
 function createElementFromHTML(html) {
-  let tempDiv = document.createElement('div'),
+  const tempDiv = document.createElement('div'),
   fragment = document.createDocumentFragment();
   tempDiv.innerHTML = html;
   Array.from(tempDiv.childNodes).forEach(e => fragment.appendChild(e));

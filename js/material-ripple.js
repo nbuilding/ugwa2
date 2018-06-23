@@ -74,7 +74,8 @@ function hasMaterialRipple(elem, round) {
 
   elem.addEventListener('mousedown', e => {
     prepare();
-    if (!e.sourceCapabilities || !e.sourceCapabilities.firesTouchEvents) onMouseDown(e.clientX, e.clientY, false);
+    if (!e.sourceCapabilities && !(navigator.maxTouchPoints > 0) || !e.sourceCapabilities.firesTouchEvents)
+      onMouseDown(e.clientX, e.clientY, false);
   }, false);
   elem.addEventListener('touchstart', e => {
     prepare();

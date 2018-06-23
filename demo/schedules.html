@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Thing that deals with the schedules - Ugwa 2</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="See title"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" href="../css/material.css">
+    <style media="screen">
+      body {
+        white-space: nowrap;
+      }
+      .day {
+        width: 500px;
+        display: inline-block;
+        min-height: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--secondary-text);
+        vertical-align: top;
+        white-space: normal;
+      }
+      .day.alt {
+        border-color: var(--primary);
+      }
+      @media (max-width: 500px) {
+        .day {
+          width: 100vw;
+        }
+      }
+    </style>
+
+    <script src="../js/parser.js" charset="utf-8"></script>
+    <script src="../js/dom-ambassador.js" charset="utf-8"></script>
+    <script src="../js/default-schedule.js" charset="utf-8"></script>
+  </head>
+  <body class="dark">
+    <script type="text/javascript">
+const altSchedules = (() => { // TEMP
+  const ugwitaToUgwa2 = {
+    'Period A': 'A',
+    'Period B': 'B',
+    'Period C': 'C',
+    'Period D': 'D',
+    'Period E': 'E',
+    'Period F': 'F',
+    'Period G': 'G',
+    'FlexTime': 'FLEX',
+    'Brunch': 'BRUNCH',
+    'Lunch': 'LUNCH'
+  };
+
+  let alts = localStorage.getItem('[gunn-web-app] lite.alts');
+  if (!alts) return {};
+  alts = JSON.parse(alts);
+  for (let day in alts) {
+    if (alts[day])
+      alts[day].forEach(p => p.period = ugwitaToUgwa2[p.name] || '???');
+  }
+  return alts;
+})();
+
+const firstDay = new Date(2018, 7, 13);
+const lastDay = new Date(2019, 4, 31);
+
+const days = (lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24);
+const divs = [];
+for (let day = 0; day <= days; day++) {
+  const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
+  const dateID = ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+  const schedule = altSchedules[dateID] !== undefined
+    ? altSchedules[dateID]
+    : normalSchedules[date.getDay()];
+  divs.push(createElement('div', {
+    classes: ['day', altSchedules[dateID] !== undefined && 'alt'],
+    content: [
+      createElement('h3', {content: [date.toDateString()]}),
+      ...(schedule === null
+        ? [createElement('p', {content: 'no school', classes: 'body1'})]
+        : schedule.map(p => createElement('p', {
+          classes: 'body1',
+          content: [
+            createElement('strong', {content: [p.period]}),
+            createElement('span', {content: ' ' + p.start + ' &ndash; ' + p.end})
+          ]
+        })))
+    ]
+  }));
+}
+document.body.appendChild(createFragment(divs));
+    </script>
+  </body>
+</html>
