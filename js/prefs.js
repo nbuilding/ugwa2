@@ -3,13 +3,16 @@
 const Prefs = {
 
   periodData: {
-    A: {name: 'a period', desc: 'yanny howard', colour: [244, 67, 54]},
+    A: {name: 'a period', desc: 'yanny howard', colour: [233, 30, 99]},
+    B: {name: 'b period', desc: 'the woz', colour: [255, 193, 7]},
+    C: {name: 'Period C', desc: 'le fup', colour: [103, 58, 183]},
+    D: {name: 'D period', desc: 'TOLENDO TOLENS', colour: [33, 150, 243]},
+    E: {name: 'pe', desc: 'TOLENDO TOLENS', colour: [139, 195, 74]},
+    F: {name: 'very long class name muahaha', desc: 'vocabphilia', colour: [156, 39, 176]},
+    G: {name: 'españñññññññol', desc: '¡¡¡¿¿¿¿INGLÉS????!!!!', colour: [255, 152, 0]},
     BRUNCH: {name: 'brunch lol', desc: 'useful i guess for... idk', colour: null},
-    B: {name: 'b period', desc: 'the woz', colour: [33, 150, 243]},
-    C: {name: 'Period C', desc: 'le fup', colour: [139, 195, 74]},
-    D: {name: 'D period', desc: 'ALL SUBMIT TO YUN', colour: [103, 58, 183]},
     LUNCH: {name: 'longer longer passing period', desc: 'I WANT TO PLAY SOME MINECRAAAAAFT', colour: null},
-    F: {name: 'very long class name muahaha', desc: 'vocabphilia', colour: [156, 39, 176]}
+    FLEX: {name: 'longer longer passing period', desc: 'ALL SUBMIT TO YUN', colour: [96, 125, 139]}
   },
 
   getPdName(period) {

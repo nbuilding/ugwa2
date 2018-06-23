@@ -6,10 +6,14 @@
     <meta name="description" content="See title"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link rel="stylesheet" href="../css/material.css">
+    <link rel="stylesheet" href="../css/material-ripple.css">
+    <link rel="stylesheet" href="../css/period.css">
     <style media="screen">
       body {
         white-space: nowrap;
+        margin: 0;
       }
       .day {
         width: 500px;
@@ -44,32 +48,24 @@
     </style>
 
     <script src="../js/parser.js" charset="utf-8"></script>
+    <script src="../js/dayviewer.js" charset="utf-8"></script>
+    <script src="../js/period.js" charset="utf-8"></script>
     <script src="../js/dom-ambassador.js" charset="utf-8"></script>
+    <script src="../js/formatter.js" charset="utf-8"></script>
+    <script src="../js/prefs.js" charset="utf-8"></script>
+    <script src="../js/material-ripple.js" charset="utf-8"></script>
     <script src="../js/default-schedule.js" charset="utf-8"></script>
   </head>
   <body class="dark">
     <span class="body1 note">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
     <script type="text/javascript">
 const altSchedules = (() => { // TEMP
-  const ugwitaToUgwa2 = {
-    'Period A': 'A',
-    'Period B': 'B',
-    'Period C': 'C',
-    'Period D': 'D',
-    'Period E': 'E',
-    'Period F': 'F',
-    'Period G': 'G',
-    'FlexTime': 'FLEX',
-    'Brunch': 'BRUNCH',
-    'Lunch': 'LUNCH'
-  };
-
   let alts = localStorage.getItem('[gunn-web-app] lite.alts');
   if (!alts) return {};
   alts = JSON.parse(alts);
   for (let day in alts) {
     if (alts[day])
-      alts[day].forEach(p => p.period = ugwitaToUgwa2[p.name] || '???');
+      alts[day].forEach(p => p.period = identifyPeriod(p.name) || '???');
   }
   return alts;
 })();
@@ -79,29 +75,49 @@ const lastDay = new Date(2019, 4, 31);
 
 const days = (lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24);
 const divs = [];
+const dayViewers = [];
 for (let day = 0; day <= days; day++) {
   const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
   const dateID = ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
   const schedule = altSchedules[dateID] !== undefined
     ? altSchedules[dateID]
     : normalSchedules[date.getDay()];
+  const viewer = schedule && new DayViewer(null, schedule, false);
   divs.push(createElement('div', {
     classes: ['day', altSchedules[dateID] !== undefined && 'alt'],
     content: [
       createElement('h3', {content: [date.toDateString()]}),
-      ...(schedule === null
-        ? [createElement('p', {content: 'no school', classes: 'body1'})]
-        : schedule.map(p => createElement('p', {
-          classes: 'body1',
-          content: [
-            createElement('strong', {content: [p.period]}),
-            createElement('span', {content: ' ' + p.start + ' &ndash; ' + p.end})
-          ]
-        })))
+      schedule === null
+        ? createElement('p', {content: 'no school', classes: 'body1'})
+        : viewer.wrapper
+      // ...(schedule === null
+      //   ? [createElement('p', {content: 'no school', classes: 'body1'})]
+      //   : schedule.map(p => createElement('p', {
+      //     classes: 'body1',
+      //     content: [
+      //       createElement('strong', {content: [p.period]}),
+      //       createElement('span', {content: ' ' + p.start + ' &ndash; ' + p.end})
+      //     ]
+      //   })))
     ]
   }));
+  if (viewer) dayViewers.push(viewer);
 }
 document.body.appendChild(createFragment(divs));
+// dayViewers.forEach(v => v.initialize());
+
+function forceScroll(scrollX) {
+  let page = 0,
+  timeout = null,
+  interval = setInterval(() => {
+    window.scrollTo(scrollX, 0);
+    if (Math.abs(pageXOffset - scrollX) < 1) {
+      if (!timeout) timeout = setTimeout(() => clearInterval(interval), 0);
+    } else if (timeout) clearTimeout(timeout);
+    console.log(':(');
+  }, 0);
+}
+forceScroll(184 * 500 + 250 - innerWidth / 2)
     </script>
   </body>
 </html>
