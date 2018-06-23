@@ -97,3 +97,39 @@ function getTextSize(text, fontStyle, wrap) {
     height: rect.height
   };
 }
+
+const events = {};
+/**
+ * Adds a custom event listener that can be fired manually.
+ * @param {string} name - The name/ID of the event.
+ * @param {function} listener - The function that'll be fired when the event is triggered.
+ * @returns {function} - The aforementioned listener.
+ */
+function on(name, listener) {
+  if (!events[name]) events[name] = [];
+  events[name].push(listener);
+  return listener;
+}
+
+/**
+ * Removes a custom event listener that can be fired manually. "onn't"
+ * @param {string} name - The name/ID of the event.
+ * @param {function} listener - The listener to be removed.
+ * @returns {function} - The aforementioned listener.
+ */
+function onnt(name, listener) {
+ if (events[name] && events[name].includes(listener)) {
+   events[name].splice(events[name].indexOf(listener), 1);
+ }
+ return listener;
+}
+
+/**
+ * Triggers a custom event.
+ * @param {string} name - The name/ID of the event.
+ * @returns {Array} - An array of the return values of the listeners.
+ */
+function trigger(name, ...params) {
+  if (events[name]) return events[name].map(l => l(...params));
+  else return [];
+}
