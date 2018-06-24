@@ -13,22 +13,55 @@ class DayViewer {
   constructor(date, schedule, today) {
     this.date = date;
     this.periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
+    const periodWrappers = this.periods.map(p => p.wrapper);
     this.wrapper = createElement('div', {
+      tabindex: 0,
       classes: 'day',
-      content: [
-        /*createElement('h1', {
-          classes: 'date',
-          content: [Formatter.date(date.getMonth(), date.getDate())]
-        }),
-        createElement('h3', {
-          classes: 'weekday',
-          content: [Formatter.weekday(date.getDay())]
-        }),*/
-        createElement('div', {
-          classes: 'margin-catcher',
-          content: this.periods.map(p => p.wrapper)
-        })
-      ]
+      content: periodWrappers
+    });
+    let openPeriod = null;
+    this.wrapper.addEventListener('keydown', e => {
+      if (e.keyCode !== 40 && e.keyCode !== 38) return;
+      else e.preventDefault();
+
+      const down = e.keyCode === 40;
+      if (openPeriod === null) {
+        this.periods[openPeriod = down ? 0 : this.periods.length - 1].expand();
+      } else {
+        this.periods[openPeriod].collapse();
+        if (down) openPeriod++;
+        else openPeriod += this.periods.length - 1;
+        this.periods[openPeriod %= this.periods.length].expand();
+      }
+    });
+    this.wrapper.addEventListener('click', e => {
+      const periodWrapper = e.path[e.path.indexOf(this.wrapper) - 1];
+      if (periodWrapper) {
+        const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
+        if (openPeriod !== newOpenPeriod) {
+          if (openPeriod !== null) this.periods[openPeriod].collapse();
+          this.periods[openPeriod = newOpenPeriod].expand();
+        }
+      } else if (openPeriod !== null) {
+        this.periods[openPeriod].collapse();
+        openPeriod = null;
+      }
+    });
+
+    on('new name', (period, name) => {
+      this.periods.filter(p => p.period === period).forEach(p => {
+        p.name.value = name;
+        p.resizeName();
+      });
+    });
+    on('new note', (period, note) => {
+      this.periods.filter(p => p.period === period).forEach(p => {
+        p.note.value = note;
+        p.resizeNote();
+      });
+    });
+    on('new colour', (period, colour) => {
+      this.periods.filter(p => p.period === period).forEach(p => Period.setColourOf(p.wrapper, colour));
     });
   }
 
@@ -41,28 +74,10 @@ class DayViewer {
   }
 
   /**
-   * Updates the names of the respective period.
-   * @param {string} affectedPeriod - Letter of the period with the new custom name.
-   */
-  newName(affectedPeriod) {
-    let period = affectedPeriod.toUpperCase();
-    this.periods.filter(p => p.period === period).forEach(p => p.setDisplayName(Prefs.getPdName(period)));
-  }
-
-  /**
-   * Updates the names of the respective period.
-   * @param {string} affectedPeriod - Letter of the period with the new custom name.
-   */
-  newNote(affectedPeriod) {
-    let period = affectedPeriod.toUpperCase();
-    this.periods.filter(p => p.period === period).forEach(p => p.updateNote(Prefs.getPdDesc(period)));
-  }
-
-  /**
    * Does stuff now knowing that it is in the DOM.
    */
   initialize() {
-    this.periods.forEach(p => p.initialize());
+    this.periods.forEach(p => p.resizeName());
   }
 
 }

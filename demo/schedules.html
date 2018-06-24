@@ -15,7 +15,7 @@
         white-space: nowrap;
         margin: 0;
       }
-      .day {
+      .day-col {
         width: 500px;
         display: inline-block;
         min-height: 100%;
@@ -24,10 +24,10 @@
         vertical-align: top;
         white-space: normal;
       }
-      .day.alt {
+      .day-col.alt {
         border-color: var(--primary);
       }
-      .note {
+      .notenotenote {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -36,12 +36,13 @@
         white-space: normal;
         line-height: 1.5;
         color: var(--secondary-text);
+        z-index: 1;
       }
       a {
         color: var(--primary);
       }
       @media (max-width: 500px) {
-        .day {
+        .day-col {
           width: 100vw;
         }
       }
@@ -57,7 +58,7 @@
     <script src="../js/default-schedule.js" charset="utf-8"></script>
   </head>
   <body class="dark">
-    <span class="body1 note">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
+    <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
     <script type="text/javascript">
 const altSchedules = (() => { // TEMP
   let alts = localStorage.getItem('[gunn-web-app] lite.alts');
@@ -74,50 +75,53 @@ const firstDay = new Date(2018, 7, 13);
 const lastDay = new Date(2019, 4, 31);
 
 const days = (lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24);
-const divs = [];
-const dayViewers = [];
+const dayCols = [];
 for (let day = 0; day <= days; day++) {
   const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
   const dateID = ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
   const schedule = altSchedules[dateID] !== undefined
     ? altSchedules[dateID]
     : normalSchedules[date.getDay()];
-  const viewer = schedule && new DayViewer(null, schedule, false);
-  divs.push(createElement('div', {
-    classes: ['day', altSchedules[dateID] !== undefined && 'alt'],
-    content: [
-      createElement('h3', {content: [date.toDateString()]}),
-      schedule === null
-        ? createElement('p', {content: 'no school', classes: 'body1'})
-        : viewer.wrapper
-      // ...(schedule === null
-      //   ? [createElement('p', {content: 'no school', classes: 'body1'})]
-      //   : schedule.map(p => createElement('p', {
-      //     classes: 'body1',
-      //     content: [
-      //       createElement('strong', {content: [p.period]}),
-      //       createElement('span', {content: ' ' + p.start + ' &ndash; ' + p.end})
-      //     ]
-      //   })))
-    ]
-  }));
-  if (viewer) dayViewers.push(viewer);
+  dayCols.push({
+    elem: createElement('div', {
+      classes: ['day-col', altSchedules[dateID] !== undefined && 'alt'],
+      content: [
+        createElement('h3', {content: [date.toDateString()]}),
+        schedule === null && createElement('p', {content: 'no school', classes: 'body1'})
+      ]
+    }),
+    iSeeYou() {
+      if (!schedule || this.initialized) return;
+      const viewer = new DayViewer(null, schedule, false);
+      this.elem.appendChild(viewer.wrapper);
+      viewer.initialize();
+      this.initialized = true;
+    }
+  });
 }
-document.body.appendChild(createFragment(divs));
-// dayViewers.forEach(v => v.initialize());
+document.body.appendChild(createFragment(dayCols.map(d => d.elem)));
 
 function forceScroll(scrollX) {
-  let page = 0,
-  timeout = null,
-  interval = setInterval(() => {
-    window.scrollTo(scrollX, 0);
-    if (Math.abs(pageXOffset - scrollX) < 1) {
-      if (!timeout) timeout = setTimeout(() => clearInterval(interval), 0);
-    } else if (timeout) clearTimeout(timeout);
-    console.log(':(');
-  }, 0);
+  return new Promise(res => {
+    let page = 0,
+    timeout = null,
+    interval = setInterval(() => {
+      window.scrollTo(scrollX, 0);
+      if (Math.abs(pageXOffset - scrollX) < 1) {
+        if (!timeout) timeout = setTimeout(() => {
+          clearInterval(interval);
+          res();
+        }, 0);
+      } else if (timeout) clearTimeout(timeout);
+      console.log(':(');
+    }, 0);
+  });
 }
-forceScroll(184 * 500 + 250 - innerWidth / 2)
+forceScroll(184 * 500 + 250 - innerWidth / 2);
+window.addEventListener('scroll', e => {
+  dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
+    .forEach(d => d.iSeeYou());
+});
     </script>
   </body>
 </html>

@@ -12,7 +12,7 @@ const Prefs = {
     G: {name: 'españñññññññol', desc: '¡¡¡¿¿¿¿INGLÉS????!!!!', colour: [255, 152, 0]},
     BRUNCH: {name: 'brunch lol', desc: 'useful i guess for... idk', colour: null},
     LUNCH: {name: 'longer longer passing period', desc: 'I WANT TO PLAY SOME MINECRAAAAAFT', colour: null},
-    FLEX: {name: 'longer longer passing period', desc: 'ALL SUBMIT TO YUN', colour: [96, 125, 139]}
+    FLEX: {name: 'unproductive yet free time meant to reduce stress that totally won\'t be replaced with something more stressful and restricting that is also meant to reduce stress', desc: 'ALL SUBMIT TO YUN', colour: [96, 125, 139]}
   },
 
   getPdName(period) {
@@ -26,4 +26,15 @@ const Prefs = {
   getPdColour(period) {
     return this.periodData[period] && this.periodData[period].colour;
   }
+
 };
+
+on('new name', (period, name) => {
+  if (this.periodData[period]) this.periodData[period].name = name;
+});
+on('new note', (period, note) => {
+  if (this.periodData[period]) this.periodData[period].note = note;
+});
+on('new colour', (period, colour) => {
+  if (this.periodData[period]) this.periodData[period].colour = colour;
+});

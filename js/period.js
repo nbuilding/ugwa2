@@ -66,15 +66,17 @@ class Period {
       this.name.style.height = 0;
       this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
     });
-    this.note.addEventListener('input', e => {
-      this.note.style.transition = 'none';
-      this.note.style.height = 0;
-      this.note.style.height = this.note.scrollHeight + 'px';
-      this.note.offsetHeight; // force CSS refresh
-      this.note.style.transition = null;
+    this.name.addEventListener('change', e => {
+      trigger('new name', period, this.name.value);
+    });
+    this.note.addEventListener('input', e => this.resizeNote());
+    this.note.addEventListener('change', e => {
+      trigger('new note', period, this.note.value);
     });
 
-    this.updateCustomisation();
+    this.name.value = Prefs.getPdName(this.period);
+    this.note.value = Prefs.getPdDesc(this.period);
+    Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
   }
 
   /**
@@ -113,15 +115,6 @@ class Period {
   }
 
   /**
-   * Sets the custom name of the period.
-   */
-  updateCustomisation() {
-    this.name.value = Prefs.getPdName(this.period);
-    this.note.value = Prefs.getPdDesc(this.period);
-    Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
-  }
-
-  /**
    * Expands the period card.
    */
   expand() {
@@ -154,9 +147,19 @@ class Period {
   /**
    * Prepares the width of the period name
    */
-  initialize() {
+  resizeName() {
     this.name.style.height = 0;
     this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
+  }
+
+  resizeNote() {
+    if (!this.wrapper.classList.contains('open')) return;
+    const note = this.note;
+    note.style.transition = 'none';
+    note.style.height = 0;
+    note.style.height = note.scrollHeight + 'px';
+    note.offsetHeight; // force CSS refresh
+    note.style.transition = null;
   }
 
   static useBlack([r, g, b]) {

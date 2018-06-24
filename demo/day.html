@@ -44,18 +44,18 @@
       test.initialize();
       test.setTime(620);
 
-      let currentPd = -1;
-      document.onkeydown = e => {
-        let oldPd = currentPd;
-        if (e.keyCode === 40) {
-          currentPd = (currentPd + 1) % test.periods.length;
-        } else if (e.keyCode === 38) {
-          currentPd = (currentPd + test.periods.length - 1) % test.periods.length;
-        } else return;
-        e.preventDefault();
-        if (oldPd >= 0) test.periods[oldPd].collapse();
-        if (currentPd >= 0) test.periods[currentPd].expand();
-      };
+      // let currentPd = -1;
+      // document.onkeydown = e => {
+      //   let oldPd = currentPd;
+      //   if (e.keyCode === 40) {
+      //     currentPd = (currentPd + 1) % test.periods.length;
+      //   } else if (e.keyCode === 38) {
+      //     currentPd = (currentPd + test.periods.length - 1) % test.periods.length;
+      //   } else return;
+      //   e.preventDefault();
+      //   if (oldPd >= 0) test.periods[oldPd].collapse();
+      //   if (currentPd >= 0) test.periods[currentPd].expand();
+      // };
     </script>
   </body>
 </html>
