@@ -48,16 +48,17 @@ class DayViewer {
       }
     });
 
-    on('new name', (period, name) => {
+    on('new name', (period, name, height) => {
       this.periods.filter(p => p.period === period).forEach(p => {
         p.name.value = name;
-        p.resizeName();
+        p.name.style.height = height;
       });
     });
-    on('new note', (period, note) => {
+    on('new note', (period, note, height) => {
       this.periods.filter(p => p.period === period).forEach(p => {
         p.note.value = note;
-        p.resizeNote();
+        if (p.wrapper.classList.contains('open'))
+          p.note.style.height = height;
       });
     });
     on('new colour', (period, colour) => {

@@ -30,11 +30,11 @@ const Prefs = {
 };
 
 on('new name', (period, name) => {
-  if (this.periodData[period]) this.periodData[period].name = name;
+  if (Prefs.periodData[period]) Prefs.periodData[period].name = name;
 });
 on('new note', (period, note) => {
-  if (this.periodData[period]) this.periodData[period].note = note;
+  if (Prefs.periodData[period]) Prefs.periodData[period].note = note;
 });
 on('new colour', (period, colour) => {
-  if (this.periodData[period]) this.periodData[period].colour = colour;
+  if (Prefs.periodData[period]) Prefs.periodData[period].colour = colour;
 });

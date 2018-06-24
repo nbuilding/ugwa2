@@ -67,11 +67,11 @@ class Period {
       this.name.style.height = this.name.scrollHeight - this.name.clientHeight + 'px';
     });
     this.name.addEventListener('change', e => {
-      trigger('new name', period, this.name.value);
+      trigger('new name', period, this.name.value, this.name.style.height);
     });
     this.note.addEventListener('input', e => this.resizeNote());
     this.note.addEventListener('change', e => {
-      trigger('new note', period, this.note.value);
+      trigger('new note', period, this.note.value, this.note.style.height);
     });
 
     this.name.value = Prefs.getPdName(this.period);
