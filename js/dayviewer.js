@@ -35,7 +35,12 @@ class DayViewer {
       }
     });
     this.wrapper.addEventListener('click', e => {
-      const periodWrapper = e.path[e.path.indexOf(this.wrapper) - 1];
+      const periodWrapper = (() => {
+        let target = e.target;
+        while (target && !periodWrappers.includes(target))
+          target = target.parentNode;
+        return target;
+      })();
       if (periodWrapper) {
         const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
         if (openPeriod !== newOpenPeriod) {
