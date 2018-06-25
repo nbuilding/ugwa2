@@ -122,12 +122,15 @@ class Period {
     this.spans.forEach(span => {
       span.style.height = span.scrollHeight + 'px';
     });
-    this.note.style.transition = 'none';
-    this.note.style.height = 0;
-    this.note.style.height = this.note.scrollHeight + 20 + 'px';
-    this.note.style.transition = null;
-    this.note.offsetHeight;
-    this.note.style.padding = null;
+    if (this.noteHeight) {
+      this.note.style.height = this.noteHeight;
+    } else {
+      this.note.style.transition = 'none';
+      this.note.style.height = 0;
+      this.noteHeight = this.note.style.height = this.note.scrollHeight + 20 + 'px';
+      this.note.style.transition = null;
+      this.note.offsetHeight;
+    }
     this.note.setAttribute('tabindex', 0);
     this.wrapper.classList.add('open');
   }
@@ -157,7 +160,7 @@ class Period {
     const note = this.note;
     note.style.transition = 'none';
     note.style.height = 0;
-    note.style.height = note.scrollHeight + 'px';
+    this.noteHeight = note.style.height = note.scrollHeight + 'px';
     note.offsetHeight; // force CSS refresh
     note.style.transition = null;
   }

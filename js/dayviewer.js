@@ -46,6 +46,9 @@ class DayViewer {
         if (openPeriod !== newOpenPeriod) {
           if (openPeriod !== null) this.periods[openPeriod].collapse();
           this.periods[openPeriod = newOpenPeriod].expand();
+        } else if (e.target.tagName !== 'TEXTAREA') {
+          this.periods[openPeriod].collapse();
+          openPeriod = null;
         }
       } else if (openPeriod !== null) {
         this.periods[openPeriod].collapse();
@@ -62,8 +65,10 @@ class DayViewer {
     on('new note', (period, note, height) => {
       this.periods.filter(p => p.period === period).forEach(p => {
         p.note.value = note;
-        if (p.wrapper.classList.contains('open'))
+        p.noteHeight = height;
+        if (p.wrapper.classList.contains('open')) {
           p.note.style.height = height;
+        }
       });
     });
     on('new colour', (period, colour) => {
