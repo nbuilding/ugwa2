@@ -13,7 +13,7 @@
     <style media="screen">
       body {
         white-space: nowrap;
-        margin: 0 100vw;
+        margin: 0;
       }
       .day-col {
         width: 500px;
@@ -118,94 +118,10 @@ function forceScroll(scrollX) {
     }, 0);
   });
 }
-forceScroll(184 * 500 + 250 + innerWidth / 2);
-
-const scrollAnimationLength = 500;
-let autoScrolling = false,
-pleaseStopAutoScrolling = false,
-autoScrollTimeout = null;
-Math.easeInOutQuad = prog => {
-	prog *= 2;
-	if (prog < 1) return prog * prog / 2;
-	prog--;
-	return (prog * (prog - 2) - 1) / -2;
-};
-function snapToDay() {
-  autoScrolling = true;
-  const destX = Math.floor((pageXOffset - innerWidth / 2) / 500) * 500 + innerWidth / 2 + 250;
-  const changeScroll = destX - pageXOffset;
-  if (Math.abs(changeScroll) < 3) {
-    window.scrollTo(destX, pageYOffset);
-    autoScrolling = false;
-    return;
-  }
-  const startScroll = pageXOffset;
-  const startTime = Date.now();
-  function scroll() {
-    const elapsedTime = Date.now() - startTime;
-    window.scrollTo(Math.easeInOutQuad(elapsedTime / scrollAnimationLength) * changeScroll + startScroll, pageYOffset);
-    autoScrolling = false;
-    if (elapsedTime > scrollAnimationLength)
-      window.scrollTo(destX, pageYOffset);
-    else if (pleaseStopAutoScrolling)
-      pleaseStopAutoScrolling = false;
-    else {
-      window.requestAnimationFrame(scroll);
-      autoScrolling = true;
-    }
-  }
-  scroll();
-}
-let lastScrollX = pageXOffset;
-let lastScreenWidth = innerWidth;
-let ticking = false;
+forceScroll(184 * 500 + 250 - innerWidth / 2);
 window.addEventListener('scroll', e => {
-  if (!autoScrolling) {
-    console.log('(scroll) clearing', autoScrollTimeout);
-    if (autoScrollTimeout !== null) clearTimeout(autoScrollTimeout);
-    let start = Date.now();
-    autoScrollTimeout = setTimeout(() => {
-      console.log('ahoy (scroll)', Date.now() - start + 'ms');
-      snapToDay();
-    }, 100);
-  }
-  if (!ticking) {
-    setTimeout(() => {
-      dayCols.slice(Math.floor((pageXOffset - innerWidth) / 500), Math.ceil((pageXOffset) / 500))
-        .forEach(d => d.iSeeYou());
-      ticking = false;
-    }, 100);
-    ticking = true;
-  }
-});
-window.addEventListener('wheel', e => {
-  if (autoScrolling) pleaseStopAutoScrolling = true;
-});
-window.addEventListener('touchmove', e => {
-  if (autoScrolling) pleaseStopAutoScrolling = true;
-});
-window.addEventListener('touchend', e => {
-  if (!autoScrolling) {
-    console.log('(touch) clearing', autoScrollTimeout);
-    if (autoScrollTimeout !== null) clearTimeout(autoScrollTimeout);
-    let start = Date.now();
-    // let wee = setInterval(() => {
-    //   console.log(Date.now() - start + 'ms');
-    // }, 0);
-    document.onkeydown = e => {
-      console.log(e.key);
-      let s = Date.now();
-      setTimeout(() => {
-        console.log(e.key, 'but delayed', Date.now() - s + 'ms');
-      }, 10);
-    };
-    autoScrollTimeout = setTimeout(() => {
-      console.log('ahoy (touch)', Date.now() - start + 'ms');
-      // clearInterval(wee);
-      document.onkeydown = null;
-      snapToDay();
-    }, 100);
-  }
+  dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
+    .forEach(d => d.iSeeYou());
 });
 dayCols[184].iSeeYou(true);
 dayCols[184].viewer.setTime(700);
