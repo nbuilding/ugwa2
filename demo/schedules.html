@@ -57,7 +57,7 @@
     <script src="../js/material-ripple.js" charset="utf-8"></script>
     <script src="../js/default-schedule.js" charset="utf-8"></script>
   </head>
-  <body class="dark">
+  <body class="dark roundish">
     <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
     <script type="text/javascript">
 const altSchedules = (() => { // TEMP
@@ -90,11 +90,12 @@ for (let day = 0; day <= days; day++) {
         schedule === null && createElement('p', {content: 'no school', classes: 'body1'})
       ]
     }),
-    iSeeYou() {
+    iSeeYou(today = false) {
       if (!schedule || this.initialized) return;
-      const viewer = new DayViewer(null, schedule, false);
+      const viewer = new DayViewer(null, schedule, today);
       this.elem.appendChild(viewer.wrapper);
       viewer.initialize();
+      this.viewer = viewer;
       this.initialized = true;
     }
   });
@@ -122,6 +123,8 @@ window.addEventListener('scroll', e => {
   dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
     .forEach(d => d.iSeeYou());
 });
+dayCols[184].iSeeYou(true);
+dayCols[184].viewer.setTime(700);
     </script>
   </body>
 </html>
