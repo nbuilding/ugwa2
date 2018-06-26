@@ -29,8 +29,11 @@ class DaysWrapper {
           ]
         }),
         viewer: new DayViewer(dateObj, schedule, day === 184),
+        triggered: false,
         trigger() {
+          if (this.triggered) return;
           this.viewer.initialize(this.elem);
+          this.triggered = true;
         }
       });
     }
@@ -119,6 +122,14 @@ class DaysWrapper {
     this.updateScrollMeasurements();
     this.scrollWrapper.addEventListener('scroll', e => {
       this.updateScrollMeasurements();
+      const visibleUntriggeredDaycols = this.dayCols.slice(
+        Math.floor((this.scrollX - this.screenWidth) / this.periodWidth),
+        Math.ceil(this.scrollX / this.periodWidth)
+      ).filter(d => !d.triggered);
+      if (visibleUntriggeredDaycols.length)
+        setTimeout(() => { // async triggering to prevent lag
+          visibleUntriggeredDaycols.forEach(d => d.trigger());
+        }, 0);
     });
 
     this.scrollWrapper.addEventListener('wheel', e => {
