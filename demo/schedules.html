@@ -13,7 +13,7 @@
     <style media="screen">
       body {
         white-space: nowrap;
-        margin: 0;
+        margin: 0 100vw;
       }
       .day-col {
         width: 500px;
@@ -56,6 +56,7 @@
     <script src="../js/prefs.js" charset="utf-8"></script>
     <script src="../js/material-ripple.js" charset="utf-8"></script>
     <script src="../js/default-schedule.js" charset="utf-8"></script>
+    <script src="../js/days-wrapper.js" charset="utf-8"></script>
   </head>
   <body class="dark roundish">
     <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
@@ -74,33 +75,7 @@ const altSchedules = (() => { // TEMP
 const firstDay = new Date(2018, 7, 13);
 const lastDay = new Date(2019, 4, 31);
 
-const days = (lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24);
-const dayCols = [];
-for (let day = 0; day <= days; day++) {
-  const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
-  const dateID = ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-  const schedule = altSchedules[dateID] !== undefined
-    ? altSchedules[dateID]
-    : normalSchedules[date.getDay()];
-  dayCols.push({
-    elem: createElement('div', {
-      classes: ['day-col', altSchedules[dateID] !== undefined && 'alt'],
-      content: [
-        createElement('h3', {content: [date.toDateString()]}),
-        schedule === null && createElement('p', {content: 'no school', classes: 'body1'})
-      ]
-    }),
-    iSeeYou(today = false) {
-      if (!schedule || this.initialized) return;
-      const viewer = new DayViewer(null, schedule, today);
-      this.elem.appendChild(viewer.wrapper);
-      viewer.initialize();
-      this.viewer = viewer;
-      this.initialized = true;
-    }
-  });
-}
-document.body.appendChild(createFragment(dayCols.map(d => d.elem)));
+const wrapper = new DaysWrapper(normalSchedules, altSchedules, firstDay, lastDay);
 
 function forceScroll(scrollX) {
   return new Promise(res => {
@@ -118,13 +93,15 @@ function forceScroll(scrollX) {
     }, 0);
   });
 }
-forceScroll(184 * 500 + 250 - innerWidth / 2);
-window.addEventListener('scroll', e => {
-  dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
-    .forEach(d => d.iSeeYou());
-});
-dayCols[184].iSeeYou(true);
-dayCols[184].viewer.setTime(700);
+forceScroll(184 * 500 + 250 + innerWidth / 2);
+// window.addEventListener('scroll', e => {
+//   dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
+//     .forEach(d => d.iSeeYou());
+// });
+wrapper.dayCols[184].trigger();
+wrapper.dayCols[184].viewer.setTime(700);
+wrapper.selected = 184;
+// wrapper.scrollTo(184, false);
     </script>
   </body>
 </html>

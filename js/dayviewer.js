@@ -12,68 +12,99 @@ class DayViewer {
    */
   constructor(date, schedule, today) {
     this.date = date;
-    this.periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
-    const periodWrappers = this.periods.map(p => p.wrapper);
-    this.wrapper = createElement('div', {
-      tabindex: 0,
-      classes: 'day',
-      content: periodWrappers
-    });
-    let openPeriod = null;
-    this.wrapper.addEventListener('keydown', e => {
-      if (e.keyCode !== 40 && e.keyCode !== 38) return;
-      else e.preventDefault();
+    this.schedule = schedule;
+    this.today = today;
+    this.state = DayViewer.UNINITIALIZED;
+  }
 
-      const down = e.keyCode === 40;
-      if (openPeriod === null) {
-        this.periods[openPeriod = down ? 0 : this.periods.length - 1].expand();
-      } else {
-        this.periods[openPeriod].collapse();
-        if (down) openPeriod++;
-        else openPeriod += this.periods.length - 1;
-        this.periods[openPeriod %= this.periods.length].expand();
-      }
-    });
-    this.wrapper.addEventListener('click', e => {
-      const periodWrapper = (() => {
-        let target = e.target;
-        while (target && !periodWrappers.includes(target))
-          target = target.parentNode;
-        return target;
-      })();
-      if (periodWrapper) {
-        const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
-        if (openPeriod !== newOpenPeriod) {
-          if (openPeriod !== null) this.periods[openPeriod].collapse();
-          this.periods[openPeriod = newOpenPeriod].expand();
-        } else if (e.target.tagName !== 'TEXTAREA') {
-          this.periods[openPeriod].collapse();
+  initialize(wrapperElem) {
+    const date = this.date;
+    const schedule = this.schedule;
+    const today = this.today;
+
+    if (schedule === null) {
+      this.wrapper = createElement('div', {
+        classes: 'day noschool body1',
+        content: ['no school!'] // TEMP
+      });
+    } else {
+      const periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
+      const periodWrappers = periods.map(p => p.wrapper);
+      this.wrapper = createElement('div', {
+        tabindex: 0,
+        classes: 'day',
+        content: periodWrappers
+      });
+      let openPeriod = null;
+      this.wrapper.addEventListener('keydown', e => {
+        if (e.keyCode !== 40 && e.keyCode !== 38) return;
+        else e.preventDefault();
+
+        const down = e.keyCode === 40;
+        if (openPeriod === null) {
+          periods[openPeriod = down ? 0 : periods.length - 1].expand();
+        } else {
+          periods[openPeriod].collapse();
+          if (down) openPeriod++;
+          else openPeriod += this.periods.length - 1;
+          periods[openPeriod %= periods.length].expand();
+        }
+      });
+      this.wrapper.addEventListener('click', e => {
+        const periodWrapper = (() => {
+          let target = e.target;
+          while (target && !periodWrappers.includes(target))
+            target = target.parentNode;
+          return target;
+        })();
+        if (periodWrapper) {
+          const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
+          if (openPeriod !== newOpenPeriod) {
+            if (openPeriod !== null) periods[openPeriod].collapse();
+            periods[openPeriod = newOpenPeriod].expand();
+          } else if (e.target.tagName !== 'TEXTAREA') {
+            periods[openPeriod].collapse();
+            openPeriod = null;
+          }
+        } else if (openPeriod !== null) {
+          periods[openPeriod].collapse();
           openPeriod = null;
         }
-      } else if (openPeriod !== null) {
-        this.periods[openPeriod].collapse();
-        openPeriod = null;
-      }
-    });
+      });
 
-    on('new name', (period, name, height) => {
-      this.periods.filter(p => p.period === period).forEach(p => {
-        p.name.value = name;
-        p.name.style.height = height;
+      this.onNewName = on('new name', (period, name, height) => {
+        this.periods.filter(p => p.period === period).forEach(p => {
+          p.name.value = name;
+          p.name.style.height = height;
+        });
       });
-    });
-    on('new note', (period, note, height) => {
-      this.periods.filter(p => p.period === period).forEach(p => {
-        p.note.value = note;
-        p.noteHeight = height;
-        if (p.wrapper.classList.contains('open')) {
-          p.note.style.height = height;
-        }
+      this.onNewNote = on('new note', (period, note, height) => {
+        this.periods.filter(p => p.period === period).forEach(p => {
+          p.note.value = note;
+          p.noteHeight = height;
+          if (p.wrapper.classList.contains('open')) {
+            p.note.style.height = height;
+          }
+        });
       });
-    });
-    on('new colour', (period, colour) => {
-      this.periods.filter(p => p.period === period).forEach(p => Period.setColourOf(p.wrapper, colour));
-    });
+      this.onNewColour = on('new colour', (period, colour) => {
+        this.periods.filter(p => p.period === period).forEach(p => Period.setColourOf(p.wrapper, colour));
+      });
+
+      this.periods = periods;
+    }
+
+    wrapperElem.appendChild(this.wrapper);
+    if (this.periods) this.periods.forEach(p => p.resizeName());
+    this.state = DayViewer.INITIALIZED;
+  }
+
+  unload() {
+    this.wrapper.remove();
+    onnt('new name', this.onNewName);
+    onnt('new note', this.onNewNote);
+    onnt('new colour', this.onNewColour);
+    this.state = DayViewer.DEAD;
   }
 
   /**
@@ -81,14 +112,12 @@ class DayViewer {
    * @param {number} minutes - Current number of minutes since the begining of the day.
    */
   setTime(minutes) {
-    this.periods.forEach(p => p.setTime(minutes));
-  }
-
-  /**
-   * Does stuff now knowing that it is in the DOM.
-   */
-  initialize() {
-    this.periods.forEach(p => p.resizeName());
+    if (this.periods)
+      this.periods.forEach(p => p.setTime(minutes));
   }
 
 }
+
+DayViewer.UNINITIALIZED = 0;
+DayViewer.INITIALIZED = 1;
+DayViewer.DEAD = 2;
