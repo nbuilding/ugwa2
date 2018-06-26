@@ -12,8 +12,19 @@
     <link rel="stylesheet" href="../css/period.css">
     <style media="screen">
       body {
+        margin: 0;
+      }
+      .days-wrapper {
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
         white-space: nowrap;
-        margin: 0 100vw;
+      }
+      .day-col:first-child {
+        margin-left: 100vw;
+      }
+      .day-col:last-child {
+        margin-right: 100vw;
       }
       .day-col {
         width: 500px;
@@ -77,23 +88,6 @@ const lastDay = new Date(2019, 4, 31);
 
 const wrapper = new DaysWrapper(normalSchedules, altSchedules, firstDay, lastDay);
 
-function forceScroll(scrollX) {
-  return new Promise(res => {
-    let page = 0,
-    timeout = null,
-    interval = setInterval(() => {
-      window.scrollTo(scrollX, 0);
-      if (Math.abs(pageXOffset - scrollX) < 1) {
-        if (!timeout) timeout = setTimeout(() => {
-          clearInterval(interval);
-          res();
-        }, 0);
-      } else if (timeout) clearTimeout(timeout);
-      console.log(':(');
-    }, 0);
-  });
-}
-forceScroll(184 * 500 + 250 + innerWidth / 2);
 // window.addEventListener('scroll', e => {
 //   dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
 //     .forEach(d => d.iSeeYou());
@@ -101,7 +95,7 @@ forceScroll(184 * 500 + 250 + innerWidth / 2);
 wrapper.dayCols[184].trigger();
 wrapper.dayCols[184].viewer.setTime(700);
 wrapper.selected = 184;
-// wrapper.scrollTo(184, false);
+wrapper.scrollTo(184, false);
     </script>
   </body>
 </html>

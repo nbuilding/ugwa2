@@ -34,7 +34,10 @@ class DaysWrapper {
         }
       });
     }
-    document.body.appendChild(createFragment(dayCols.map(d => d.elem)));
+    document.body.appendChild(this.scrollWrapper = createElement('div', {
+      classes: 'days-wrapper',
+      content: dayCols.map(d => d.elem)
+    }));
 
     this.dayCols = dayCols;
 
@@ -45,9 +48,10 @@ class DaysWrapper {
 
   scrollTo(pdPos, animate = true) {
     if (!animate) {
-      window.scrollTo(this.screenWidth / 2 + this.periodWidth * (pdPos - 0.5), this.scrollY);
+      this.scrollWrapper.scrollLeft = this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
       return;
     }
+    this.stopAutoScrolling();
     this.autoScrolling = window.requestAnimationFrame(() => {
       const startPdPos = this.toPdPos(this.scrollX);
       const pdPosChange = pdPos - startPdPos;
@@ -75,7 +79,7 @@ class DaysWrapper {
         this.snapToADay();
         return;
       }
-      window.scrollBy(vel, 0);
+      this.scrollWrapper.scrollBy(vel, 0);
       this.autoScrolling = window.requestAnimationFrame(scroll);
     };
     scroll();
@@ -86,10 +90,11 @@ class DaysWrapper {
   }
 
   toPdPos(scrollX) {
-    return (scrollX - this.screenWidth / 2) / this.periodWidth + 0.5;
+    return (scrollX - this.screenWidth / 2) / this.periodWidth - 0.5;
   }
 
   stopAutoScrolling() {
+    if (!this.autoScrolling) return;
     window.cancelAnimationFrame(this.autoScrolling);
     this.autoScrolling = false;
   }
@@ -112,11 +117,11 @@ class DaysWrapper {
     });
 
     this.updateScrollMeasurements();
-    window.addEventListener('scroll', e => {
+    this.scrollWrapper.addEventListener('scroll', e => {
       this.updateScrollMeasurements();
     });
 
-    window.addEventListener('wheel', e => {
+    this.scrollWrapper.addEventListener('wheel', e => {
       if (this.autoScrolling)
         this.stopAutoScrolling();
 
@@ -131,8 +136,14 @@ class DaysWrapper {
         this.trackpadScroll();
     });
 
+    document.body.addEventListener('keydown', e => {
+      if (document.activeElement.tagName === 'TEXTAREA') return;
+      if (e.keyCode === 37) this.scrollTo(--this.selected, true);
+      else if (e.keyCode === 39) this.scrollTo(++this.selected, true);
+    });
+
     const touchSpeeds = [];
-    window.addEventListener('touchstart', e => {
+    this.scrollWrapper.addEventListener('touchstart', e => {
       if (this.autoScrolling)
         this.stopAutoScrolling();
       Array.from(e.changedTouches).forEach(t => {
@@ -144,7 +155,7 @@ class DaysWrapper {
         };
       });
     });
-    window.addEventListener('touchmove', e => {
+    this.scrollWrapper.addEventListener('touchmove', e => {
       Array.from(e.changedTouches).forEach(t => {
         touchSpeeds[t.identifier] = {
           oldX: t.clientX,
@@ -154,7 +165,7 @@ class DaysWrapper {
         };
       });
     });
-    window.addEventListener('touchend', e => {
+    this.scrollWrapper.addEventListener('touchend', e => {
       if (!this.autoScrolling) {
         this.momentumScrolling(-touchSpeeds[e.changedTouches[0].identifier].xSpeed / 3);
       }
@@ -170,8 +181,8 @@ class DaysWrapper {
   }
 
   updateScrollMeasurements() {
-    this.scrollX = window.pageXOffset;
-    this.scrollY = window.pageYOffset;
+    this.scrollX = this.scrollWrapper.scrollLeft;
+    this.scrollY = this.scrollWrapper.scrollTop;
   }
 
 }
