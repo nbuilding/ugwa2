@@ -16,15 +16,15 @@ const Prefs = {
   },
 
   getPdName(period) {
-    return this.periodData[period] && this.periodData[period].name;
+    return this.periodData[period] && this.periodData[period].name || period;
   },
 
   getPdDesc(period) {
-    return this.periodData[period] && this.periodData[period].desc;
+    return this.periodData[period] && this.periodData[period].desc || '';
   },
 
   getPdColour(period) {
-    return this.periodData[period] && this.periodData[period].colour;
+    return this.periodData[period] && this.periodData[period].colour || null;
   }
 
 };

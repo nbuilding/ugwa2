@@ -20,23 +20,30 @@
         overflow: auto;
         white-space: nowrap;
       }
-      .day-col:first-child {
+      .date-heading {
+        position: fixed;
+        width: 100%;
+        text-align: center;
+      }
+      .day:first-of-type {
         margin-left: 100vw;
       }
-      .day-col:last-child {
+      .day:last-of-type {
         margin-right: 100vw;
       }
-      .day-col {
+      .day {
         width: 500px;
         display: inline-block;
         min-height: 100%;
         box-sizing: border-box;
-        border: 1px solid var(--secondary-text);
         vertical-align: top;
         white-space: normal;
+        opacity: 0.6;
+        padding-top: 100px;
+        transition: opacity .2s;
       }
-      .day-col.alt {
-        border-color: var(--primary);
+      .day.selected {
+        opacity: 1;
       }
       .notenotenote {
         position: fixed;

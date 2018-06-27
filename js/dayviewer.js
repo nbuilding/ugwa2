@@ -15,17 +15,21 @@ class DayViewer {
     this.schedule = schedule;
     this.today = today;
     this.state = DayViewer.UNINITIALIZED;
+    this.wrapper = createElement('div', {
+      classes: 'day'
+    });
   }
 
-  initialize(wrapperElem) {
+  initialize() {
     const date = this.date;
     const schedule = this.schedule;
     const today = this.today;
+    const oldWrapper = this.wrapper;
 
     if (schedule === null) {
       this.wrapper = createElement('div', {
-        classes: 'day noschool body1',
-        content: ['no school!'] // TEMP
+        classes: 'day noschool h3',
+        content: [Formatter.phrase('no-school')] // TEMP
       });
     } else {
       const periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
@@ -94,7 +98,7 @@ class DayViewer {
       this.periods = periods;
     }
 
-    wrapperElem.appendChild(this.wrapper);
+    oldWrapper.parentNode.replaceChild(this.wrapper, oldWrapper);
     if (this.periods) this.periods.forEach(p => p.resizeName());
     this.state = DayViewer.INITIALIZED;
   }
