@@ -44,6 +44,26 @@
       test.initialize();
       test.setTime(620);
 
+      test.onselected();
+      document.addEventListener('click', e => {
+        let target = e.target;
+        let periodWrapper;
+        do {
+          if (target.classList.contains('period')) {
+            periodWrapper = target;
+            break;
+          }
+        } while ((target = target.parentNode) && target.classList);
+        test.onclick(periodWrapper, e.target.tagName);
+      });
+      document.addEventListener('keydown', e => {
+        const down = e.keyCode === 40;
+        if ((e.keyCode === 38 || down) && document.activeElement.tagName !== 'TEXTAREA') {
+          test.onarrowpress(down);
+          e.preventDefault();
+        }
+      });
+
       // let currentPd = -1;
       // document.onkeydown = e => {
       //   let oldPd = currentPd;
