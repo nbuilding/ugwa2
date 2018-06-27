@@ -49,6 +49,39 @@ class DaysWrapper {
 
     this.initWindowyThings();
 
+    this.scrollWrapper.addEventListener('click', e => {
+      let target = e.target;
+      let periodWrapper, dayWrapper;
+      do {
+        if (target.classList.contains('day')) {
+          dayWrapper = target;
+          break;
+        } else if (target.classList.contains('period')) {
+          periodWrapper = target;
+        }
+      } while ((target = target.parentNode) && target.classList);
+      if (dayWrapper) {
+        const pdPos = dayCols.map(d => d.viewer.wrapper).indexOf(dayWrapper);
+        if (dayWrapper.classList.contains('selected')) {
+          const onclick = dayCols[pdPos].viewer.onclick;
+          if (onclick) onclick(periodWrapper, e.target.tagName);
+        } else {
+          this.selected = pdPos;
+          this.scrollTo(pdPos, true);
+        }
+      } else {
+        dayCols[this._selected].viewer.closeOpenPeriods();
+      }
+    });
+    document.addEventListener('keydown', e => {
+      const down = e.keyCode === 40;
+      if ((e.keyCode === 38 || down) && document.activeElement.tagName !== 'TEXTAREA') {
+        const onarrowpress = dayCols[this._selected].viewer.onarrowpress;
+        if (onarrowpress) onarrowpress(down);
+        e.preventDefault();
+      }
+    });
+
     this.selected = 0; // TODO: scroll to today
   }
 
@@ -212,9 +245,9 @@ class DaysWrapper {
 
   set selected(s) {
     if (this._selected)
-      this.dayCols[this._selected].viewer.wrapper.classList.remove('selected');
+      this.dayCols[this._selected].viewer.onunselected();
     this._selected = s;
-    this.dayCols[s].viewer.wrapper.classList.add('selected');
+    this.dayCols[s].viewer.onselected();
     const dateObj = this.dayCols[s].viewer.date;
     this.dateHeading.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
   }

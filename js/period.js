@@ -23,6 +23,7 @@ class Period {
       content: [
         this.name = createElement('textarea', {
           classes: 'name',
+          disabled: true,
           attr: {placeholder: 'A class undeserving of a name', spellcheck: false}
         }),
         this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
@@ -59,7 +60,7 @@ class Period {
 
     this.name.addEventListener('keydown', e => {
       if (e.keyCode === 13) e.preventDefault();
-    })
+    });
     this.name.addEventListener('input', e => {
       if (this.name.value.includes('\n'))
         this.name.value = this.name.value.replace(/\r?\n/g, '');

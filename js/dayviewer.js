@@ -35,16 +35,12 @@ class DayViewer {
       const periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
       const periodWrappers = periods.map(p => p.wrapper);
       this.wrapper = createElement('div', {
-        tabindex: 0,
         classes: 'day',
         content: periodWrappers
       });
-      let openPeriod = null;
-      this.wrapper.addEventListener('keydown', e => {
-        if (e.keyCode !== 40 && e.keyCode !== 38) return;
-        else e.preventDefault();
 
-        const down = e.keyCode === 40;
+      let openPeriod = null;
+      this.onarrowpress = down => {
         if (openPeriod === null) {
           periods[openPeriod = down ? 0 : periods.length - 1].expand();
         } else {
@@ -53,20 +49,14 @@ class DayViewer {
           else openPeriod += this.periods.length - 1;
           periods[openPeriod %= periods.length].expand();
         }
-      });
-      this.wrapper.addEventListener('click', e => {
-        const periodWrapper = (() => {
-          let target = e.target;
-          while (target && !periodWrappers.includes(target))
-            target = target.parentNode;
-          return target;
-        })();
+      };
+      this.onclick = (periodWrapper, targetTagName) => {
         if (periodWrapper) {
           const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
           if (openPeriod !== newOpenPeriod) {
             if (openPeriod !== null) periods[openPeriod].collapse();
             periods[openPeriod = newOpenPeriod].expand();
-          } else if (e.target.tagName !== 'TEXTAREA') {
+          } else if (targetTagName !== 'TEXTAREA') {
             periods[openPeriod].collapse();
             openPeriod = null;
           }
@@ -74,7 +64,12 @@ class DayViewer {
           periods[openPeriod].collapse();
           openPeriod = null;
         }
-      });
+      };
+      this.closeOpenPeriods = () => {
+        if (openPeriod === null) return;
+        periods[openPeriod].collapse();
+        openPeriod = null;
+      };
 
       this.onNewName = on('new name', (period, name, height) => {
         this.periods.filter(p => p.period === period).forEach(p => {
@@ -101,6 +96,7 @@ class DayViewer {
     oldWrapper.parentNode.replaceChild(this.wrapper, oldWrapper);
     if (this.periods) this.periods.forEach(p => p.resizeName());
     this.state = DayViewer.INITIALIZED;
+    this.selected = false;
   }
 
   unload() {
@@ -109,6 +105,22 @@ class DayViewer {
     onnt('new note', this.onNewNote);
     onnt('new colour', this.onNewColour);
     this.state = DayViewer.DEAD;
+  }
+
+  onselected() {
+    this.selected = true;
+    this.wrapper.classList.add('selected');
+    if (this.periods)
+      this.periods.forEach(p => p.name.disabled = false);
+  }
+
+  onunselected() {
+    this.selected = false;
+    this.wrapper.classList.remove('selected');
+    if (this.periods) {
+      this.periods.forEach(p => p.name.disabled = true);
+      this.closeOpenPeriods();
+    }
   }
 
   /**

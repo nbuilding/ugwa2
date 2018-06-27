@@ -45,6 +45,9 @@
       .day.selected {
         opacity: 1;
       }
+      .day:not(.selected) > * {
+        pointer-events: none;
+      }
       .notenotenote {
         position: fixed;
         bottom: 0;
