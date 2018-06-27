@@ -48,6 +48,29 @@
       .day:not(.selected) > * {
         pointer-events: none;
       }
+      .day.noschool {
+        position: relative;
+        padding-top: 200px;
+        text-align: center;
+      }
+      .day.noschool::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-repeat: no-repeat;
+        background-position: center 300px;
+        background-image: url('../images/no-school-sheep.png');
+        background-size: 200px;
+        opacity: 0;
+        z-index: -1;
+        transition: all .5s;
+      }
+      .day.noschool.selected::after {
+        opacity: 1;
+      }
       .notenotenote {
         position: fixed;
         bottom: 0;

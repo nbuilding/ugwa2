@@ -29,7 +29,7 @@ class DayViewer {
     if (schedule === null) {
       this.wrapper = createElement('div', {
         classes: 'day noschool h3',
-        content: [Formatter.phrase('no-school')] // TEMP
+        content: [createElement('span', {content: [Formatter.phrase('no-school')]})]
       });
     } else {
       const periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
