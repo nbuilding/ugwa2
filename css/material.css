@@ -1,6 +1,9 @@
 * {
   -webkit-tap-highlight-color: transparent;
 }
+.ios * {
+  cursor: pointer;
+}
 body {
   font-family: 'Roboto', sans-serif;
   font-size: 0;

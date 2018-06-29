@@ -105,6 +105,9 @@
   <body class="dark roundish">
     <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
     <script type="text/javascript">
+if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)
+  document.body.classList.add('ios');
+
 const altSchedules = (() => { // TEMP
   let alts = localStorage.getItem('[gunn-web-app] lite.alts');
   if (!alts) return {};
