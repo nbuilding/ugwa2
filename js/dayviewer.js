@@ -10,66 +10,30 @@ class DayViewer {
    * @param {number} schedule[].end - The period's end time in minutes since 00:00 of the day.
    * @param {boolean} today - If this represents today.
    */
-  constructor(date, schedule, today) {
+  constructor(date, schedule) {
     this.date = date;
     this.schedule = schedule;
-    this.today = today;
-    this.state = DayViewer.UNINITIALIZED;
     this.wrapper = createElement('div', {
       classes: 'day'
     });
+    this.today = false;
+    this.hide();
+    this.deinitialize();
   }
 
   initialize() {
     const date = this.date;
     const schedule = this.schedule;
-    const today = this.today;
     const oldWrapper = this.wrapper;
+    const today = this.today;
 
     if (schedule === null) {
-      this.wrapper = createElement('div', {
-        classes: 'day noschool h3',
-        content: [createElement('span', {content: [Formatter.phrase('no-school')]})]
-      });
+      this.wrapper.appendChild(createElement('span', {content: [Formatter.phrase('no-school')]}));
+      this.wrapper.classList.add('noschool', 'h3');
     } else {
-      const periods = schedule.map(p => new Period(p.period, p.start, p.end, today));
+      const periods = schedule.map(p => new Period(p.period, p.start, p.end, today, true));
       const periodWrappers = periods.map(p => p.wrapper);
-      this.wrapper = createElement('div', {
-        classes: 'day',
-        content: periodWrappers
-      });
-
-      let openPeriod = null;
-      this.onarrowpress = down => {
-        if (openPeriod === null) {
-          periods[openPeriod = down ? 0 : periods.length - 1].expand();
-        } else {
-          periods[openPeriod].collapse();
-          if (down) openPeriod++;
-          else openPeriod += this.periods.length - 1;
-          periods[openPeriod %= periods.length].expand();
-        }
-      };
-      this.onclick = (periodWrapper, targetTagName) => {
-        if (periodWrapper) {
-          const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
-          if (openPeriod !== newOpenPeriod) {
-            if (openPeriod !== null) periods[openPeriod].collapse();
-            periods[openPeriod = newOpenPeriod].expand();
-          } else if (targetTagName !== 'TEXTAREA') {
-            periods[openPeriod].collapse();
-            openPeriod = null;
-          }
-        } else if (openPeriod !== null) {
-          periods[openPeriod].collapse();
-          openPeriod = null;
-        }
-      };
-      this.closeOpenPeriods = () => {
-        if (openPeriod === null) return;
-        periods[openPeriod].collapse();
-        openPeriod = null;
-      };
+      this.wrapper.appendChild(createFragment(periodWrappers));
 
       this.onNewName = on('new name', (period, name, height) => {
         this.periods.filter(p => p.period === period).forEach(p => {
@@ -90,50 +54,93 @@ class DayViewer {
         this.periods.filter(p => p.period === period).forEach(p => Period.setColourOf(p.wrapper, colour));
       });
 
+      if (this.time) this.setTime(this.time);
+
       this.periods = periods;
+      this.periodWrappers = periodWrappers;
     }
 
     oldWrapper.parentNode.replaceChild(this.wrapper, oldWrapper);
     if (this.periods) this.periods.forEach(p => p.resizeName());
-    this.state = DayViewer.INITIALIZED;
     this.selected = false;
+
+    this.initialized = true;
   }
 
-  unload() {
-    this.wrapper.remove();
-    onnt('new name', this.onNewName);
-    onnt('new note', this.onNewNote);
-    onnt('new colour', this.onNewColour);
-    this.state = DayViewer.DEAD;
+  deinitialize() {
+    clearChildren(this.wrapper);
+    this.wrapper.classList.remove('noschool', 'h3');
+
+    this.periods = null;
+    this.periodWrappers;
+    this.openPeriod = null;
+
+    this.initialized = false;
   }
 
-  onselected() {
+  handleSelection() {
     this.selected = true;
     this.wrapper.classList.add('selected');
     if (this.periods)
       this.periods.forEach(p => p.name.disabled = false);
   }
 
-  onunselected() {
+  handleDeselection() {
     this.selected = false;
     this.wrapper.classList.remove('selected');
     if (this.periods) {
       this.periods.forEach(p => p.name.disabled = true);
-      this.closeOpenPeriods();
+      this.closeAllOpenPeriods();
     }
   }
+
+  handleArrowPress(down) {
+    const periods = this.periods;
+    if (this.openPeriod === null) {
+      periods[this.openPeriod = down ? 0 : periods.length - 1].expand();
+    } else {
+      periods[this.openPeriod].collapse();
+      if (down) this.openPeriod++;
+      else this.openPeriod += this.periods.length - 1;
+      periods[this.openPeriod %= periods.length].expand();
+    }
+  }
+
+  handleClick(periodWrapper, targetTagName) {
+    const periods = this.periods;
+    const periodWrappers = this.periodWrappers;
+    if (periodWrapper) {
+      const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
+      if (this.openPeriod !== newOpenPeriod) {
+        if (this.openPeriod !== null) periods[this.openPeriod].collapse();
+        periods[this.openPeriod = newOpenPeriod].expand();
+      } else if (targetTagName !== 'TEXTAREA') {
+        periods[this.openPeriod].collapse();
+        this.openPeriod = null;
+      }
+    } else if (this.openPeriod !== null) {
+      periods[this.openPeriod].collapse();
+      this.openPeriod = null;
+    }
+  }
+
+  closeAllOpenPeriods() {
+    if (this.openPeriod === null) return;
+    this.periods[this.openPeriod].collapse();
+    this.openPeriod = null;
+  }
+
+  show() { this.wrapper.style.display = null; this.visible = true; }
+  hide() { this.wrapper.style.display = 'none'; this.visible = false; }
 
   /**
    * Updates the displayed times of each period.
    * @param {number} minutes - Current number of minutes since the begining of the day.
    */
   setTime(minutes) {
-    if (this.periods)
+    this.time = minutes;
+    if (this.today && this.periods)
       this.periods.forEach(p => p.setTime(minutes));
   }
 
 }
-
-DayViewer.UNINITIALIZED = 0;
-DayViewer.INITIALIZED = 1;
-DayViewer.DEAD = 2;

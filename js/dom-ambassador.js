@@ -51,7 +51,7 @@ function createElement(tag, attributes) {
  */
 function createFragment(elems) {
   const fragment = document.createDocumentFragment();
-  elems.forEach(elem => fragment.appendChild(elem));
+  elems.forEach(elem => elem instanceof Element &&fragment.appendChild(elem));
   return fragment;
 }
 
@@ -96,6 +96,10 @@ function getTextSize(text, fontStyle, wrap) {
     width: rect.width,
     height: rect.height
   };
+}
+
+function clearChildren(elem) {
+  while (elem.firstChild) elem.removeChild(elem.firstChild);
 }
 
 const events = {};

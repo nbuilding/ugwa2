@@ -11,50 +11,60 @@ class Period {
    * @param {number} end - Time when the period ends in minutes since 00:00 of the day.
    * @param {boolean} today - If the period is representing a period today.
    */
-  constructor(period, start, end, today) {
-    this.period = period = period.toUpperCase();
+  constructor(period, start, end, today, ready) {
+    // INITIALISE PERIOD DATA
+    this.period = period.toUpperCase();
     this.startTime = start;
     this.endTime = end;
+    this.today = today;
+
     this.wrapper = createElement('div', {
       classes: ['period'],
       data: {
         period: period.length === 1 && period
       },
-      content: [
-        this.name = createElement('textarea', {
-          classes: 'name',
-          disabled: true,
-          attr: {placeholder: 'A class undeserving of a name', spellcheck: false}
-        }),
-        this.timeRange = createElement('span', {content: Formatter.time(start) + '–' + Formatter.time(end)}),
-        today && (this.toStart = createElement('span', {})),
-        today && (this.toEnd = createElement('span', {})),
-        this.duration = createElement('span', {
-          content: Formatter.phrase(
-            'lasts',
-            Formatter.duration(end - start)
-          )
-        }),
-        this.note = createElement('textarea', {
-          classes: 'note',
-          tabindex: -1,
-          attr: {placeholder: 'Class description'}
-        }),
-        createElement('svg', {
-          svg: true,
-          attr: {
-            width: 24,
-            height: 24
-          },
-          content: [createElement('path', {
-            svg: true,
-            attr: {d: expandLessPath}
-          })]
-        })
-      ]
     });
+
+    if (ready) this.handleReady();
+    else this.ready = false;
+  }
+
+  handleReady() {
+    const period = this.period;
+    this.wrapper.appendChild(createFragment([
+      this.name = createElement('textarea', {
+        classes: 'name',
+        disabled: true,
+        attr: {placeholder: 'A class undeserving of a name', spellcheck: false}
+      }),
+      this.timeRange = createElement('span', {content: Formatter.time(this.startTime) + '–' + Formatter.time(this.endTime)}),
+      this.today && (this.toStart = createElement('span', {})),
+      this.today && (this.toEnd = createElement('span', {})),
+      this.duration = createElement('span', {
+        content: Formatter.phrase(
+          'lasts',
+          Formatter.duration(this.endTime - this.startTime)
+        )
+      }),
+      this.note = createElement('textarea', {
+        classes: 'note',
+        tabindex: -1,
+        attr: {placeholder: 'Class description'}
+      }),
+      createElement('svg', {
+        svg: true,
+        attr: {
+          width: 24,
+          height: 24
+        },
+        content: [createElement('path', {
+          svg: true,
+          attr: {d: expandLessPath}
+        })]
+      })
+    ]));
     this.spans = [this.timeRange, this.toStart, this.toEnd, this.duration].filter(a => a);
-    if (!today) {
+    if (!this.today) {
       this.timeRange.classList.add('previewed');
     }
 
@@ -78,6 +88,8 @@ class Period {
     this.name.value = Prefs.getPdName(this.period);
     this.note.value = Prefs.getPdDesc(this.period);
     Period.setColourOf(this.wrapper, Prefs.getPdColour(this.period));
+
+    this.ready = true;
   }
 
   /**

@@ -1,4 +1,6 @@
-const msPerDay = 1000 * 60 * 60 * 24;
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const MS_PER_MIN = 1000 * 60;
+const MIN_PER_DAY = 60 * 24;
 const autoScrollDuration = 500;
 
 Math.easeInOutQuad = prog => {
@@ -11,8 +13,9 @@ Math.easeInOutQuad = prog => {
 class DaysWrapper {
 
   constructor(normalSchedules, altSchedules, firstDay, lastDay) {
-    const dayCount = (lastDay.getTime() - firstDay.getTime()) / msPerDay;
-    const dayCols = [];
+    // CALCULATE WHAT viewers SHOULD EXIST
+    const dayCount = (lastDay.getTime() - firstDay.getTime()) / MS_PER_DAY;
+    const viewers = [];
     let scrollWrapper;
     for (let day = 0; day <= dayCount; day++) {
       const dateObj = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
@@ -23,15 +26,7 @@ class DaysWrapper {
         ? altSchedules[dateID]
         : normalSchedules[dateObj.getDay()];
       const viewer = new DayViewer(dateObj, schedule, day === 184); // TEMP
-      dayCols.push({
-        viewer: viewer,
-        triggered: false,
-        trigger() {
-          if (this.triggered) return;
-          this.viewer.initialize();
-          this.triggered = true;
-        }
-      });
+      viewers.push(viewer);
     }
     document.body.appendChild(scrollWrapper = createElement('div', {
       classes: 'days-wrapper',
@@ -40,11 +35,14 @@ class DaysWrapper {
           classes: 'date-heading',
           content: ['2018-03-03']
         }),
-        ...dayCols.map(d => d.viewer.wrapper)
+        this.scrollSizeEnforcer = createElement('div', {
+          classes: 'scroll-size-enforcer'
+        }),
+        ...viewers.map(v => v.wrapper)
       ]
     }));
 
-    this.dayCols = dayCols;
+    this.viewers = viewers;
     this.scrollWrapper = scrollWrapper;
 
     this.initWindowyThings();
@@ -61,28 +59,31 @@ class DaysWrapper {
         }
       } while ((target = target.parentNode) && target.classList);
       if (dayWrapper) {
-        const pdPos = dayCols.map(d => d.viewer.wrapper).indexOf(dayWrapper);
+        const pdPos = viewers.map(v => v.wrapper).indexOf(dayWrapper);
         if (dayWrapper.classList.contains('selected')) {
-          const onclick = dayCols[pdPos].viewer.onclick;
-          if (onclick) onclick(periodWrapper, e.target.tagName);
+          const viewer = viewers[pdPos];
+          if (viewer.handleClick) viewer.handleClick(periodWrapper, e.target.tagName);
         } else {
           this.selected = pdPos;
           this.scrollTo(pdPos, true);
         }
       } else {
-        dayCols[this._selected].viewer.closeOpenPeriods();
+        viewers[this.selected].closeAllOpenPeriods();
       }
     });
     document.addEventListener('keydown', e => {
       const down = e.keyCode === 40;
       if ((e.keyCode === 38 || down) && document.activeElement.tagName !== 'TEXTAREA') {
-        const onarrowpress = dayCols[this._selected].viewer.onarrowpress;
-        if (onarrowpress) onarrowpress(down);
+        const viewer = viewers[this.selected];
+        if (viewer.handleArrowPress) viewer.handleArrowPress(down);
         e.preventDefault();
       }
     });
 
-    this.selected = 0; // TODO: scroll to today
+    const timeZone = new Date().getTimezoneOffset();
+    this.firstDay = Math.floor(firstDay.getTime() / MS_PER_DAY);
+    this.now = Math.floor(Date.now() / MS_PER_MIN) - timeZone; // TEMP
+    this.newDay();
   }
 
   scrollTo(pdPos, animate = true) {
@@ -157,17 +158,19 @@ class DaysWrapper {
         this.scrollTo(this.selected, false);
     });
 
-    this.updateScrollMeasurements();
     this.scrollWrapper.addEventListener('scroll', e => {
-      this.updateScrollMeasurements();
-      const visibleUntriggeredDaycols = this.dayCols.slice(
-        Math.floor((this.scrollX - this.screenWidth) / this.periodWidth),
-        Math.ceil(this.scrollX / this.periodWidth)
-      ).filter(d => !d.triggered);
-      if (visibleUntriggeredDaycols.length)
-        window.requestAnimationFrame(() => { // async triggering to prevent lag
-          visibleUntriggeredDaycols.forEach(d => d.trigger());
-        });
+      window.requestAnimationFrame(() => {
+        this.updateScrollMeasurements();
+        const visibleViewers = this.viewers.slice(
+          Math.floor((this.scrollX - this.screenWidth) / this.periodWidth),
+          Math.ceil(this.scrollX / this.periodWidth)
+        );
+        this.viewers.filter(v => v.visible).forEach(v => !visibleViewers.includes(v) && v.hide());
+        visibleViewers.forEach(v => v.show());
+        const visibleUntriggeredDaycols = visibleViewers.filter(v => !v.initialized);
+        if (visibleUntriggeredDaycols.length)
+          visibleUntriggeredDaycols.forEach(d => d.initialize());
+      });
     });
 
     this.scrollWrapper.addEventListener('wheel', e => {
@@ -178,7 +181,8 @@ class DaysWrapper {
       const integerScrollDiff = e.deltaY % 1 === 0;
 
       if (mousewheelScroll && integerScrollDiff) {
-        this.scrollTo(this.selected += Math.sign(e.deltaY), true);
+        this.selected += Math.sign(e.deltaY);
+        this.scrollTo(this.selected, true);
         e.preventDefault();
       }
       else if (e.deltaX || mousewheelScroll);
@@ -231,6 +235,10 @@ class DaysWrapper {
   updateWidthMeasurements() {
     this.screenWidth = window.innerWidth;
     this.periodWidth = Math.min(this.screenWidth, 500);
+    this.scrollSizeEnforcer.style.width = this.screenWidth * 2 + this.periodWidth * this.viewers.length + 'px';
+    this.viewers.forEach((viewer, index) => {
+      viewer.wrapper.style.transform = `translateX(${this.screenWidth + this.periodWidth * index}px)`;
+    });
   }
 
   updateScrollMeasurements() {
@@ -239,16 +247,31 @@ class DaysWrapper {
     this.dateHeading.style.top = -this.scrollY + 'px';
   }
 
+  newDay() {
+    this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
+    this.scrollTo(this.selected, false);
+    const viewer = this.viewers[this.selected];
+    viewer.deinitialize();
+    viewer.today = true;
+    viewer.show();
+    window.requestAnimationFrame(() => {
+      viewer.initialize();
+      viewer.handleSelection();
+      viewer.setTime(this.now % MIN_PER_DAY);
+    });
+  }
+
   get selected() {
     return this._selected;
   }
 
   set selected(s) {
-    if (this._selected)
-      this.dayCols[this._selected].viewer.onunselected();
+    if (s < 0 || s >= this.viewers.length || typeof s !== 'number' || isNaN(s)) return;
+    if (this.selected !== undefined)
+      this.viewers[this.selected].handleDeselection();
     this._selected = s;
-    this.dayCols[s].viewer.onselected();
-    const dateObj = this.dayCols[s].viewer.date;
+    this.viewers[s].handleSelection();
+    const dateObj = this.viewers[s].date;
     this.dateHeading.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
   }
 

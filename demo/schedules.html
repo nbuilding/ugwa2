@@ -19,24 +19,27 @@
         height: 100vh;
         overflow: auto;
         white-space: nowrap;
+        position: relative;
+      }
+      .days-wrapper::-webkit-scrollbar {
+        display: none;
       }
       .date-heading {
         position: fixed;
         width: 100%;
         text-align: center;
       }
-      .day:first-of-type {
-        margin-left: 100vw;
-      }
-      .day:last-of-type {
-        margin-right: 100vw;
+      .scroll-size-enforcer {
+        height: 1px;
       }
       .day {
         width: 500px;
+        position: absolute;
+        top: 0;
+        left: 0;
         display: inline-block;
         min-height: 100%;
         box-sizing: border-box;
-        vertical-align: top;
         white-space: normal;
         opacity: 0.6;
         padding-top: 100px;
@@ -49,7 +52,6 @@
         pointer-events: none;
       }
       .day.noschool {
-        position: relative;
         padding-top: 200px;
         text-align: center;
       }
@@ -112,6 +114,7 @@ const altSchedules = (() => { // TEMP
   let alts = localStorage.getItem('[gunn-web-app] lite.alts');
   if (!alts) return {};
   alts = JSON.parse(alts);
+  delete alts.lastGenerated;
   for (let day in alts) {
     if (alts[day])
       alts[day].forEach(p => p.period = identifyPeriod(p.name) || '???');
@@ -128,10 +131,9 @@ const wrapper = new DaysWrapper(normalSchedules, altSchedules, firstDay, lastDay
 //   dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))
 //     .forEach(d => d.iSeeYou());
 // });
-wrapper.dayCols[184].trigger();
-wrapper.dayCols[184].viewer.setTime(700);
-wrapper.selected = 184;
-wrapper.scrollTo(184, false);
+// wrapper.selected = 184;
+// wrapper.scrollTo(184, false);
+// wrapper.viewers[184].setTime(700);
     </script>
   </body>
 </html>
