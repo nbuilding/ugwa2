@@ -244,7 +244,7 @@ class DaysWrapper {
   updateScrollMeasurements() {
     this.scrollX = this.scrollWrapper.scrollLeft;
     this.scrollY = this.scrollWrapper.scrollTop;
-    this.dateHeading.style.top = -this.scrollY + 'px';
+    this.dateHeading.style.transform = `translateY(${-this.scrollY}px)`;
   }
 
   newDay() {

@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  font-size: 0;
+}
+.days-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  white-space: nowrap;
+  position: relative;
+}
+.days-wrapper::-webkit-scrollbar {
+  display: none;
+}
+.date-heading {
+  position: fixed;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+}
+.scroll-size-enforcer {
+  height: 1px;
+}
+.day {
+  width: 500px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  min-height: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  opacity: 0.6;
+  padding-top: 100px;
+  transition: opacity .2s;
+}
+.ios .day {
+  cursor: pointer;
+}
+.day.selected {
+  opacity: 1;
+}
+.day:not(.selected) > * {
+  pointer-events: none;
+}
+.day.noschool {
+  padding-top: 200px;
+  text-align: center;
+}
+.day.noschool::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center 300px;
+  background-image: url('../images/no-school-sheep.png');
+  background-size: 200px;
+  opacity: 0;
+  z-index: -1;
+  transition: all .5s;
+}
+.day.noschool.selected::after {
+  opacity: 1;
+}
+@media (max-width: 500px) {
+  .day {
+    width: 100vw;
+  }
+}
