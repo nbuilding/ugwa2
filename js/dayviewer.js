@@ -139,8 +139,15 @@ class DayViewer {
    */
   setTime(minutes) {
     this.time = minutes;
-    if (this.today && this.periods)
-      this.periods.forEach(p => p.setTime(minutes));
+    if (this.today && this.periods) {
+      const messages = this.periods.map((p, i) => p.setTime(minutes, i === this.periods.length - 1));
+      let periodIndex = messages.findIndex(m => m);
+      if (!~periodIndex) periodIndex = this.periods.length - 1;
+      return {
+        period: this.periods[periodIndex].period,
+        ...messages[periodIndex]
+      };
+    }
   }
 
 }

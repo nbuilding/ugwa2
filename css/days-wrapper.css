@@ -1,3 +1,9 @@
+/*
+ * Z-INDEX ORDER
+ * 5 - heading
+ * 7 - progress bar
+ */
+
 body {
   margin: 0;
   font-size: 0;
@@ -13,11 +19,13 @@ body {
   display: none;
 }
 .heading {
-  position: fixed;
   width: 100%;
+  max-width: 500px;
   text-align: center;
   z-index: 5;
   padding: 16px 0;
+  margin-top: 52px;
+  transition: transform .5s;
 }
 .heading h3, .heading h4 {
   margin: 0;
@@ -25,6 +33,34 @@ body {
 .heading .week-day-heading {
   margin-top: 8px;
   color: var(--secondary-text);
+}
+.progress-bar {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 7;
+  background-color: var(--app-bar);
+  padding: 8px 16px;
+  height: 52px;
+  box-sizing: border-box;
+  align-items: center;
+}
+.progress-bar button {
+  position: absolute;
+  right: 8px;
+}
+.progress-bar > span {
+  font-size: 16px;
+  color: var(--secondary-text);
+}
+.progress-bar > span em {
+  font-style: normal;
+  color: var(--primary-text);
+}
+.progress-bar .period-span {
+  color: var(--primary-text);
 }
 .scroll-size-enforcer {
   height: 1px;
@@ -39,7 +75,7 @@ body {
   box-sizing: border-box;
   white-space: normal;
   opacity: 0.6;
-  padding-top: 122px;
+  padding-top: 174px;
   transition: opacity .2s;
 }
 .ios .day {

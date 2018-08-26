@@ -51,7 +51,7 @@ function createElement(tag, attributes) {
  */
 function createFragment(elems) {
   const fragment = document.createDocumentFragment();
-  elems.forEach(elem => elem instanceof Element &&fragment.appendChild(elem));
+  elems.forEach(elem => elem instanceof Element ? fragment.appendChild(elem) : typeof elem === 'string' && document.createTextNode(elem));
   return fragment;
 }
 

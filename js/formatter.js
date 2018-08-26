@@ -57,6 +57,8 @@ const Formatter = {
         return 'Ended ' + params[0] + ' ago';
       case 'ending':
         return 'Ending in ' + params[0];
+      case 'jump-to-today':
+        return 'Today';
       default:
         return `Unknown phrase "<em>${phraseID}</em>"`;
     }

@@ -31,6 +31,10 @@ class DaysWrapper {
     document.body.appendChild(scrollWrapper = createElement('div', {
       classes: 'days-wrapper',
       content: [
+        this.scrollSizeEnforcer = createElement('div', {
+          classes: 'scroll-size-enforcer'
+        }),
+        ...viewers.map(v => v.wrapper),
         this.heading = createElement('div', {
           classes: 'heading',
           content: [
@@ -40,10 +44,17 @@ class DaysWrapper {
             })
           ]
         }),
-        this.scrollSizeEnforcer = createElement('div', {
-          classes: 'scroll-size-enforcer'
-        }),
-        ...viewers.map(v => v.wrapper)
+        this.progressBar = createElement('div', {
+          classes: 'progress-bar shadow4',
+          content: [
+            this.progress = createElement('span'),
+            this.todayJump = createElement('button', {
+              classes: 'text button',
+              ripple: true,
+              content: [Formatter.phrase('jump-to-today')]
+            })
+          ]
+        })
       ]
     }));
 
@@ -84,10 +95,14 @@ class DaysWrapper {
         e.preventDefault();
       }
     });
+    this.todayJump.addEventListener('click', e => {
+      this.selected = this.today;
+      this.scrollTo(this.selected, true);
+    });
 
-    const timeZone = new Date().getTimezoneOffset();
+    this.timeZone = new Date().getTimezoneOffset();
     this.firstDay = Math.floor(firstDay.getTime() / MS_PER_DAY);
-    this.now = Math.floor(Date.now() / MS_PER_MIN) - timeZone; // TEMP
+    this.updateTime();
     this.newDay();
   }
 
@@ -249,21 +264,47 @@ class DaysWrapper {
   updateScrollMeasurements() {
     this.scrollX = this.scrollWrapper.scrollLeft;
     this.scrollY = this.scrollWrapper.scrollTop;
-    this.heading.style.transform = `translateY(${-this.scrollY}px)`;
+    this.headingDate.style.transform = `translateY(${-this.scrollY}px)`;
+    this.headingDay.style.transform = `translateY(${-this.scrollY}px)`;
   }
 
   newDay() {
-    this.today = this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
-    this.scrollTo(this.selected, false);
-    const viewer = this.viewers[this.selected];
+    this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
+    const todayPos = this.selected;
+    this.scrollTo(todayPos, false);
+    const viewer = this.viewers[todayPos];
     viewer.deinitialize();
     viewer.today = true;
     viewer.show();
     window.requestAnimationFrame(() => {
       viewer.initialize();
       viewer.handleSelection();
-      viewer.setTime(this.now % MIN_PER_DAY);
+      this.today = todayPos;
+      this.updateTime();
     });
+  }
+
+  updateTime() {
+    this.now = Math.floor(Date.now() / MS_PER_MIN) - this.timeZone;
+    if (this.today !== undefined) {
+      clearChildren(this.progress);
+      if (this.viewers[this.today].schedule !== null) {
+        const {period, message, progress} = this.viewers[this.today].setTime(this.now % MIN_PER_DAY);
+        const colour = Prefs.getPdColour(period);
+        this.progress.appendChild(createFragment([
+          createElement('span', {
+            classes: ['period-span', colour === null ? 'clear' : Period.useBlack(colour) ? 'light' : 'dark'],
+            styles: {
+              backgroundColor: colour && `rgb(${colour})`
+            },
+            content: [Prefs.getPdName(period)]
+          }),
+          createElement('span', {content: ' ' + message})
+        ]));
+      } else {
+        this.progress.textContent = Formatter.phrase('no-school');
+      }
+    }
   }
 
   get selected() {
@@ -279,6 +320,7 @@ class DaysWrapper {
     const dateObj = this.viewers[s].date;
     this.headingDate.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
     this.headingDay.textContent = Formatter.weekday(dateObj.getDay());
+    this.heading.style.transform = `translateX(${this.screenWidth + this.periodWidth * this._selected}px)`;
   }
 
 }

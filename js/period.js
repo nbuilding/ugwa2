@@ -96,7 +96,7 @@ class Period {
    * Sets the displayed "time left" thingy of the period.
    * @param {number} minutes - Current number of minutes since the begining of the day.
    */
-  setTime(minutes) {
+  setTime(minutes, lastPeriod) {
     /*
      * examples:
      * before period  -  50, 100 "starting in 50 minutes"
@@ -124,6 +124,17 @@ class Period {
     } else {
       this.toStart.classList.remove('previewed');
       this.toEnd.classList.add('previewed');
+    }
+
+    if (timeToEnd > 0) { // current/next period
+      return {
+        message: (timeToStart > 0 ? this.toStart.innerHTML : this.toEnd.innerHTML).toLowerCase(), // HACK
+        progress: -timeToStart / (this.endTime - this.startTime)
+      };
+    } else if (lastPeriod) {
+      return {
+        message: this.toEnd.innerHTML.toLowerCase()
+      }
     }
   }
 

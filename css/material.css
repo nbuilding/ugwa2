@@ -22,6 +22,7 @@ body.dark {
   background-color: #303030;
 }
 .light {
+  --app-bar: #F5F5F5;
   --dialogs: #FFFFFF;
   --primary-text: rgba(0, 0, 0, 0.87);
   --secondary-text: rgba(0, 0, 0, 0.54);
@@ -42,6 +43,7 @@ body.dark {
   color: var(--primary-text);
 }
 .dark {
+  --app-bar: #212121;
   --dialogs: #424242;
   --primary-text: rgb(255, 255, 255);
   --secondary-text: rgba(255, 255, 255, 0.7);
@@ -158,6 +160,10 @@ a.button {
 .shadow2, .button.contained {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 3px 4px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
   z-index: 2;
+}
+.shadow4 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 4px 5px rgba(0, 0, 0, 0.12), 0 1px 10px rgba(0, 0, 0, 0.2);
+  z-index: 4;
 }
 .shadow8, .button.contained:hover {
   box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 3px rgba(0, 0, 0, 0.12), 0 4px 15px rgba(0, 0, 0, 0.2);
