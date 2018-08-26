@@ -37,7 +37,7 @@ class Period {
         disabled: true,
         attr: {placeholder: 'A class undeserving of a name', spellcheck: false}
       }),
-      this.timeRange = createElement('span', {content: Formatter.time(this.startTime) + '–' + Formatter.time(this.endTime)}),
+      this.timeRange = createElement('span', {content: Formatter.time(this.startTime) + ' &ndash; ' + Formatter.time(this.endTime)}),
       this.today && (this.toStart = createElement('span', {})),
       this.today && (this.toEnd = createElement('span', {})),
       this.duration = createElement('span', {
@@ -109,13 +109,13 @@ class Period {
     let timeToStart = this.startTime - minutes;
     this.toStart.innerHTML = Formatter.phrase(
       timeToStart === 0 ? 'juststarted' : timeToStart < 0 ? 'started' : 'starting',
-      `<em>${Math.abs(timeToStart)}</em>`
+      Formatter.duration(Math.abs(timeToStart))
     );
 
     let timeToEnd = this.endTime - minutes;
     this.toEnd.innerHTML = Formatter.phrase(
       timeToEnd === 0 ? 'justended' : timeToEnd < 0 ? 'ended' : 'ending',
-      `<em>${Math.abs(timeToEnd)}</em>`
+      Formatter.duration(Math.abs(timeToEnd))
     );
 
     if (timeToStart > 0) {
