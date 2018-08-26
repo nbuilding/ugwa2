@@ -31,9 +31,14 @@ class DaysWrapper {
     document.body.appendChild(scrollWrapper = createElement('div', {
       classes: 'days-wrapper',
       content: [
-        this.dateHeading = createElement('h3', {
-          classes: 'date-heading',
-          content: ['2018-03-03']
+        this.heading = createElement('div', {
+          classes: 'heading',
+          content: [
+            this.headingDate = createElement('h3'),
+            this.headingDay = createElement('h4', {
+              classes: 'week-day-heading'
+            })
+          ]
         }),
         this.scrollSizeEnforcer = createElement('div', {
           classes: 'scroll-size-enforcer'
@@ -244,11 +249,11 @@ class DaysWrapper {
   updateScrollMeasurements() {
     this.scrollX = this.scrollWrapper.scrollLeft;
     this.scrollY = this.scrollWrapper.scrollTop;
-    this.dateHeading.style.transform = `translateY(${-this.scrollY}px)`;
+    this.heading.style.transform = `translateY(${-this.scrollY}px)`;
   }
 
   newDay() {
-    this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
+    this.today = this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
     this.scrollTo(this.selected, false);
     const viewer = this.viewers[this.selected];
     viewer.deinitialize();
@@ -272,7 +277,8 @@ class DaysWrapper {
     this._selected = s;
     this.viewers[s].handleSelection();
     const dateObj = this.viewers[s].date;
-    this.dateHeading.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
+    this.headingDate.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
+    this.headingDay.textContent = Formatter.weekday(dateObj.getDay());
   }
 
 }

@@ -12,11 +12,19 @@ body {
 .days-wrapper::-webkit-scrollbar {
   display: none;
 }
-.date-heading {
+.heading {
   position: fixed;
   width: 100%;
   text-align: center;
   z-index: 5;
+  padding: 16px 0;
+}
+.heading h3, .heading h4 {
+  margin: 0;
+}
+.heading .week-day-heading {
+  margin-top: 8px;
+  color: var(--secondary-text);
 }
 .scroll-size-enforcer {
   height: 1px;
@@ -31,7 +39,7 @@ body {
   box-sizing: border-box;
   white-space: normal;
   opacity: 0.6;
-  padding-top: 100px;
+  padding-top: 122px;
   transition: opacity .2s;
 }
 .ios .day {

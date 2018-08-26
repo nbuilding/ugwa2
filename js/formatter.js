@@ -34,10 +34,10 @@ const Formatter = {
   },
   days: ['Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur'],
   weekday(day) {
-    return days[day] + 'day';
+    return this.days[day] + 'day';
   },
   weekdayletter(day) {
-    return day === 4 ? '&theta;' : days[day][0];
+    return day === 4 ? '&theta;' : this.days[day][0];
   },
   phrase(phraseID, ...params) {
     switch (phraseID) {
