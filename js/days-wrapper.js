@@ -47,6 +47,9 @@ class DaysWrapper {
         this.progressBar = createElement('div', {
           classes: 'progress-bar shadow4',
           content: [
+            this.progressLine = createElement('div', {
+              classes: 'progress-line'
+            }),
             this.progress = createElement('span'),
             this.todayJump = createElement('button', {
               classes: 'text button',
@@ -104,6 +107,12 @@ class DaysWrapper {
     this.firstDay = Math.floor(firstDay.getTime() / MS_PER_DAY);
     this.updateTime();
     this.newDay();
+
+    setInterval(() => {
+      this.updateTime();
+      this.newDay();
+    }, 5000);
+    on('new name', on('new colour', () => this.updateTime()));
   }
 
   scrollTo(pdPos, animate = true) {
@@ -188,25 +197,30 @@ class DaysWrapper {
         this.viewers.filter(v => v.visible).forEach(v => !visibleViewers.includes(v) && v.hide());
         visibleViewers.forEach(v => v.show());
         const visibleUntriggeredDaycols = visibleViewers.filter(v => !v.initialized);
-        if (visibleUntriggeredDaycols.length)
+        if (visibleUntriggeredDaycols.length) {
           visibleUntriggeredDaycols.forEach(d => d.initialize());
+          if (visibleUntriggeredDaycols.includes(this.viewers[this.selected]))
+            this.viewers[this.selected].handleSelection();
+        }
       });
     });
 
     this.scrollWrapper.addEventListener('wheel', e => {
-      if (this.autoScrolling)
-        this.stopAutoScrolling();
-
       const mousewheelScroll = e.deltaY && e.shiftKey;
-      const integerScrollDiff = e.deltaY % 1 === 0;
+      const integerScrollDiff = Math.abs(e.deltaY) > 60 && e.deltaY % 10 === 0;
 
       if (mousewheelScroll && integerScrollDiff) {
+        if (this.autoScrolling)
+          this.stopAutoScrolling();
         this.selected += Math.sign(e.deltaY);
         this.scrollTo(this.selected, true);
         e.preventDefault();
       }
-      else if (e.deltaX || mousewheelScroll);
+      else if (e.deltaX || mousewheelScroll) {
+        if (this.autoScrolling)
+          this.stopAutoScrolling();
         this.trackpadScroll();
+      }
     });
 
     document.body.addEventListener('keydown', e => {
@@ -269,23 +283,27 @@ class DaysWrapper {
   }
 
   newDay() {
-    this.selected = Math.floor((this.now / MIN_PER_DAY - this.firstDay));
-    const todayPos = this.selected;
-    this.scrollTo(todayPos, false);
-    const viewer = this.viewers[todayPos];
-    viewer.deinitialize();
-    viewer.today = true;
-    viewer.show();
-    window.requestAnimationFrame(() => {
-      viewer.initialize();
-      viewer.handleSelection();
-      this.today = todayPos;
-      this.updateTime();
-    });
+    const todayPos = Math.floor((this.now / MIN_PER_DAY - this.firstDay))
+      + (+window.location.search.slice(1) || 0); // TEMP
+    if (todayPos !== this.today) {
+      this.selected = todayPos;
+      this.scrollTo(todayPos, false);
+      const viewer = this.viewers[todayPos];
+      viewer.deinitialize();
+      viewer.today = true;
+      viewer.show();
+      window.requestAnimationFrame(() => {
+        viewer.initialize();
+        viewer.handleSelection();
+        this.today = todayPos;
+        this.updateTime();
+      });
+    }
   }
 
   updateTime() {
-    this.now = Math.floor(Date.now() / MS_PER_MIN) - this.timeZone;
+    this.now = Math.floor(Date.now() / MS_PER_MIN) - this.timeZone
+      + (+window.location.hash.slice(1) || 0); // TEMP
     if (this.today !== undefined) {
       clearChildren(this.progress);
       if (this.viewers[this.today].schedule !== null) {
@@ -301,8 +319,19 @@ class DaysWrapper {
           }),
           createElement('span', {content: ' ' + message})
         ]));
+        if (progress) {
+          this.progressLine.style.display = null;
+          this.progressLine.style.setProperty('--progress', progress * 100 + '%');
+          this.progressLine.style.setProperty('--color', colour ? `rgb(${colour})` : 'var(--secondary-text)');
+          document.body.classList.add('progress-line-showing');
+        } else {
+          this.progressLine.style.display = 'none';
+          document.body.classList.remove('progress-line-showing');
+        }
       } else {
         this.progress.textContent = Formatter.phrase('no-school');
+        this.progressLine.style.display = 'none';
+        document.body.classList.remove('progress-line-showing');
       }
     }
   }
@@ -312,9 +341,9 @@ class DaysWrapper {
   }
 
   set selected(s) {
-    if (s < 0 || s >= this.viewers.length || typeof s !== 'number' || isNaN(s)) return;
-    if (this.selected !== undefined)
-      this.viewers[this.selected].handleDeselection();
+    if (s < 0 || s >= this.viewers.length || typeof s !== 'number' || isNaN(s) || this._selected === s) return;
+    if (this._selected !== undefined)
+      this.viewers[this._selected].handleDeselection();
     this._selected = s;
     this.viewers[s].handleSelection();
     const dateObj = this.viewers[s].date;

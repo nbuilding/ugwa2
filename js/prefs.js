@@ -16,7 +16,11 @@ const Prefs = {
   },
 
   getPdName(period) {
-    return this.periodData[period] && this.periodData[period].name || period;
+    if (this.periodData[period]) {
+      return this.periodData[period].name || '';
+    } else {
+      return period;
+    }
   },
 
   getPdDesc(period) {
@@ -25,16 +29,23 @@ const Prefs = {
 
   getPdColour(period) {
     return this.periodData[period] && this.periodData[period].colour || null;
+  },
+
+  createPeriod(period) {
+    this.periodData[period] = {name: period, note: '', colour: null}
   }
 
 };
 
 on('new name', (period, name) => {
-  if (Prefs.periodData[period]) Prefs.periodData[period].name = name;
+  if (!Prefs.periodData[period]) Prefs.createPeriod(period);
+  Prefs.periodData[period].name = name;
 });
 on('new note', (period, note) => {
-  if (Prefs.periodData[period]) Prefs.periodData[period].note = note;
+  if (!Prefs.periodData[period]) Prefs.createPeriod(period);
+  Prefs.periodData[period].note = note;
 });
 on('new colour', (period, colour) => {
-  if (Prefs.periodData[period]) Prefs.periodData[period].colour = colour;
+  if (!Prefs.periodData[period]) Prefs.createPeriod(period);
+  Prefs.periodData[period].colour = colour;
 });

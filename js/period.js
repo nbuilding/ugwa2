@@ -70,6 +70,7 @@ class Period {
 
     this.name.addEventListener('keydown', e => {
       if (e.keyCode === 13) e.preventDefault();
+      if (e.keyCode === 27) this.name.blur();
     });
     this.name.addEventListener('input', e => {
       if (this.name.value.includes('\n'))
