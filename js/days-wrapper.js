@@ -319,7 +319,7 @@ class DaysWrapper {
           }),
           createElement('span', {content: ' ' + message})
         ]));
-        if (progress) {
+        if (progress >= 0) {
           this.progressLine.style.display = null;
           this.progressLine.style.setProperty('--progress', progress * 100 + '%');
           this.progressLine.style.setProperty('--color', colour ? `rgb(${colour})` : 'var(--secondary-text)');
