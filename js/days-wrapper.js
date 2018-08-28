@@ -273,6 +273,7 @@ class DaysWrapper {
     this.viewers.forEach((viewer, index) => {
       viewer.wrapper.style.transform = `translateX(${this.screenWidth + this.periodWidth * index}px)`;
     });
+    this.heading.style.transform = `translateX(${this.screenWidth + this.periodWidth * this.selected}px)`;
   }
 
   updateScrollMeasurements() {
