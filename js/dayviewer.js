@@ -143,10 +143,8 @@ class DayViewer {
       const messages = this.periods.map((p, i) => p.setTime(minutes, i === this.periods.length - 1));
       let periodIndex = messages.findIndex(m => m);
       if (!~periodIndex) periodIndex = this.periods.length - 1;
-      return {
-        period: this.periods[periodIndex].period,
-        ...messages[periodIndex]
-      };
+      messages[periodIndex].period = this.periods[periodIndex].period;
+      return messages[periodIndex];
     }
   }
 
