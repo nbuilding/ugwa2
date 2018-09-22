@@ -8,8 +8,8 @@ body {
   font-family: 'Roboto', sans-serif;
   font-size: 0;
   line-height: 1;
-  --primary: #f44336;
-  --switch-on-track: rgba(244, 67, 54, 0.5);
+  --primary: rgb(255, 89, 89);
+  --switch-on-track: rgba(255, 89, 89, 0.5);
   --go-in: cubic-bezier(0.0, 0.0, 0.2, 1);
   --go-out: cubic-bezier(0.4, 0.0, 1, 1);
   --go-places: cubic-bezier(0.4, 0.0, 0.2, 1);
@@ -28,15 +28,15 @@ body {
   --inactive-icon: rgba(0, 0, 0, 0.38);
   --off-select-hover: rgba(0, 0, 0, 0.04);
   --off-select-focus: rgba(0, 0, 0, 0.12);
-  --on-select-hover: rgba(244, 67, 54, 0.08);
-  --on-select-focus: rgba(244, 67, 54, 0.12);
+  --on-select-hover: rgba(255, 89, 89, 0.08);
+  --on-select-focus: rgba(255, 89, 89, 0.12);
   --switch-off-track: rgba(0, 0, 0, 0.38);
   --switch-off-thumb: #FAFAFA;
   --ripple: rgba(0, 0, 0, 0.16);
   --input-back: rgba(0, 0, 0, 0.06);
   --input-hover: rgba(0, 0, 0, 0.15);
   --hover: rgba(0, 0, 0, 0.04);
-  --primary-ripple: rgba(244, 67, 54, 0.12);
+  --primary-ripple: rgba(255, 89, 89, 0.12);
   color: var(--primary-text);
 }
 .dark {
@@ -51,15 +51,15 @@ body {
   --inactive-icon: rgba(255, 255, 255, 0.5);
   --off-select-hover: rgba(255, 255, 255, 0.08);
   --off-select-focus: rgba(255, 255, 255, 0.24);
-  --on-select-hover: rgba(244, 67, 54, 0.16);
-  --on-select-focus: rgba(244, 67, 54, 0.24);
+  --on-select-hover: rgba(255, 89, 89, 0.16);
+  --on-select-focus: rgba(255, 89, 89, 0.24);
   --switch-off-track: rgba(255, 255, 255, 0.3);
   --switch-off-thumb: #BDBDBD;
   --ripple: rgba(255, 255, 255, 0.32);
   --input-back: rgba(255, 255, 255, 0.1);
   --input-hover: rgba(255, 255, 255, 0.2);
   --hover: rgba(255, 255, 255, 0.08);
-  --primary-ripple: rgba(244, 67, 54, 0.24);
+  --primary-ripple: rgba(255, 89, 89, 0.24);
   color: var(--primary-text);
 }
 .sharp {
