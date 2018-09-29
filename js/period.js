@@ -129,11 +129,13 @@ class Period {
 
     if (timeToEnd > 0) { // current/next period
       return {
+        minutes: timeToStart > 0 ? timeToStart : timeToEnd,
         message: (timeToStart > 0 ? this.toStart.innerHTML : this.toEnd.innerHTML).toLowerCase(), // HACK
         progress: -timeToStart / (this.endTime - this.startTime)
       };
     } else if (lastPeriod) {
       return {
+        minutes: timeToEnd,
         message: this.toEnd.innerHTML.toLowerCase()
       }
     }
