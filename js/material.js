@@ -18,7 +18,7 @@ class RadioGroup {
               ripple: true,
               roundRipple: true,
               content: [
-                createElement('span', {classes: 'icon'})
+                createElement('span', {classes: 'radio-icon'})
               ]
             }),
             createElement('label', {content: c})

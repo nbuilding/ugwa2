@@ -59,6 +59,15 @@ const Formatter = {
         return 'Ending in ' + params[0];
       case 'jump-to-today':
         return 'Today';
+      case 'appearance': return 'Appearance';
+      case 'periods': return 'Periods';
+      case 'locales': return 'Locales';
+      case 'barcodes': return 'Barcodes';
+      case 'staff': return 'Staff';
+      case 'clubs': return 'Clubs';
+      case 'last-psa': return 'Last PSA';
+      case 'about': return 'About';
+      case 'credits': return 'Credits';
       default:
         return `Unknown phrase "<em>${phraseID}</em>"`;
     }

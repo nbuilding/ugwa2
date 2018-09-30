@@ -10,10 +10,12 @@ body {
   line-height: 1;
   --primary: rgb(255, 89, 89);
   --switch-on-track: rgba(255, 89, 89, 0.5);
+  --primary-selected: rgba(255, 89, 89, 0.16);
   --go-in: cubic-bezier(0.0, 0.0, 0.2, 1);
   --go-out: cubic-bezier(0.4, 0.0, 1, 1);
   --go-places: cubic-bezier(0.4, 0.0, 0.2, 1);
   --border-radius: 4px;
+  --icon-theme: url('../images/icons-theme.svg');
   background-color: var(--background);
 }
 .light {
@@ -37,6 +39,8 @@ body {
   --input-hover: rgba(0, 0, 0, 0.15);
   --hover: rgba(0, 0, 0, 0.04);
   --primary-ripple: rgba(255, 89, 89, 0.12);
+  --icon-url: url('../images/icons-black.svg');
+  --line: rgba(0, 0, 0, 0.12);
   color: var(--primary-text);
 }
 .dark {
@@ -60,6 +64,8 @@ body {
   --input-hover: rgba(255, 255, 255, 0.2);
   --hover: rgba(255, 255, 255, 0.08);
   --primary-ripple: rgba(255, 89, 89, 0.24);
+  --icon-url: url('../images/icons-white.svg');
+  --line: rgba(255, 255, 255, 0.24);
   color: var(--primary-text);
 }
 .sharp {
@@ -110,6 +116,53 @@ h6, .h6 {
   font-size: 0.875rem;
   letter-spacing: 0.025rem;
 }
+
+.icon {
+  background-image: var(--icon-url);
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  background-origin: content-box;
+  background-position: 0 calc(-24px * var(--icon-pos));
+}
+.icon.active {
+  background-image: var(--icon-theme);
+}
+button.icon {
+  background-color: transparent;
+  border: none;
+  height: 24px;
+  width: 24px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background-size: 24px;
+  padding: 12px;
+  cursor: pointer;
+}
+button.icon:focus {
+  outline: none; /* TEMP */
+}
+span.icon {
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  box-sizing: border-box;
+  background-size: 24px;
+}
+.icon.ugwa { --icon-pos: 0; }
+.icon.appearance { --icon-pos: 1; }
+.icon.periods { --icon-pos: 2; }
+.icon.locales { --icon-pos: 3; }
+.icon.barcodes { --icon-pos: 4; }
+.icon.staff { --icon-pos: 5; }
+.icon.clubs { --icon-pos: 6; }
+.icon.last-psa { --icon-pos: 7; }
+.icon.about { --icon-pos: 8; }
+.icon.credits { --icon-pos: 9; }
+.icon.alternate { --icon-pos: 10; }
+.icon.transparent { --icon-pos: 11; }
+.icon.menu { --icon-pos: 12; }
+.icon.close { --icon-pos: 13; }
+
 button.button {
   display: inline-block;
   -webkit-appearance: none;
@@ -200,7 +253,7 @@ material-ripple {
   background-color: var(--primary);
   opacity: 0.3;
 }
-.radio .icon {
+.radio .radio-icon {
   display: inline-block;
   border-radius: 50%;
   height: 20px;
@@ -210,7 +263,7 @@ material-ripple {
   position: relative;
   transition: border-color .1s var(--go-places);
 }
-.radio .icon::after {
+.radio .radio-icon::after {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -224,14 +277,14 @@ material-ripple {
   transform-origin: center;
   transform: scale(0);
 }
-.radio .icon::after {
+.radio .radio-icon::after {
   background-color: var(--primary);
   transition: transform .1s var(--go-out);
 }
-.radio.checked .icon {
+.radio.checked .radio-icon {
   border-color: var(--primary);
 }
-.radio.checked .icon::after {
+.radio.checked .radio-icon::after {
   transform: scale(1);
   transition: transform .1s var(--go-in);
 }
@@ -437,7 +490,7 @@ material-ripple {
   fill: var(--active-icon);
 }
 
-.menu {
+ul.menu {
   position: fixed;
   display: inline-block;
   margin: 0;
@@ -453,17 +506,17 @@ material-ripple {
   opacity: 0;
   transition: opacity 75ms var(--go-out), transform 0s 75ms;
 }
-.menu:focus {
+ul.menu:focus {
   outline: none;
 }
-.menu.open {
+ul.menu.open {
   pointer-events: all;
   opacity: 1;
   transform: scale(1);
   transition: transform 150ms var(--go-in);
 }
 /* QUESTION: Wrap items? or not? */
-.menu li {
+ul.menu li {
   overflow: hidden;
   position: relative;
   white-space: nowrap;
@@ -473,25 +526,25 @@ material-ripple {
   /* font-size: 14px; */
   cursor: pointer;
 }
-.menu li.selected {
+ul.menu li.selected {
   background-color: var(--off-select-focus);
 }
-.menu.mouse li {
+ul.menu.mouse li {
   height: 32px;
   line-height: 32px;
 }
-.textfield .menu {
+.textfield ul.menu {
   transform: scale(0.8);
   transition: opacity 75ms var(--go-out), transform 75ms;
 }
-.textfield .menu.open {
+.textfield ul.menu.open {
   transform: scale(1);
   transition: opacity 150ms var(--go-in);
 }
-.textfield .menu li {
+.textfield ul.menu li {
   padding-left: 12px;
   padding-right: 68px;
 }
-.textfield .menu li:hover {
+.textfield ul.menu li:hover {
   background-color: var(--hover);
 }
