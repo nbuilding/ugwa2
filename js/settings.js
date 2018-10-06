@@ -74,8 +74,37 @@ function initialize() {
       themeRadios.choice = 1; // temp
       roundnessRadios.choice = 1;
     },
-    periods: section => 'Periods',
-    locales: section => 'Locales',
+    periods: section => {
+      const showBreaks = new Switch('show brunch and lunch'),
+            showSELF = new Switch('show SELF'),
+            show0 = new Switch('show zero period'),
+            showH = new Switch('show period H'),
+            showStaff = new Switch('show staff periods');
+      showBreaks.checked = true;
+      showSELF.checked = true;
+      section.appendChild(createFragment([showBreaks.wrapper, showSELF.wrapper, show0.wrapper, showH.wrapper, showStaff.wrapper]))
+    },
+    locales: section => {
+      const language = new Dropdown('Language', ['English (traditional)', 'English (simplified)', '█████'], 0),
+            time = new RadioGroup('Time format', ['10:54pm', '10:54PM', '10:54 pm', '10:54 PM', '22:54', '???']),
+            duration = new RadioGroup('Duration format', ['4 hours, 20 minutes', '4 hours and 20 minutes', '260 minutes', '4:20 hours', '-260 comment karma']),
+            date = new RadioGroup('Date format', ['03-14', '3/14', 'Mar. 14', 'Mar 14', 'March 14', 'March 14th', '14/3', '14 Mar.', '14 Mar', '14 March', '14th of March', '3 + 14 = 5']),
+            weekdays = new RadioGroup('Format of the days of the week', ['SMTWΘFS', 'SMTWTFS', 'Su M Tu W Th F Sa', 'Sun Mon Tue Wed Thu Fri Sat', 'Sun. Mon. Tue. Wed. Thu. Fri. Sat', 'Sun Mon Tues Wed Thurs Fri Sat', 'Sun. Mon. Tues. Wed. Thurs. Fri. Sat', 'Sun. Mon. Tues. Wed. Thurs. Fri. Sat', 'SOOHAAM']),
+            weekstart = new RadioGroup('The week starts on', ['Sunday', 'Monday', 'Thursday']);
+      time.choice = 0;
+      duration.choice = 1;
+      date.choice = 4;
+      weekdays.choice = 1;
+      weekstart.choice = 0;
+      section.appendChild(createFragment([
+        language.wrapper,
+        time.wrapper,
+        duration.wrapper,
+        date.wrapper,
+        weekdays.wrapper,
+        weekstart.wrapper
+      ]));
+    },
     barcodes: section => 'Barcodes',
     staff: section => 'Staff',
     clubs: section => 'Clubs',

@@ -61,6 +61,25 @@ body {
   margin-top: 0;
 }
 
+.period-customizer {
+  margin: 32px 0;
+}
+.period-customizer .textfield.multi-line {
+  margin-top: 16px;
+  max-width: 352px;
+}
+.temp-colour-input { /* TEMP */
+  display: inline-block;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--border-radius);
+  margin-right: 16px;
+  cursor: pointer;
+}
+.temp-colour-input material-ripple {
+  background-color: rgba(0, 0, 0, 0.48);
+}
+
 #menu {
   display: none;
 }
@@ -93,6 +112,7 @@ body {
     background-color: var(--dialogs);
     transform: translateX(-256px);
     transition: all .2s;
+    overflow-y: auto;
   }
 
   .dimmer.open {
