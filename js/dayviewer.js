@@ -102,6 +102,7 @@ class DayViewer {
 
   handleArrowPress(down) {
     const periods = this.periods;
+    if (!periods) return;
     if (this.openPeriod === null) {
       periods[this.openPeriod = down ? 0 : periods.length - 1].expand();
     } else {
@@ -114,6 +115,7 @@ class DayViewer {
 
   handleClick(periodWrapper, targetTagName) {
     const periods = this.periods;
+    if (!periods) return;
     const periodWrappers = this.periodWrappers;
     if (periodWrapper) {
       const newOpenPeriod = periodWrappers.indexOf(periodWrapper);
@@ -131,6 +133,7 @@ class DayViewer {
   }
 
   closeAllOpenPeriods() {
+    if (!this.periods) return;
     if (this.openPeriod === null) return;
     this.periods[this.openPeriod].collapse();
     this.openPeriod = null;
