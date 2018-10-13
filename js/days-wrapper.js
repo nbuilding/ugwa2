@@ -1,7 +1,7 @@
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
-const autoScrollDuration = 500;
+const autoScrollDuration = 300;
 
 Math.easeInOutQuad = prog => {
   prog *= 2;
@@ -142,8 +142,8 @@ class DaysWrapper {
 
   momentumScrolling(vel) {
     const scroll = () => {
-      vel *= 0.9;
-      if (Math.abs(vel) < 0.2) {
+      vel *= 0.85;
+      if (Math.abs(vel) < 0.5) {
         this.autoScrolling = false;
         this.snapToADay();
         return;
