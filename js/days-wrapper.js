@@ -57,6 +57,15 @@ class DaysWrapper {
               content: [Formatter.phrase('jump-to-today')]
             })
           ]
+        }),
+        this.settingsBtn = createElement('button', {
+          classes: 'fab contained icon',
+          content: [
+            createElement('span', {
+              classes: 'icon ugwa'
+            })
+          ],
+          ripple: true
         })
       ]
     }));
@@ -202,6 +211,7 @@ class DaysWrapper {
           if (visibleUntriggeredDaycols.includes(this.viewers[this.selected]))
             this.viewers[this.selected].handleSelection();
         }
+        if (this.scrollY < 500) this.scrollWrapper.scrollTop = 500; // TEMP
       });
     });
 
@@ -264,6 +274,10 @@ class DaysWrapper {
         touchSpeeds[t.identifier] = null;
       });
     });
+
+    window.requestAnimationFrame(() => {
+      this.scrollWrapper.scrollTop = 500;
+    });
   }
 
   updateWidthMeasurements() {
@@ -279,8 +293,8 @@ class DaysWrapper {
   updateScrollMeasurements() {
     this.scrollX = this.scrollWrapper.scrollLeft;
     this.scrollY = this.scrollWrapper.scrollTop;
-    this.headingDate.style.transform = `translateY(${-this.scrollY}px)`;
-    this.headingDay.style.transform = `translateY(${-this.scrollY}px)`;
+    // this.headingDate.style.transform = `translateY(${-this.scrollY}px)`;
+    // this.headingDay.style.transform = `translateY(${-this.scrollY}px)`;
   }
 
   newDay() {

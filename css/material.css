@@ -191,11 +191,21 @@ a.button {
 .button:focus {
   outline: none; /* TEMP */
 }
-.button.contained {
+button.contained {
   color: white;
   background-color: var(--primary);
 }
-.button.contained material-ripple {
+button.contained.icon {
+  background-clip: padding-box;
+  background-image: none;
+}
+button.contained.icon.fab {
+  padding: 16px;
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+}
+button.contained material-ripple {
   background-color: rgba(255, 255, 255, 0.32);
 }
 .button.text {
@@ -209,7 +219,7 @@ a.button {
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.14), 0 2px 2px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
-.shadow2, .button.contained {
+.shadow2, .contained {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 3px 4px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
@@ -217,9 +227,17 @@ a.button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 4px 5px rgba(0, 0, 0, 0.12), 0 1px 10px rgba(0, 0, 0, 0.2);
   z-index: 4;
 }
-.shadow8, .button.contained:hover {
+.shadow6, .contained.fab {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.14), 0 1px 18px rgba(0, 0, 0, 0.12), 0 3px 5px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+.shadow8, .contained:hover {
   box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 3px rgba(0, 0, 0, 0.12), 0 4px 15px rgba(0, 0, 0, 0.2);
   z-index: 8;
+}
+.shadow12, .contained.fab:hover {
+  box-shadow: 0 12px 17px 2px rgba(0, 0, 0, 0.14), 0 5px 22px 4px rgba(0, 0, 0, 0.12), 0 7px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 }
 
 material-ripple {
