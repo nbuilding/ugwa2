@@ -95,7 +95,7 @@ class DaysWrapper {
           if (viewer.handleClick) viewer.handleClick(periodWrapper, e.target.tagName);
         } else {
           this.selected = pdPos;
-          this.snapToDay(pdPos);
+          this.animateToDay(pdPos);
         }
       } else {
         viewers[this.selected].closeAllOpenPeriods();
@@ -111,7 +111,7 @@ class DaysWrapper {
     });
     this.todayJump.addEventListener('click', e => {
       this.selected = this.today;
-      this.snapToDay(this.selected);
+      this.animateToDay(this.selected);
     });
 
     this.timeZone = new Date().getTimezoneOffset();
@@ -169,7 +169,7 @@ class DaysWrapper {
     scroll();
   }
 
-  snapToDay(pdPos) {
+  animateToDay(pdPos) {
     this.selected = pdPos;
     this.scrollingMode = 'snap';
     this.scrollData.pdPos = pdPos;
@@ -180,18 +180,29 @@ class DaysWrapper {
 
   scrollFrame() {
     if (this.scrollingMode !== 'manual') {
-      if (Math.abs(this.scrollData.velX) < 0.5) {
-        this.scrollData.velX = 0;
-        this.snapToDay(Math.round(this.toPdPos(this.scrollX)));
-      } else if (this.scrollData.velX !== 0) {
-        this.scrollData.velX *= 0.9;
-        this.setScrollX = this.scrollX + this.scrollData.velX;
+      if (this.scrollData.velX !== 0 || this.scrollingMode === 'manualend') {
+        if (Math.abs(this.scrollData.velX) < 0.5) {
+          this.scrollData.velX = 0;
+          this.animateToDay(Math.max(Math.min(Math.round(this.toPdPos(this.scrollX)), this.viewers.length - 1), 0));
+        } else {
+          this.scrollData.velX *= 0.9;
+          this.setScrollX = this.scrollX + this.scrollData.velX;
+        }
       }
 
-      if (Math.abs(this.scrollData.velY) < 0.5) this.scrollVelY = 0;
-      else if (this.scrollData.velY !== 0) {
-        this.scrollData.velY *= 0.9;
-        this.setScrollY = this.scrollY + this.scrollData.velY;
+      if (this.scrollData.velY !== 0 || this.scrollingMode === 'manualend') {
+        if (Math.abs(this.scrollData.velY) < 0.5) this.scrollVelY = 0;
+        else {
+          this.scrollData.velY *= 0.9;
+          this.setScrollY = this.scrollY + this.scrollData.velY;
+        }
+      }
+
+      if (this.scrollData.smoothY !== null) {
+        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5)
+          this.scrollData.smoothY = null;
+        else
+          this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 3 + this.scrollY;
       }
 
       if (this.scrollingMode === 'snap') {
@@ -202,37 +213,40 @@ class DaysWrapper {
         } else {
           this.scrollToDay(Math.easeInOutQuad(elapsedTime / AUTO_SCROLL_DURATION) * this.scrollData.pdPosChange + this.scrollData.startPdPos);
         }
+      } else if (this.scrollingMode === 'manualend') {
+        this.scrollingMode = 'rest';
       }
     }
     window.requestAnimationFrame(() => this.scrollFrame());
   }
 
   snapToADay() { // REMOVE
-    this.snapToDay(Math.round(this.toPdPos(this.scrollX)));
+    this.animateToDay(Math.round(this.toPdPos(this.scrollX)));
   }
 
   toPdPos(scrollX) {
     return (scrollX - this.screenWidth / 2) / this.periodWidth - 0.5;
   }
 
-  stopAutoScrolling() {
+  stopAutoScrolling() { // REMOVE
     if (!this.autoScrolling) return;
     window.cancelAnimationFrame(this.autoScrolling);
     this.autoScrolling = false;
   }
 
-  trackpadScroll() {
+  trackpadScroll() { // REMOVE
     if (this.trackpadScrollTimeout !== null)
       clearInterval(this.trackpadScrollTimeout);
     this.trackpadScrollTimeout = setTimeout(() => {
-      this.snapToADay();
+      this.trackpadScrollTimeout = null;
+      this.scrollingMode = 'manualend';
     }, 500);
   }
 
   initWindowyThings() {
     this.scrollingMode = 'rest'; // manual, momentum, snap, rest
     this.scrollData = {
-      velX: 0, velY: 0
+      velX: 0, velY: 0, smoothY: null
     };
 
     this.updateWidthMeasurements();
@@ -252,8 +266,8 @@ class DaysWrapper {
     this.onscroll = () => {
       this.scroller.style.transform = `translate(${-this.scrollX}px, ${-this.scrollY}px)`;
       const visibleViewers = this.viewers.slice(
-        Math.floor((this.scrollX - this.screenWidth) / this.periodWidth),
-        Math.ceil(this.scrollX / this.periodWidth)
+        Math.max(Math.floor((this.scrollX - this.screenWidth) / this.periodWidth), 0),
+        Math.min(Math.ceil(this.scrollX / this.periodWidth), this.viewers.length)
       );
       this.viewers.filter(v => v.visible).forEach(v => !visibleViewers.includes(v) && v.hide());
       visibleViewers.forEach(v => v.show());
@@ -271,23 +285,22 @@ class DaysWrapper {
       const integerScrollDiff = Math.abs(e.deltaY) > 60 && e.deltaY % 10 === 0;
 
       if (mousewheelScroll && integerScrollDiff) {
-        if (this.autoScrolling)
-          this.stopAutoScrolling();
         this.selected += Math.sign(e.deltaY);
-        this.scrollTo(this.selected, true);
-        e.preventDefault();
+        this.animateToDay(this.selected);
+      } else if (integerScrollDiff && !mousewheelScroll) {
+        this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+      } else {
+        this.scrollData.velX = e.deltaX / 1.5;
+        this.scrollData.velY = e.deltaY / 1.5;
+        this.scrollingMode = 'manualend';
       }
-      else if (e.deltaX || mousewheelScroll) {
-        if (this.autoScrolling)
-          this.stopAutoScrolling();
-        this.trackpadScroll();
-      }
+      e.preventDefault();
     });
 
     document.body.addEventListener('keydown', e => {
       if (document.activeElement.tagName === 'TEXTAREA') return;
-      if (e.keyCode === 37) this.snapToDay(--this.selected);
-      else if (e.keyCode === 39) this.snapToDay(++this.selected);
+      if (e.keyCode === 37) this.animateToDay(Math.max(--this.selected, 0));
+      else if (e.keyCode === 39) this.animateToDay(Math.min(++this.selected, this.viewers.length - 1));
     });
 
     const fingerData = [];
@@ -326,7 +339,7 @@ class DaysWrapper {
     }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
       if (!this.autoScrolling) {
-        this.scrollingMode = 'rest';
+        this.scrollingMode = 'manualend';
         this.scrollData.velX = -fingerData[e.changedTouches[0].identifier].xDiff
           / fingerData[e.changedTouches[0].identifier].timeDiff * 17
           || 0;
