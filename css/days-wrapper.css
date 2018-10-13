@@ -11,12 +11,17 @@ body {
 .days-wrapper {
   width: 100vw;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   white-space: nowrap;
-  position: relative;
+  position: absolute;
 }
 .days-wrapper::-webkit-scrollbar {
   display: none;
+}
+.scrolling-container {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .heading {
   width: 100%;
@@ -36,7 +41,7 @@ body {
 }
 .progress-bar {
   display: flex;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -84,9 +89,6 @@ body {
 }
 .progress-line-showing .progress-line {
   height: 5px;
-}
-.scroll-size-enforcer {
-  height: 1px;
 }
 .day {
   width: 500px;
@@ -137,4 +139,7 @@ body {
   .day {
     width: 100vw;
   }
+}
+button.contained.icon.fab {
+  position: absolute;
 }
