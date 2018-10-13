@@ -126,47 +126,8 @@ class DaysWrapper {
     on('new name', on('new colour', () => this.updateTime()));
   }
 
-  scrollTo(pdPos, animate = true) { // REMOVE
-    if (!animate) {
-      this.setScrollX = this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
-      return;
-    }
-    this.stopAutoScrolling();
-    this.autoScrolling = window.requestAnimationFrame(() => {
-      this.selected = pdPos;
-      const startPdPos = this.toPdPos(this.scrollX);
-      const pdPosChange = pdPos - startPdPos;
-      const startTime = Date.now();
-      const scroll = () => {
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime >= AUTO_SCROLL_DURATION) {
-          this.scrollTo(pdPos, false);
-          this.autoScrolling = false;
-          return;
-        }
-        this.scrollTo(Math.easeInOutQuad(elapsedTime / AUTO_SCROLL_DURATION) * pdPosChange + startPdPos, false);
-        this.autoScrolling = window.requestAnimationFrame(scroll);
-      };
-      scroll();
-    });
-  }
-
   scrollToDay(pdPos) {
     this.setScrollX = this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
-  }
-
-  momentumScrolling(vel) { // REMOVE
-    const scroll = () => {
-      vel *= 0.85;
-      if (Math.abs(vel) < 0.5) {
-        this.autoScrolling = false;
-        // this.snapToADay();
-        return;
-      }
-      this.setScrollX = this.scrollX + vel;
-      this.autoScrolling = window.requestAnimationFrame(scroll);
-    };
-    scroll();
   }
 
   animateToDay(pdPos) {
@@ -220,27 +181,8 @@ class DaysWrapper {
     window.requestAnimationFrame(() => this.scrollFrame());
   }
 
-  snapToADay() { // REMOVE
-    this.animateToDay(Math.round(this.toPdPos(this.scrollX)));
-  }
-
   toPdPos(scrollX) {
     return (scrollX - this.screenWidth / 2) / this.periodWidth - 0.5;
-  }
-
-  stopAutoScrolling() { // REMOVE
-    if (!this.autoScrolling) return;
-    window.cancelAnimationFrame(this.autoScrolling);
-    this.autoScrolling = false;
-  }
-
-  trackpadScroll() { // REMOVE
-    if (this.trackpadScrollTimeout !== null)
-      clearInterval(this.trackpadScrollTimeout);
-    this.trackpadScrollTimeout = setTimeout(() => {
-      this.trackpadScrollTimeout = null;
-      this.scrollingMode = 'manualend';
-    }, 500);
   }
 
   initWindowyThings() {
