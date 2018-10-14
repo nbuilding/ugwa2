@@ -170,7 +170,6 @@ class DaysWrapper {
           this.scrollData.showingDateSel = this.scrollData.showingDateSel && this.scrollY === 0
             ? false : !this.scrollData.showingDateSel && this.scrollY === -DATE_SELECTOR_HEIGHT
             ? true : this.scrollData.showingDateSel;
-          console.log(this.scrollData.showingDateSel);
         }
         else
           this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 5 + this.scrollY;
@@ -185,6 +184,11 @@ class DaysWrapper {
           && Date.now() - this.scrollData.lastTrackpadScroll > 100) {
         if (this.scrollY < 0 && this.scrollY !== -DATE_SELECTOR_HEIGHT) {
           this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -DATE_SELECTOR_HEIGHT;
+        } else if (this.scrollY >= 0 && this.scrollData.showingDateSel) {
+          this.scrollData.showingDateSel = false;
+        }
+        if (this.scrollY > 0 && this.scrollY < 100) {
+          this.scrollData.smoothY = 0;
         }
       }
     }
