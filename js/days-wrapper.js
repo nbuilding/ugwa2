@@ -304,7 +304,8 @@ class DaysWrapper {
           oldY: t.clientY,
           yDiff: 0,
           oldTime: now,
-          timeDiff: 0
+          timeDiff: 0,
+          scrolling: false
         };
       });
     });
@@ -318,22 +319,24 @@ class DaysWrapper {
         finger.oldY = t.clientY;
         finger.timeDiff = now - finger.oldTime;
         finger.oldTime = now;
-        this.setScrollX = finger.originalScrollX - t.clientX + finger.originalX;
-        this.setScrollY = finger.originalScrollY - t.clientY + finger.originalY;
+        if (!finger.scrolling && (Math.abs(finger.originalX - t.clientX) > 5
+            || Math.abs(finger.originalY - t.clientY) > 5))
+          finger.scrolling = true;
+        if (finger.scrolling) {
+          this.setScrollX = finger.originalScrollX - t.clientX + finger.originalX;
+          this.setScrollY = finger.originalScrollY - t.clientY + finger.originalY;
+        }
       });
       e.preventDefault();
     }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
-      if (!this.autoScrolling) {
+      const finger = fingerData[e.changedTouches[0].identifier];
+      if (finger.scrolling) {
         this.scrollData.resnap = true;
-        this.scrollData.velX = -fingerData[e.changedTouches[0].identifier].xDiff
-          / fingerData[e.changedTouches[0].identifier].timeDiff * 17
-          || 0;
-        this.scrollData.velY = -fingerData[e.changedTouches[0].identifier].yDiff
-          / fingerData[e.changedTouches[0].identifier].timeDiff * 17
-          || 0;
-        this.scrollingMode = 'auto';
+        this.scrollData.velX = -finger.xDiff / finger.timeDiff * 17 || 0;
+        this.scrollData.velY = -finger.yDiff / finger.timeDiff * 17 || 0;
       }
+      this.scrollingMode = 'auto';
       Array.from(e.changedTouches).forEach(t => {
         fingerData[t.identifier] = null;
       });
