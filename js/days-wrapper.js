@@ -2,7 +2,7 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
 const AUTO_SCROLL_DURATION = 300;
-const DATE_SELECTOR_HEIGHT = 500;
+const DATE_SELECTOR_HEIGHT = 300;
 
 class DaysWrapper {
 
@@ -155,7 +155,7 @@ class DaysWrapper {
       }
 
       if (this.scrollData.smoothX !== null) {
-        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 0.5) {
+        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 2) {
           this.scrollX = this.scrollData.smoothX;
           this.scrollData.smoothX = null;
         }
@@ -164,7 +164,7 @@ class DaysWrapper {
       }
 
       if (this.scrollData.smoothY !== null) {
-        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
+        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 2) {
           this.scrollY = this.scrollData.smoothY;
           this.scrollData.smoothY = null;
           this.scrollData.showingDateSel = this.scrollData.showingDateSel && this.scrollY === 0
@@ -182,7 +182,7 @@ class DaysWrapper {
       if (this.scrollData.velX === 0 && this.scrollData.velY === 0
           && this.scrollData.smoothX === null && this.scrollData.smoothY === null) {
         if (this.scrollY < 0 && this.scrollY !== -DATE_SELECTOR_HEIGHT) {
-          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -DATE_SELECTOR_HEIGHT;
+          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -150 ? 0 : -DATE_SELECTOR_HEIGHT;
         } else if (this.scrollY >= 0 && this.scrollData.showingDateSel) {
           this.scrollData.showingDateSel = false;
         }
@@ -252,7 +252,15 @@ class DaysWrapper {
         this.selected += Math.sign(e.deltaY);
         this.animateToDay(this.selected);
       } else if (integerScrollDiff && !mousewheelScroll) {
-        this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+        if (this.scrollY === 0 || this.scrollData.smoothY === 0 && !this.scrollData.showingDateSel) {
+          this.scrollData.showingDateSel = true;
+          this.scrollData.smoothY = -DATE_SELECTOR_HEIGHT;
+        } else if (this.scrollY === -DATE_SELECTOR_HEIGHT || this.scrollData.smoothY === -DATE_SELECTOR_HEIGHT && this.scrollData.showingDateSel) {
+          this.scrollData.showingDateSel = false;
+          this.scrollData.smoothY = 0;
+        } else {
+          this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+        }
       } else {
         this.scrollingMode = 'manual';
         this.setScrollX = this.scrollX + e.deltaX;
