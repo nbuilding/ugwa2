@@ -57,6 +57,7 @@ const altSchedules = (() => { // TEMP
   if (!alts) return {};
   alts = JSON.parse(alts);
   delete alts.lastGenerated;
+  delete alts.self; // TEMP
   for (let day in alts) {
     if (alts[day])
       alts[day].forEach(p => p.period = identifyPeriod(p.name) || '???');
