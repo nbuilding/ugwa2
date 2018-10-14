@@ -185,8 +185,8 @@ class DaysWrapper {
 
       if (this.scrollData.velX === 0 && this.scrollData.velY === 0 && !this.scrollData.snapping
           && this.scrollData.smoothY === null) {
-        if (this.scrollY < 500 && this.scrollY !== 0) {
-          this.scrollData.smoothY = this.scrollData.showingDateSel ? 500 : 0;
+        if (this.scrollY < 0 && this.scrollY !== -500) {
+          this.scrollData.smoothY = this.scrollData.showingDateSel ? 0 : -500;
           this.scrollData.showingDateSel = !this.scrollData.showingDateSel;
         }
       }
@@ -309,7 +309,7 @@ class DaysWrapper {
       });
     });
 
-    this.scrollY = 500;
+    this.scrollY = 0;
     this.scrollFrame();
   }
 
