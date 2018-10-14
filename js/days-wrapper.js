@@ -132,7 +132,7 @@ class DaysWrapper {
 
   animateToDay(pdPos) {
     this.selected = pdPos;
-    this.scrollingMode = 'snap';
+    this.scrollData.snapping = true;
     this.scrollData.pdPos = pdPos;
     this.scrollData.startPdPos = this.toPdPos(this.scrollX);
     this.scrollData.startTime = Date.now();
@@ -141,7 +141,7 @@ class DaysWrapper {
 
   scrollFrame() {
     if (this.scrollingMode !== 'manual') {
-      if (this.scrollData.velX !== 0 || this.scrollingMode === 'manualend') {
+      if (this.scrollData.velX !== 0 || this.scrollData.resnap) {
         if (Math.abs(this.scrollData.velX) < 0.5) {
           this.scrollData.velX = 0;
           this.animateToDay(Math.max(Math.min(Math.round(this.toPdPos(this.scrollX)), this.viewers.length - 1), 0));
@@ -151,31 +151,44 @@ class DaysWrapper {
         }
       }
 
-      if (this.scrollData.velY !== 0 || this.scrollingMode === 'manualend') {
-        if (Math.abs(this.scrollData.velY) < 0.5) this.scrollVelY = 0;
-        else {
+      if (this.scrollData.velY !== 0 || this.scrollData.resnap) {
+        if (Math.abs(this.scrollData.velY) < 0.5) {
+          this.scrollData.velY = 0;
+        } else {
           this.scrollData.velY *= 0.9;
           this.setScrollY = this.scrollY + this.scrollData.velY;
         }
       }
 
       if (this.scrollData.smoothY !== null) {
-        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5)
+        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
+          this.scrollY = this.scrollData.smoothY;
           this.scrollData.smoothY = null;
+        }
         else
           this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 3 + this.scrollY;
       }
 
-      if (this.scrollingMode === 'snap') {
+      if (this.scrollData.snapping) {
         const elapsedTime = Date.now() - this.scrollData.startTime;
         if (elapsedTime >= AUTO_SCROLL_DURATION) {
           this.scrollToDay(this.scrollData.pdPos);
-          this.scrollingMode = 'rest';
+          this.scrollData.snapping = false;
         } else {
           this.scrollToDay(Math.easeInOutQuad(elapsedTime / AUTO_SCROLL_DURATION) * this.scrollData.pdPosChange + this.scrollData.startPdPos);
         }
-      } else if (this.scrollingMode === 'manualend') {
-        this.scrollingMode = 'rest';
+      }
+
+      if (this.scrollData.resnap) {
+        this.scrollData.resnap = false;
+      }
+
+      if (this.scrollData.velX === 0 && this.scrollData.velY === 0 && !this.scrollData.snapping
+          && this.scrollData.smoothY === null) {
+        if (this.scrollY < 500 && this.scrollY !== 0) {
+          this.scrollData.smoothY = this.scrollData.showingDateSel ? 500 : 0;
+          this.scrollData.showingDateSel = !this.scrollData.showingDateSel;
+        }
       }
     }
     window.requestAnimationFrame(() => this.scrollFrame());
@@ -186,15 +199,16 @@ class DaysWrapper {
   }
 
   initWindowyThings() {
-    this.scrollingMode = 'rest'; // manual, momentum, snap, rest
+    this.scrollingMode = 'auto'; // manual, auto
     this.scrollData = {
-      velX: 0, velY: 0, smoothY: null
+      velX: 0, velY: 0, smoothY: null, snapping: false, resnap: false,
+      showingDateSel: false
     };
 
     this.updateWidthMeasurements();
     window.addEventListener('resize', e => {
       this.updateWidthMeasurements();
-      if (this.scrollingMode === 'rest')
+      if (this.scrollingMode !== 'manual')
         this.scrollToDay(this.selected);
     });
 
@@ -234,7 +248,7 @@ class DaysWrapper {
       } else {
         this.scrollData.velX = e.deltaX / 1.5;
         this.scrollData.velY = e.deltaY / 1.5;
-        this.scrollingMode = 'manualend';
+        this.scrollData.resnap = true;
       }
       e.preventDefault();
     });
@@ -281,13 +295,14 @@ class DaysWrapper {
     }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
       if (!this.autoScrolling) {
-        this.scrollingMode = 'manualend';
+        this.scrollData.resnap = true;
         this.scrollData.velX = -fingerData[e.changedTouches[0].identifier].xDiff
           / fingerData[e.changedTouches[0].identifier].timeDiff * 17
           || 0;
         this.scrollData.velY = -fingerData[e.changedTouches[0].identifier].yDiff
           / fingerData[e.changedTouches[0].identifier].timeDiff * 17
           || 0;
+        this.scrollingMode = 'auto';
       }
       Array.from(e.changedTouches).forEach(t => {
         fingerData[t.identifier] = null;
