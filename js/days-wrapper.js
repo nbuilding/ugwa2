@@ -62,6 +62,16 @@ class DaysWrapper {
             })
           ],
           ripple: true
+        }),
+        createElement('div', {
+          classes: 'back-to-top',
+          content: [
+            this.backToTop = createElement('button', {
+              classes: 'contained button',
+              ripple: true,
+              content: [Formatter.phrase('to-top')]
+            })
+          ]
         })
       ]
     }));
@@ -106,6 +116,9 @@ class DaysWrapper {
     this.todayJump.addEventListener('click', e => {
       this.selected = this.today;
       this.animateToDay(this.selected);
+    });
+    this.backToTop.addEventListener('click', e => {
+      this.scrollData.smoothY = 0;
     });
 
     this.timeZone = new Date().getTimezoneOffset();
@@ -155,8 +168,8 @@ class DaysWrapper {
       }
 
       if (this.scrollData.smoothX !== null) {
-        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 2) {
-          this.scrollX = this.scrollData.smoothX;
+        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 0.5) {
+          this.setScrollX = this.scrollData.smoothX;
           this.scrollData.smoothX = null;
         }
         else
@@ -164,8 +177,8 @@ class DaysWrapper {
       }
 
       if (this.scrollData.smoothY !== null) {
-        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 2) {
-          this.scrollY = this.scrollData.smoothY;
+        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
+          this.setScrollY = this.scrollData.smoothY;
           this.scrollData.smoothY = null;
           this.scrollData.showingDateSel = this.scrollData.showingDateSel && this.scrollY === 0
             ? false : !this.scrollData.showingDateSel && this.scrollY === -DATE_SELECTOR_HEIGHT
@@ -252,10 +265,10 @@ class DaysWrapper {
         this.selected += Math.sign(e.deltaY);
         this.animateToDay(this.selected);
       } else if (integerScrollDiff && !mousewheelScroll) {
-        if (this.scrollY === 0 || this.scrollData.smoothY === 0 && !this.scrollData.showingDateSel) {
+        if (e.deltaY < 0 && (this.scrollY === 0 || this.scrollData.smoothY === 0) && !this.scrollData.showingDateSel) {
           this.scrollData.showingDateSel = true;
           this.scrollData.smoothY = -DATE_SELECTOR_HEIGHT;
-        } else if (this.scrollY === -DATE_SELECTOR_HEIGHT || this.scrollData.smoothY === -DATE_SELECTOR_HEIGHT && this.scrollData.showingDateSel) {
+        } else if ((this.scrollY === -DATE_SELECTOR_HEIGHT || this.scrollData.smoothY === -DATE_SELECTOR_HEIGHT) && this.scrollData.showingDateSel) {
           this.scrollData.showingDateSel = false;
           this.scrollData.smoothY = 0;
         } else {
@@ -346,6 +359,7 @@ class DaysWrapper {
 
   set setScrollY(y) {
     this.scrollY = y;
+    this.backToTop.style.transform = `translateY(${-Math.min(y - 200, 36 + 16)}px)`;
     this.onscroll();
   }
 

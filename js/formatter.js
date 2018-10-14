@@ -59,6 +59,8 @@ const Formatter = {
         return 'Ending in ' + params[0];
       case 'jump-to-today':
         return 'Today';
+      case 'to-top':
+        return 'Back to top';
       case 'appearance': return 'Appearance';
       case 'periods': return 'Periods';
       case 'locales': return 'Locales';

@@ -180,13 +180,12 @@ a.button {
   text-transform: uppercase;
   font-weight: 500;
   border-radius: var(--border-radius);
-  transition: all;
   min-width: 64px;
   padding: 0 16px;
   box-sizing: border-box;
   height: 36px;
   line-height: 36px;
-  transition: all .2s var(--go-places);
+  transition: box-shadow .2s var(--go-places);
 }
 .button:focus {
   outline: none; /* TEMP */
