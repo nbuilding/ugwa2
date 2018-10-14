@@ -2,6 +2,7 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
 const AUTO_SCROLL_DURATION = 300;
+const DATE_SELECTOR_HEIGHT = 500;
 
 class DaysWrapper {
 
@@ -148,7 +149,7 @@ class DaysWrapper {
         if (Math.abs(this.scrollData.velY) < 0.5) {
           this.scrollData.velY = 0;
         } else {
-          this.scrollData.velY *= 0.9;
+          this.scrollData.velY *= this.scrollY < -DATE_SELECTOR_HEIGHT ? 0.5 : 0.9;
           this.setScrollY = this.scrollY + this.scrollData.velY;
         }
       }
@@ -166,6 +167,10 @@ class DaysWrapper {
         if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
           this.scrollY = this.scrollData.smoothY;
           this.scrollData.smoothY = null;
+          this.scrollData.showingDateSel = this.scrollData.showingDateSel && this.scrollY === 0
+            ? false : !this.scrollData.showingDateSel && this.scrollY === -DATE_SELECTOR_HEIGHT
+            ? true : this.scrollData.showingDateSel;
+          console.log(this.scrollData.showingDateSel);
         }
         else
           this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 5 + this.scrollY;
@@ -176,10 +181,10 @@ class DaysWrapper {
       }
 
       if (this.scrollData.velX === 0 && this.scrollData.velY === 0
-          && this.scrollData.smoothX === null&& this.scrollData.smoothY === null) {
-        if (this.scrollY < 0 && this.scrollY !== -500) {
-          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -500;
-          this.scrollData.showingDateSel = this.scrollData.smoothY === -500;
+          && this.scrollData.smoothX === null && this.scrollData.smoothY === null
+          && Date.now() - this.scrollData.lastTrackpadScroll > 100) {
+        if (this.scrollY < 0 && this.scrollY !== -DATE_SELECTOR_HEIGHT) {
+          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -DATE_SELECTOR_HEIGHT;
         }
       }
     }
@@ -194,7 +199,7 @@ class DaysWrapper {
     this.scrollingMode = 'auto'; // manual, auto
     this.scrollData = {
       velX: 0, velY: 0, smoothX: null, smoothY: null, resnap: false,
-      showingDateSel: false
+      showingDateSel: false, lastTrackpadScroll: 0
     };
 
     this.updateWidthMeasurements();
@@ -241,6 +246,7 @@ class DaysWrapper {
         this.scrollData.smoothY = null;
         this.scrollData.velX = e.deltaX / 1.5;
         this.scrollData.velY = e.deltaY / 1.5;
+        this.scrollData.lastTrackpadScroll = Date.now();
         this.scrollData.resnap = true;
       }
       e.preventDefault();
