@@ -4,7 +4,7 @@ const HTMLnewlineRegex = /<(p|div).*?>/g;
 const noHTMLRegex = /<.*?>/g;
 const noNbspRegex = /&nbsp;/g;
 const parserRegex = /(?:\n|,|\))(.*?)\(?(1?[0-9]):([0-9]{2})-(1?[0-9]):([0-9]{2})(?=\))?/g;
-const getPeriodLetterRegex = /\b[A-G]\b/;
+const getPeriodLetterRegex = /\b[A-H]\b/;
 
 function parseAlternate(summary, description) {
   if (/(schedule|extended)/i.test(summary)) {
@@ -45,8 +45,9 @@ function identifyPeriod(name) {
     let letter = getPeriodLetterRegex.exec(name);
     if (letter) return letter[0];
   }
-  if (~name.indexOf("FLEX")
-      || ~name.indexOf("SELF")
+  if (~name.indexOf("ZERO")) return "ZERO";
+  else if (~name.indexOf("SELF")) return "SELF";
+  else if (~name.indexOf("FLEX")
       || ~name.indexOf("ASSEMBLY")
       || ~name.indexOf("TUTORIAL"))
     return "FLEX";
