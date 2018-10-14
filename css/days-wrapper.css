@@ -11,20 +11,25 @@ body {
 .days-wrapper {
   width: 100vw;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   white-space: nowrap;
-  position: relative;
+  position: absolute;
 }
 .days-wrapper::-webkit-scrollbar {
   display: none;
 }
+.scrolling-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .heading {
-  width: 100%;
+  width: 100vw;
   max-width: 500px;
   text-align: center;
   z-index: 5;
   padding: 16px 0;
-  margin-top: 552px;
+  margin-top: 52px;
   transition: transform .5s;
 }
 .heading h3, .heading h4 {
@@ -36,7 +41,7 @@ body {
 }
 .progress-bar {
   display: flex;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -85,21 +90,17 @@ body {
 .progress-line-showing .progress-line {
   height: 5px;
 }
-.scroll-size-enforcer {
-  height: 1px;
-}
 .day {
   width: 500px;
   position: absolute;
   top: 0;
   left: 0;
   display: inline-block;
-  min-height: 100%;
+  min-height: 100vh;
   box-sizing: border-box;
   white-space: normal;
   opacity: 0.6;
   padding-top: 174px;
-  margin-top: 500px;
   transition: opacity .2s;
 }
 .ios .day {
@@ -137,4 +138,7 @@ body {
   .day {
     width: 100vw;
   }
+}
+button.contained.icon.fab {
+  position: absolute;
 }

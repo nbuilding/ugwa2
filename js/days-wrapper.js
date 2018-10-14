@@ -1,14 +1,7 @@
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
-const autoScrollDuration = 300;
-
-Math.easeInOutQuad = prog => {
-  prog *= 2;
-  if (prog < 1) return prog * prog / 2;
-  prog--;
-  return (prog * (prog - 2) - 1) / -2;
-};
+const AUTO_SCROLL_DURATION = 300;
 
 class DaysWrapper {
 
@@ -31,17 +24,19 @@ class DaysWrapper {
     document.body.appendChild(scrollWrapper = createElement('div', {
       classes: 'days-wrapper',
       content: [
-        this.scrollSizeEnforcer = createElement('div', {
-          classes: 'scroll-size-enforcer'
-        }),
-        ...viewers.map(v => v.wrapper),
-        this.heading = createElement('div', {
-          classes: 'heading',
+        this.scroller = createElement('div', {
+          classes: 'scrolling-container',
           content: [
-            this.headingDate = createElement('h3'),
-            this.headingDay = createElement('h4', {
-              classes: 'week-day-heading'
-            })
+            ...viewers.map(v => v.wrapper),
+            this.heading = createElement('div', {
+              classes: 'heading',
+              content: [
+                this.headingDate = createElement('h3'),
+                this.headingDay = createElement('h4', {
+                  classes: 'week-day-heading'
+                })
+              ]
+            }),
           ]
         }),
         this.progressBar = createElement('div', {
@@ -93,7 +88,7 @@ class DaysWrapper {
           if (viewer.handleClick) viewer.handleClick(periodWrapper, e.target.tagName);
         } else {
           this.selected = pdPos;
-          this.scrollTo(pdPos, true);
+          this.animateToDay(pdPos);
         }
       } else {
         viewers[this.selected].closeAllOpenPeriods();
@@ -109,7 +104,7 @@ class DaysWrapper {
     });
     this.todayJump.addEventListener('click', e => {
       this.selected = this.today;
-      this.scrollTo(this.selected, true);
+      this.animateToDay(this.selected);
     });
 
     this.timeZone = new Date().getTimezoneOffset();
@@ -124,130 +119,153 @@ class DaysWrapper {
     on('new name', on('new colour', () => this.updateTime()));
   }
 
-  scrollTo(pdPos, animate = true) {
-    if (!animate) {
-      this.scrollWrapper.scrollLeft = this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
-      return;
-    }
-    this.stopAutoScrolling();
-    this.autoScrolling = window.requestAnimationFrame(() => {
-      this.selected = pdPos;
-      const startPdPos = this.toPdPos(this.scrollX);
-      const pdPosChange = pdPos - startPdPos;
-      const startTime = Date.now();
-      const scroll = () => {
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime >= autoScrollDuration) {
-          this.scrollTo(pdPos, false);
-          this.autoScrolling = false;
-          return;
+  getScrollPos(pdPos) {
+    return this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
+  }
+
+  scrollToDay(pdPos) {
+    this.setScrollX = this.getScrollPos(pdPos);
+  }
+
+  animateToDay(pdPos) {
+    this.selected = pdPos;
+    this.scrollData.smoothX = this.getScrollPos(pdPos);
+  }
+
+  scrollFrame() {
+    if (this.scrollingMode !== 'manual') {
+      if (this.scrollData.velX !== 0 || this.scrollData.resnap) {
+        if (Math.abs(this.scrollData.velX) < 0.5) {
+          this.scrollData.velX = 0;
+          this.animateToDay(Math.max(Math.min(Math.round(this.toPdPos(this.scrollX)), this.viewers.length - 1), 0));
+        } else {
+          this.scrollData.velX *= 0.9;
+          this.setScrollX = this.scrollX + this.scrollData.velX;
         }
-        this.scrollTo(Math.easeInOutQuad(elapsedTime / autoScrollDuration) * pdPosChange + startPdPos, false);
-        this.autoScrolling = window.requestAnimationFrame(scroll);
-      };
-      scroll();
-    });
-  }
-
-  momentumScrolling(vel) {
-    const scroll = () => {
-      vel *= 0.85;
-      if (Math.abs(vel) < 0.5) {
-        this.autoScrolling = false;
-        this.snapToADay();
-        return;
       }
-      this.scrollWrapper.scrollBy(vel, 0);
-      this.autoScrolling = window.requestAnimationFrame(scroll);
-    };
-    scroll();
-  }
 
-  snapToADay() {
-    this.scrollTo(Math.round(this.toPdPos(this.scrollX)), true);
+      if (this.scrollData.velY !== 0 || this.scrollData.resnap) {
+        if (Math.abs(this.scrollData.velY) < 0.5) {
+          this.scrollData.velY = 0;
+        } else {
+          this.scrollData.velY *= 0.9;
+          this.setScrollY = this.scrollY + this.scrollData.velY;
+        }
+      }
+
+      if (this.scrollData.smoothX !== null) {
+        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 0.5) {
+          this.scrollX = this.scrollData.smoothX;
+          this.scrollData.smoothX = null;
+        }
+        else
+          this.setScrollX = (this.scrollData.smoothX - this.scrollX) / 5 + this.scrollX;
+      }
+
+      if (this.scrollData.smoothY !== null) {
+        if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
+          this.scrollY = this.scrollData.smoothY;
+          this.scrollData.smoothY = null;
+        }
+        else
+          this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 5 + this.scrollY;
+      }
+
+      if (this.scrollData.resnap) {
+        this.scrollData.resnap = false;
+      }
+
+      if (this.scrollData.velX === 0 && this.scrollData.velY === 0
+          && this.scrollData.smoothX === null&& this.scrollData.smoothY === null) {
+        if (this.scrollY < 0 && this.scrollY !== -500) {
+          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -500;
+          this.scrollData.showingDateSel = this.scrollData.smoothY === -500;
+        }
+      }
+    }
+    window.requestAnimationFrame(() => this.scrollFrame());
   }
 
   toPdPos(scrollX) {
     return (scrollX - this.screenWidth / 2) / this.periodWidth - 0.5;
   }
 
-  stopAutoScrolling() {
-    if (!this.autoScrolling) return;
-    window.cancelAnimationFrame(this.autoScrolling);
-    this.autoScrolling = false;
-  }
-
-  trackpadScroll() {
-    if (this.trackpadScrollTimeout !== null)
-      clearInterval(this.trackpadScrollTimeout);
-    this.trackpadScrollTimeout = setTimeout(() => {
-      this.snapToADay();
-    }, 500);
-  }
-
   initWindowyThings() {
-    this.autoScrolling = false;
-    this.trackpadScrollTimeout = null;
+    this.scrollingMode = 'auto'; // manual, auto
+    this.scrollData = {
+      velX: 0, velY: 0, smoothX: null, smoothY: null, resnap: false,
+      showingDateSel: false
+    };
 
     this.updateWidthMeasurements();
     window.addEventListener('resize', e => {
       this.updateWidthMeasurements();
-      if (!this.autoScrolling)
-        this.scrollTo(this.selected, false);
+      if (this.scrollingMode !== 'manual')
+        this.scrollToDay(this.selected);
     });
 
     this.scrollWrapper.addEventListener('scroll', e => {
-      window.requestAnimationFrame(() => {
-        this.updateScrollMeasurements();
-        const visibleViewers = this.viewers.slice(
-          Math.floor((this.scrollX - this.screenWidth) / this.periodWidth),
-          Math.ceil(this.scrollX / this.periodWidth)
-        );
-        this.viewers.filter(v => v.visible).forEach(v => !visibleViewers.includes(v) && v.hide());
-        visibleViewers.forEach(v => v.show());
-        const visibleUntriggeredDaycols = visibleViewers.filter(v => !v.initialized);
-        if (visibleUntriggeredDaycols.length) {
-          visibleUntriggeredDaycols.forEach(d => d.initialize());
-          if (visibleUntriggeredDaycols.includes(this.viewers[this.selected]))
-            this.viewers[this.selected].handleSelection();
-        }
-        if (this.scrollY < 500) this.scrollWrapper.scrollTop = 500; // TEMP
+      window.requestAnimationFrame(() => { // disable native scrolling
+        this.scrollWrapper.scrollLeft = this.scrollWrapper.scrollTop = 0;
       });
-    });
+      e.preventDefault();
+    }, {passive: false});
+
+    this.onscroll = () => {
+      this.scroller.style.transform = `translate(${-this.scrollX}px, ${-this.scrollY}px)`;
+      const visibleViewers = this.viewers.slice(
+        Math.max(Math.floor((this.scrollX - this.screenWidth) / this.periodWidth), 0),
+        Math.min(Math.ceil(this.scrollX / this.periodWidth), this.viewers.length)
+      );
+      this.viewers.filter(v => v.visible).forEach(v => !visibleViewers.includes(v) && v.hide());
+      visibleViewers.forEach(v => v.show());
+      const visibleUntriggeredDaycols = visibleViewers.filter(v => !v.initialized);
+      if (visibleUntriggeredDaycols.length) {
+        visibleUntriggeredDaycols.forEach(d => d.initialize());
+        if (visibleUntriggeredDaycols.includes(this.viewers[this.selected]))
+          this.viewers[this.selected].handleSelection();
+      }
+      // if (this.scrollY < 500) this.setScrollY = 500; // TEMP
+    };
 
     this.scrollWrapper.addEventListener('wheel', e => {
       const mousewheelScroll = e.deltaY && e.shiftKey;
       const integerScrollDiff = Math.abs(e.deltaY) > 60 && e.deltaY % 10 === 0;
 
       if (mousewheelScroll && integerScrollDiff) {
-        if (this.autoScrolling)
-          this.stopAutoScrolling();
         this.selected += Math.sign(e.deltaY);
-        this.scrollTo(this.selected, true);
-        e.preventDefault();
+        this.animateToDay(this.selected);
+      } else if (integerScrollDiff && !mousewheelScroll) {
+        this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+      } else {
+        this.scrollData.smoothY = null;
+        this.scrollData.velX = e.deltaX / 1.5;
+        this.scrollData.velY = e.deltaY / 1.5;
+        this.scrollData.resnap = true;
       }
-      else if (e.deltaX || mousewheelScroll) {
-        if (this.autoScrolling)
-          this.stopAutoScrolling();
-        this.trackpadScroll();
-      }
+      e.preventDefault();
     });
 
     document.body.addEventListener('keydown', e => {
       if (document.activeElement.tagName === 'TEXTAREA') return;
-      if (e.keyCode === 37) this.scrollTo(--this.selected, true);
-      else if (e.keyCode === 39) this.scrollTo(++this.selected, true);
+      if (e.keyCode === 37) this.animateToDay(Math.max(--this.selected, 0));
+      else if (e.keyCode === 39) this.animateToDay(Math.min(++this.selected, this.viewers.length - 1));
     });
 
-    const touchSpeeds = [];
+    const fingerData = [];
     this.scrollWrapper.addEventListener('touchstart', e => {
-      if (this.autoScrolling)
-        this.stopAutoScrolling();
+      this.scrollingMode = 'manual';
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
-        touchSpeeds[t.identifier] = {
+        fingerData[t.identifier] = {
+          originalScrollX: this.scrollX,
+          originalX: t.clientX,
           oldX: t.clientX,
           xDiff: 0,
+          originalScrollY: this.scrollY,
+          originalY: t.clientY,
+          oldY: t.clientY,
+          yDiff: 0,
           oldTime: now,
           timeDiff: 0
         };
@@ -256,45 +274,55 @@ class DaysWrapper {
     this.scrollWrapper.addEventListener('touchmove', e => {
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
-        touchSpeeds[t.identifier] = {
-          oldX: t.clientX,
-          xDiff: t.clientX - touchSpeeds[t.identifier].oldX,
-          oldTime: now,
-          timeDiff: now - touchSpeeds[t.identifier].oldTime
-        };
+        const finger = fingerData[t.identifier];
+        finger.xDiff = t.clientX - finger.oldX;
+        finger.oldX = t.clientX;
+        finger.yDiff = t.clientY - finger.oldY;
+        finger.oldY = t.clientY;
+        finger.timeDiff = now - finger.oldTime;
+        finger.oldTime = now;
+        this.setScrollX = finger.originalScrollX - t.clientX + finger.originalX;
+        this.setScrollY = finger.originalScrollY - t.clientY + finger.originalY;
       });
-    });
+      e.preventDefault();
+    }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
       if (!this.autoScrolling) {
-        this.momentumScrolling(-touchSpeeds[e.changedTouches[0].identifier].xDiff
-          / touchSpeeds[e.changedTouches[0].identifier].timeDiff * 17
-          || 0);
+        this.scrollData.resnap = true;
+        this.scrollData.velX = -fingerData[e.changedTouches[0].identifier].xDiff
+          / fingerData[e.changedTouches[0].identifier].timeDiff * 17
+          || 0;
+        this.scrollData.velY = -fingerData[e.changedTouches[0].identifier].yDiff
+          / fingerData[e.changedTouches[0].identifier].timeDiff * 17
+          || 0;
+        this.scrollingMode = 'auto';
       }
       Array.from(e.changedTouches).forEach(t => {
-        touchSpeeds[t.identifier] = null;
+        fingerData[t.identifier] = null;
       });
     });
 
-    window.requestAnimationFrame(() => {
-      this.scrollWrapper.scrollTop = 500;
-    });
+    this.scrollY = 0;
+    this.scrollFrame();
   }
 
   updateWidthMeasurements() {
     this.screenWidth = window.innerWidth;
     this.periodWidth = Math.min(this.screenWidth, 500);
-    this.scrollSizeEnforcer.style.width = this.screenWidth * 2 + this.periodWidth * this.viewers.length + 'px';
     this.viewers.forEach((viewer, index) => {
       viewer.wrapper.style.transform = `translateX(${this.screenWidth + this.periodWidth * index}px)`;
     });
     this.heading.style.transform = `translateX(${this.screenWidth + this.periodWidth * this.selected}px)`;
   }
 
-  updateScrollMeasurements() {
-    this.scrollX = this.scrollWrapper.scrollLeft;
-    this.scrollY = this.scrollWrapper.scrollTop;
-    // this.headingDate.style.transform = `translateY(${-this.scrollY}px)`;
-    // this.headingDay.style.transform = `translateY(${-this.scrollY}px)`;
+  set setScrollX(x) {
+    this.scrollX = x;
+    this.onscroll();
+  }
+
+  set setScrollY(y) {
+    this.scrollY = y;
+    this.onscroll();
   }
 
   newDay() {
@@ -302,7 +330,7 @@ class DaysWrapper {
       + (+window.location.search.slice(1) || 0); // TEMP
     if (todayPos !== this.today) {
       this.selected = todayPos;
-      this.scrollTo(todayPos, false);
+      this.scrollToDay(todayPos);
       const viewer = this.viewers[todayPos];
       viewer.deinitialize();
       viewer.today = true;
