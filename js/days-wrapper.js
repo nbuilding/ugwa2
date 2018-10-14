@@ -3,13 +3,6 @@ const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
 const AUTO_SCROLL_DURATION = 300;
 
-Math.easeInOutQuad = prog => {
-  prog *= 2;
-  if (prog < 1) return prog * prog / 2;
-  prog--;
-  return (prog * (prog - 2) - 1) / -2;
-};
-
 class DaysWrapper {
 
   constructor(normalSchedules, altSchedules, firstDay, lastDay) {
@@ -126,17 +119,17 @@ class DaysWrapper {
     on('new name', on('new colour', () => this.updateTime()));
   }
 
+  getScrollPos(pdPos) {
+    return this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
+  }
+
   scrollToDay(pdPos) {
-    this.setScrollX = this.screenWidth / 2 + this.periodWidth * (pdPos + 0.5);
+    this.setScrollX = this.getScrollPos(pdPos);
   }
 
   animateToDay(pdPos) {
     this.selected = pdPos;
-    this.scrollData.snapping = true;
-    this.scrollData.pdPos = pdPos;
-    this.scrollData.startPdPos = this.toPdPos(this.scrollX);
-    this.scrollData.startTime = Date.now();
-    this.scrollData.pdPosChange = pdPos - this.scrollData.startPdPos;
+    this.scrollData.smoothX = this.getScrollPos(pdPos);
   }
 
   scrollFrame() {
@@ -160,31 +153,30 @@ class DaysWrapper {
         }
       }
 
+      if (this.scrollData.smoothX !== null) {
+        if (Math.abs(this.scrollData.smoothX - this.scrollX) < 0.5) {
+          this.scrollX = this.scrollData.smoothX;
+          this.scrollData.smoothX = null;
+        }
+        else
+          this.setScrollX = (this.scrollData.smoothX - this.scrollX) / 5 + this.scrollX;
+      }
+
       if (this.scrollData.smoothY !== null) {
         if (Math.abs(this.scrollData.smoothY - this.scrollY) < 0.5) {
           this.scrollY = this.scrollData.smoothY;
           this.scrollData.smoothY = null;
         }
         else
-          this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 3 + this.scrollY;
-      }
-
-      if (this.scrollData.snapping) {
-        const elapsedTime = Date.now() - this.scrollData.startTime;
-        if (elapsedTime >= AUTO_SCROLL_DURATION) {
-          this.scrollToDay(this.scrollData.pdPos);
-          this.scrollData.snapping = false;
-        } else {
-          this.scrollToDay(Math.easeInOutQuad(elapsedTime / AUTO_SCROLL_DURATION) * this.scrollData.pdPosChange + this.scrollData.startPdPos);
-        }
+          this.setScrollY = (this.scrollData.smoothY - this.scrollY) / 5 + this.scrollY;
       }
 
       if (this.scrollData.resnap) {
         this.scrollData.resnap = false;
       }
 
-      if (this.scrollData.velX === 0 && this.scrollData.velY === 0 && !this.scrollData.snapping
-          && this.scrollData.smoothY === null) {
+      if (this.scrollData.velX === 0 && this.scrollData.velY === 0
+          && this.scrollData.smoothX === null&& this.scrollData.smoothY === null) {
         if (this.scrollY < 0 && this.scrollY !== -500) {
           this.scrollData.smoothY = this.scrollData.showingDateSel ? 0 : -500;
           this.scrollData.showingDateSel = !this.scrollData.showingDateSel;
@@ -201,7 +193,7 @@ class DaysWrapper {
   initWindowyThings() {
     this.scrollingMode = 'auto'; // manual, auto
     this.scrollData = {
-      velX: 0, velY: 0, smoothY: null, snapping: false, resnap: false,
+      velX: 0, velY: 0, smoothX: null, smoothY: null, resnap: false,
       showingDateSel: false
     };
 
