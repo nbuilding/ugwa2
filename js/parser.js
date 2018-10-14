@@ -50,8 +50,8 @@ function identifyPeriod(name) {
       || ~name.indexOf("ASSEMBLY")
       || ~name.indexOf("TUTORIAL"))
     return "FLEX";
-  else if (~name.indexOf("COLLABORATION")) return "COLLABORATION";
-  else if (~name.indexOf("MEETING")) return "MEETINGS";
+  else if (~name.indexOf("COLLABORATION")) return "STAFF_COLLAB";
+  else if (~name.indexOf("MEETING")) return "STAFF_MEETINGS";
   else if (~name.indexOf("BRUNCH") || ~name.indexOf("BREAK")) return "BRUNCH";
   else if (~name.indexOf("LUNCH")) return "LUNCH";
   else return;

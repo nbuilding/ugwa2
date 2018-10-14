@@ -120,6 +120,9 @@ class DaysWrapper {
     this.backToTop.addEventListener('click', e => {
       this.scrollData.smoothY = 0;
     });
+    this.settingsBtn.addEventListener('click', e => {
+      window.location = './settings.html'; // TEMP
+    });
 
     this.timeZone = new Date().getTimezoneOffset();
     this.firstDay = Math.floor(firstDay.getTime() / MS_PER_DAY);
@@ -291,6 +294,7 @@ class DaysWrapper {
 
     const fingerData = [];
     this.scrollWrapper.addEventListener('touchstart', e => {
+      if (document.activeElement !== document.body) return;
       this.scrollingMode = 'manual';
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
@@ -310,6 +314,7 @@ class DaysWrapper {
       });
     });
     this.scrollWrapper.addEventListener('touchmove', e => {
+      if (document.activeElement !== document.body) return;
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
         const finger = fingerData[t.identifier];
@@ -330,6 +335,7 @@ class DaysWrapper {
       e.preventDefault();
     }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
+      if (document.activeElement !== document.body) return;
       const finger = fingerData[e.changedTouches[0].identifier];
       if (finger.scrolling) {
         this.scrollData.resnap = true;

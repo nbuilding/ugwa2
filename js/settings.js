@@ -60,6 +60,8 @@ class SectionManager extends Array {
 }
 
 function initialize() {
+  Prefs.loadPrefs();
+  Prefs.applyTheme();
   const sections = new SectionManager({
     appearance: section => {
       const themes = ['light', 'dark', 'neither'],
@@ -68,21 +70,30 @@ function initialize() {
             roundnessRadios = new RadioGroup('Rounded corners', ['sharp', 'modestly round', 'overly round']);
       section.appendChild(themeRadios.wrapper);
       section.appendChild(roundnessRadios.wrapper);
+      themeRadios.choice = (themes.indexOf(Prefs.options.theme) + 3) % 3; // temp
+      roundnessRadios.choice = Prefs.options.roundness;
       themeRadios.onchange = roundnessRadios.onchange = theme => {
         document.body.className = `${themes[themeRadios.choice]} ${roundnesses[roundnessRadios.choice]}`;
+        Prefs.options.theme = themes[themeRadios.choice];
+        Prefs.options.roundness = roundnessRadios.choice;
+        Prefs.savePrefs();
       };
-      themeRadios.choice = 1; // temp
-      roundnessRadios.choice = 1;
     },
     periods: section => {
       const showBreaks = new Switch('show brunch and lunch'),
             showSELF = new Switch('show SELF'),
             show0 = new Switch('show zero period'),
-            showH = new Switch('show period H'),
-            showStaff = new Switch('show staff periods');
-      showBreaks.checked = true;
-      showSELF.checked = true;
-      section.appendChild(createFragment([showBreaks.wrapper, showSELF.wrapper, show0.wrapper, showH.wrapper, showStaff.wrapper]))
+            showStaff = new Switch('show staff periods'),
+            switches = [showBreaks, showSELF, show0, showStaff];
+      showBreaks.checked = Prefs.options.breaks;
+      showSELF.checked = Prefs.options.self;
+      show0.checked = Prefs.options.zero;
+      showStaff.checked = Prefs.options.staff;
+      showBreaks.onchange = checked => { Prefs.options.breaks = checked; Prefs.savePrefs(); };
+      showSELF.onchange = checked => { Prefs.options.self = checked; Prefs.savePrefs(); };
+      show0.onchange = checked => { Prefs.options.zero = checked; Prefs.savePrefs(); };
+      showStaff.onchange = checked => { Prefs.options.staff = checked; Prefs.savePrefs(); };
+      section.appendChild(createFragment(switches.map(s => s.wrapper)))
     },
     locales: section => {
       const language = new Dropdown('Language', ['English (traditional)', 'English (simplified)', '█████'], 0),
@@ -124,6 +135,10 @@ function initialize() {
   collapsibleSidebar.addEventListener('click', e => {
     if (e.target === collapsibleSidebar)
       collapsibleSidebar.classList.remove('open');
+  });
+
+  document.getElementById('close').addEventListener('click', e => {
+    window.location.href = './schedules.html'; // TEMP
   });
 }
 

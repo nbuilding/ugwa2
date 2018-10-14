@@ -23,21 +23,21 @@ class DayViewer {
 
   initialize() {
     const date = this.date;
-    const schedule = this.schedule;
     const oldWrapper = this.wrapper;
     const today = this.today;
     const weekday = date.getDay();
 
-    if (schedule === null) {
+    const schedule = this.schedule !== null && this.schedule
+      .filter(({period}) => (period !== 'BRUNCH' && period !== 'LUNCH' || Prefs.options.breaks)
+                         && (period !== 'ZERO' || Prefs.options.zero)
+                         && (period !== 'H' || Prefs.options.h[weekday - 1])
+                         && (period !== 'STAFF_COLLAB' && period !== 'STAFF_MEETINGS' || Prefs.options.staff));
+
+    if (schedule === null || !schedule.length) {
       this.wrapper.appendChild(createElement('span', {content: [Formatter.phrase('no-school')]}));
       this.wrapper.classList.add('noschool', 'h3');
     } else {
-      const periods = schedule
-          .filter(({period}) => (period !== 'BRUNCH' && period !== 'LUNCH' || Prefs.options.breaks)
-                           && (period !== 'ZERO' || Prefs.options.zero)
-                           && (period !== 'H' || Prefs.options.h[weekday - 1])
-                           && (period !== 'STAFF_COLLAB' && period !== 'STAFF_MEETINGS' || Prefs.options.staff))
-          .map(p => new Period(p.period, p.start, p.end, today, true));
+      const periods = schedule.map(p => new Period(p.period, p.start, p.end, today, true));
       const periodWrappers = periods.map(p => p.wrapper);
       this.wrapper.appendChild(createFragment(periodWrappers));
 
