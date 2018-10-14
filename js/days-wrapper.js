@@ -186,8 +186,8 @@ class DaysWrapper {
       if (this.scrollData.velX === 0 && this.scrollData.velY === 0 && !this.scrollData.snapping
           && this.scrollData.smoothY === null) {
         if (this.scrollY < 0 && this.scrollY !== -500) {
-          this.scrollData.smoothY = this.scrollData.showingDateSel ? 0 : -500;
-          this.scrollData.showingDateSel = !this.scrollData.showingDateSel;
+          this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -500;
+          this.scrollData.showingDateSel = this.scrollData.smoothY === -500;
         }
       }
     }
@@ -246,6 +246,7 @@ class DaysWrapper {
       } else if (integerScrollDiff && !mousewheelScroll) {
         this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
       } else {
+        this.scrollData.smoothY = null;
         this.scrollData.velX = e.deltaX / 1.5;
         this.scrollData.velY = e.deltaY / 1.5;
         this.scrollData.resnap = true;
