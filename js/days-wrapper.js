@@ -180,8 +180,7 @@ class DaysWrapper {
       }
 
       if (this.scrollData.velX === 0 && this.scrollData.velY === 0
-          && this.scrollData.smoothX === null && this.scrollData.smoothY === null
-          && Date.now() - this.scrollData.lastTrackpadScroll > 100) {
+          && this.scrollData.smoothX === null && this.scrollData.smoothY === null) {
         if (this.scrollY < 0 && this.scrollY !== -DATE_SELECTOR_HEIGHT) {
           this.scrollData.smoothY = this.scrollData.showingDateSel || this.scrollY > -100 ? 0 : -DATE_SELECTOR_HEIGHT;
         } else if (this.scrollY >= 0 && this.scrollData.showingDateSel) {
@@ -190,6 +189,14 @@ class DaysWrapper {
         if (this.scrollY > 0 && this.scrollY < 100) {
           this.scrollData.smoothY = 0;
         }
+      }
+    } else {
+      this.scrollData.smoothX = null;
+      this.scrollData.smoothY = null;
+      if (this.scrollData.lastTrackpadScroll !== null && Date.now() - this.scrollData.lastTrackpadScroll > 100) {
+        this.scrollingMode = 'auto';
+        this.scrollData.resnap = true;
+        this.scrollData.lastTrackpadScroll = null;
       }
     }
     window.requestAnimationFrame(() => this.scrollFrame());
@@ -203,7 +210,7 @@ class DaysWrapper {
     this.scrollingMode = 'auto'; // manual, auto
     this.scrollData = {
       velX: 0, velY: 0, smoothX: null, smoothY: null, resnap: false,
-      showingDateSel: false, lastTrackpadScroll: 0
+      showingDateSel: false, lastTrackpadScroll: null
     };
 
     this.updateWidthMeasurements();
@@ -247,11 +254,10 @@ class DaysWrapper {
       } else if (integerScrollDiff && !mousewheelScroll) {
         this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
       } else {
-        this.scrollData.smoothY = null;
-        this.scrollData.velX = e.deltaX / 1.5;
-        this.scrollData.velY = e.deltaY / 1.5;
+        this.scrollingMode = 'manual';
+        this.setScrollX = this.scrollX + e.deltaX;
+        this.setScrollY = this.scrollY + e.deltaY;
         this.scrollData.lastTrackpadScroll = Date.now();
-        this.scrollData.resnap = true;
       }
       e.preventDefault();
     });
