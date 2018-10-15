@@ -22,7 +22,8 @@ class Section {
         })
       ]
     }));
-    this.sidebarBtn.addEventListener('click', () => this.switchToMe());
+    const collapsibleSidebar = document.querySelector('.dimmer');
+    this.sidebarBtn.addEventListener('click', () => (this.switchToMe(), collapsibleSidebar.classList.remove('open')));
     addContent(this.section);
   }
 
