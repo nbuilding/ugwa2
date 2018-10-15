@@ -25,7 +25,7 @@ const Prefs = {
     theme: 'dark',
     roundness: 2,
     breaks: true,
-    self: true,
+    self: false,
     zero: false,
     h: [false, false, false, false, false],
     staff: false

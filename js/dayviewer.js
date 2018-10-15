@@ -10,9 +10,8 @@ class DayViewer {
    * @param {number} schedule[].end - The period's end time in minutes since 00:00 of the day.
    * @param {boolean} today - If this represents today.
    */
-  constructor(date, schedule) {
+  constructor(date) {
     this.date = date;
-    this.schedule = schedule;
     this.wrapper = createElement('div', {
       classes: 'day'
     });
@@ -21,13 +20,14 @@ class DayViewer {
     this.deinitialize();
   }
 
-  initialize() {
+  initialize(schedule) {
+    this.schedule = schedule;
     const date = this.date;
     const oldWrapper = this.wrapper;
     const today = this.today;
     const weekday = date.getDay();
 
-    const schedule = this.schedule !== null && this.schedule
+    schedule = schedule !== null && schedule
       .filter(({period}) => (period !== 'BRUNCH' && period !== 'LUNCH' || Prefs.options.breaks)
                          && (period !== 'ZERO' || Prefs.options.zero)
                          && (period !== 'H' || Prefs.options.h[weekday - 1])

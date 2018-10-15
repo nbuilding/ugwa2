@@ -52,23 +52,38 @@ if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)
 
 Prefs.applyTheme();
 
-const altSchedules = (() => { // TEMP
+const [altSchedules, selfDays] = (() => { // TEMP
   let alts = localStorage.getItem('[gunn-web-app] lite.alts');
   if (!alts) return {};
   alts = JSON.parse(alts);
   delete alts.lastGenerated;
+  const selfDays = alts.self;
   delete alts.self; // TEMP
   for (let day in alts) {
     if (alts[day])
       alts[day].forEach(p => p.period = identifyPeriod(p.name) || '???');
   }
-  return alts;
+  return [alts, selfDays];
 })();
 
 const firstDay = new Date(2018, 7, 13);
 const lastDay = new Date(2019, 4, 31);
 
-const wrapper = new DaysWrapper(normalSchedules, altSchedules, firstDay, lastDay);
+const wrapper = new DaysWrapper(firstDay, lastDay, dateObj => {
+  const date = dateObj.getDate();
+  const month = dateObj.getMonth();
+  const dateID = ('0' + (month + 1)).slice(-2) + '-' + ('0' + date).slice(-2);
+  const schedule = JSON.parse(JSON.stringify(altSchedules[dateID] !== undefined
+    ? altSchedules[dateID]
+    : normalSchedules[dateObj.getDay()]));
+  if (selfDays.includes(dateID) && Prefs.options.self) {
+    schedule.forEach(period => {
+      if (period.period === 'FLEX')
+        period.period = 'SELF';
+    });
+  }
+  return schedule;
+});
 
 // window.addEventListener('scroll', e => {
 //   dayCols.slice(Math.floor(pageXOffset / 500), Math.ceil((pageXOffset + innerWidth) / 500))

@@ -6,20 +6,15 @@ const DATE_SELECTOR_HEIGHT = 300;
 
 class DaysWrapper {
 
-  constructor(normalSchedules, altSchedules, firstDay, lastDay) {
+  constructor(firstDay, lastDay, getSchedule) {
     // CALCULATE WHAT viewers SHOULD EXIST
+    this.getSchedule = getSchedule;
     const dayCount = (lastDay.getTime() - firstDay.getTime()) / MS_PER_DAY;
     const viewers = [];
     let scrollWrapper;
     for (let day = 0; day <= dayCount; day++) {
       const dateObj = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + day);
-      const date = dateObj.getDate();
-      const month = dateObj.getMonth();
-      const dateID = ('0' + (month + 1)).slice(-2) + '-' + ('0' + date).slice(-2);
-      const schedule = altSchedules[dateID] !== undefined
-        ? altSchedules[dateID]
-        : normalSchedules[dateObj.getDay()];
-      const viewer = new DayViewer(dateObj, schedule, day === 184); // TEMP
+      const viewer = new DayViewer(dateObj);
       viewers.push(viewer);
     }
     document.body.appendChild(scrollWrapper = createElement('div', {
@@ -253,7 +248,7 @@ class DaysWrapper {
       visibleViewers.forEach(v => v.show());
       const visibleUntriggeredDaycols = visibleViewers.filter(v => !v.initialized);
       if (visibleUntriggeredDaycols.length) {
-        visibleUntriggeredDaycols.forEach(d => d.initialize());
+        visibleUntriggeredDaycols.forEach(d => d.initialize(this.getSchedule(d.date)));
         if (visibleUntriggeredDaycols.includes(this.viewers[this.selected]))
           this.viewers[this.selected].handleSelection();
       }
@@ -294,7 +289,7 @@ class DaysWrapper {
 
     const fingerData = [];
     this.scrollWrapper.addEventListener('touchstart', e => {
-      if (document.activeElement !== document.body) return;
+      if (document.activeElement.tagName === 'TEXTAREA') return;
       this.scrollingMode = 'manual';
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
@@ -314,7 +309,7 @@ class DaysWrapper {
       });
     });
     this.scrollWrapper.addEventListener('touchmove', e => {
-      if (document.activeElement !== document.body) return;
+      if (document.activeElement.tagName === 'TEXTAREA') return;
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
         const finger = fingerData[t.identifier];
@@ -335,7 +330,7 @@ class DaysWrapper {
       e.preventDefault();
     }, {passive: false});
     this.scrollWrapper.addEventListener('touchend', e => {
-      if (document.activeElement !== document.body) return;
+      if (document.activeElement.tagName === 'TEXTAREA') return;
       const finger = fingerData[e.changedTouches[0].identifier];
       if (finger.scrolling) {
         this.scrollData.resnap = true;
@@ -383,7 +378,7 @@ class DaysWrapper {
       viewer.today = true;
       viewer.show();
       window.requestAnimationFrame(() => {
-        viewer.initialize();
+        viewer.initialize(this.getSchedule(viewer.date));
         viewer.handleSelection();
         this.today = todayPos;
         this.updateTime();
