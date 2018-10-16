@@ -59,7 +59,7 @@ const [altSchedules, selfDays] = (() => { // TEMP
   if (!alts) return {};
   alts = JSON.parse(alts);
   delete alts.lastGenerated;
-  const selfDays = alts.self;
+  const selfDays = alts.self || [];
   delete alts.self; // TEMP
   for (let day in alts) {
     if (alts[day])
