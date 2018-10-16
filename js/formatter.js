@@ -32,12 +32,15 @@ const Formatter = {
   date(month, date) {
     return this.months[month] + ' ' + date;
   },
+  month(month, year) {
+    return this.months[month] + (year ? ' ' + year : '');
+  },
   days: ['Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur'],
   weekday(day) {
     return this.days[day] + 'day';
   },
-  weekdayletter(day) {
-    return day === 4 ? '&theta;' : this.days[day][0];
+  weekdayletters() {
+    return ['S', 'M', 'T', 'W', '&Theta;', 'F', 'S'];
   },
   phrase(phraseID, ...params) {
     switch (phraseID) {

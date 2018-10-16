@@ -22,7 +22,7 @@ function createElement(tag, attributes) {
     attributes.classes.forEach(c => c && elem.classList.add(c));
 
   if (attributes.data)
-    Object.keys(attributes.data).forEach(d => typeof attributes.data[d] === 'string' && (elem.dataset[d] = attributes.data[d]));
+    Object.keys(attributes.data).forEach(d => (typeof attributes.data[d] === 'string' || typeof attributes.data[d] === 'number') && (elem.dataset[d] = attributes.data[d]));
 
   if (attributes.attr)
     Object.keys(attributes.attr).forEach(d => attributes.attr[d] !== undefined && (attributes.svg ? elem.setAttributeNS(null, d, attributes.attr[d]) : elem.setAttribute(d, attributes.attr[d])));
@@ -30,7 +30,7 @@ function createElement(tag, attributes) {
   if (attributes.styles)
     Object.keys(attributes.styles).forEach(s => elem.style[s] = attributes.styles[s]);
 
-  if (typeof attributes.content === 'string') elem.innerHTML = attributes.content;
+  if (typeof attributes.content === 'string' || typeof attributes.content === 'number') elem.innerHTML = attributes.content;
   else if (attributes.content)
     attributes.content.forEach(e => e && elem.appendChild(typeof e === 'object' ? e : document.createTextNode(e)));
 

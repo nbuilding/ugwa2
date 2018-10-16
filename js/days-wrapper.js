@@ -2,7 +2,7 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_MIN = 1000 * 60;
 const MIN_PER_DAY = 60 * 24;
 const AUTO_SCROLL_DURATION = 300;
-const DATE_SELECTOR_HEIGHT = 300;
+const DATE_SELECTOR_HEIGHT = 400;
 
 class DaysWrapper {
 
@@ -67,7 +67,8 @@ class DaysWrapper {
               content: [Formatter.phrase('to-top')]
             })
           ]
-        })
+        }),
+        (this.dateSelector = new DateSelector(this, firstDay, lastDay)).wrapper
       ]
     }));
 
@@ -145,6 +146,7 @@ class DaysWrapper {
   }
 
   scrollFrame() {
+    this.dateSelector.animate();
     if (this.scrollingMode !== 'manual') {
       if (this.scrollData.velX !== 0 || this.scrollData.resnap) {
         if (Math.abs(this.scrollData.velX) < 0.5) {
@@ -217,6 +219,10 @@ class DaysWrapper {
     return (scrollX - this.screenWidth / 2) / this.periodWidth - 0.5;
   }
 
+  isOfDateSelector(target) {
+    return this.dateSelector.wrapper.contains(target);
+  }
+
   initWindowyThings() {
     this.scrollingMode = 'auto'; // manual, auto
     this.scrollData = {
@@ -256,27 +262,36 @@ class DaysWrapper {
     };
 
     this.scrollWrapper.addEventListener('wheel', e => {
-      const mousewheelScroll = e.deltaY && e.shiftKey;
       const integerScrollDiff = Math.abs(e.deltaY) > 60 && e.deltaY % 10 === 0;
-
-      if (mousewheelScroll && integerScrollDiff) {
-        this.selected += Math.sign(e.deltaY);
-        this.animateToDay(this.selected);
-      } else if (integerScrollDiff && !mousewheelScroll) {
-        if (e.deltaY < 0 && (this.scrollY === 0 || this.scrollData.smoothY === 0) && !this.scrollData.showingDateSel) {
-          this.scrollData.showingDateSel = true;
-          this.scrollData.smoothY = -DATE_SELECTOR_HEIGHT;
-        } else if ((this.scrollY === -DATE_SELECTOR_HEIGHT || this.scrollData.smoothY === -DATE_SELECTOR_HEIGHT) && this.scrollData.showingDateSel) {
-          this.scrollData.showingDateSel = false;
-          this.scrollData.smoothY = 0;
+      if (this.isOfDateSelector(e.target)) {
+        const dateSel = this.dateSelector;
+        if (integerScrollDiff) {
+          dateSel.autoScroll = (dateSel.autoScroll !== null ? dateSel.autoScroll : dateSel.scroll) + e.deltaY;
         } else {
-          this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+          dateSel.setScroll = dateSel.scroll + e.deltaY;
         }
       } else {
-        this.scrollingMode = 'manual';
-        this.setScrollX = this.scrollX + e.deltaX;
-        this.setScrollY = this.scrollY + e.deltaY;
-        this.scrollData.lastTrackpadScroll = Date.now();
+        const mousewheelScroll = e.deltaY && e.shiftKey;
+
+        if (mousewheelScroll && integerScrollDiff) {
+          this.selected += Math.sign(e.deltaY);
+          this.animateToDay(this.selected);
+        } else if (integerScrollDiff && !mousewheelScroll) {
+          if (e.deltaY < 0 && (this.scrollY === 0 || this.scrollData.smoothY === 0) && !this.scrollData.showingDateSel) {
+            this.scrollData.showingDateSel = true;
+            this.scrollData.smoothY = -DATE_SELECTOR_HEIGHT;
+          } else if ((this.scrollY === -DATE_SELECTOR_HEIGHT || this.scrollData.smoothY === -DATE_SELECTOR_HEIGHT) && this.scrollData.showingDateSel) {
+            this.scrollData.showingDateSel = false;
+            this.scrollData.smoothY = 0;
+          } else {
+            this.scrollData.smoothY = (this.scrollData.smoothY !== null ? this.scrollData.smoothY : this.scrollY) + e.deltaY;
+          }
+        } else {
+          this.scrollingMode = 'manual';
+          this.setScrollX = this.scrollX + e.deltaX;
+          this.setScrollY = this.scrollY + e.deltaY;
+          this.scrollData.lastTrackpadScroll = Date.now();
+        }
       }
       e.preventDefault();
     });
@@ -290,7 +305,13 @@ class DaysWrapper {
     const fingerData = [];
     this.scrollWrapper.addEventListener('touchstart', e => {
       if (document.activeElement.tagName === 'TEXTAREA') return;
-      this.scrollingMode = 'manual';
+      const ofDateSel = this.isOfDateSelector(e.target);
+      if (ofDateSel) {
+        this.dateSelector.autoScroll = null;
+        this.dateSelector.scrollVel = 0;
+      } else {
+        this.scrollingMode = 'manual';
+      }
       const now = Date.now();
       Array.from(e.changedTouches).forEach(t => {
         fingerData[t.identifier] = {
@@ -298,13 +319,14 @@ class DaysWrapper {
           originalX: t.clientX,
           oldX: t.clientX,
           xDiff: 0,
-          originalScrollY: this.scrollY,
+          originalScrollY: ofDateSel ? this.dateSelector.scroll : this.scrollY,
           originalY: t.clientY,
           oldY: t.clientY,
           yDiff: 0,
           oldTime: now,
           timeDiff: 0,
-          scrolling: false
+          scrolling: false,
+          ofDateSel: ofDateSel
         };
       });
     });
@@ -323,8 +345,12 @@ class DaysWrapper {
             || Math.abs(finger.originalY - t.clientY) > 5))
           finger.scrolling = true;
         if (finger.scrolling) {
-          this.setScrollX = finger.originalScrollX - t.clientX + finger.originalX;
-          this.setScrollY = finger.originalScrollY - t.clientY + finger.originalY;
+          if (finger.ofDateSel) {
+            this.dateSelector.setScroll = finger.originalScrollY - t.clientY + finger.originalY;
+          } else {
+            this.setScrollX = finger.originalScrollX - t.clientX + finger.originalX;
+            this.setScrollY = finger.originalScrollY - t.clientY + finger.originalY;
+          }
         }
       });
       e.preventDefault();
@@ -333,11 +359,15 @@ class DaysWrapper {
       if (document.activeElement.tagName === 'TEXTAREA') return;
       const finger = fingerData[e.changedTouches[0].identifier];
       if (finger.scrolling) {
-        this.scrollData.resnap = true;
-        this.scrollData.velX = -finger.xDiff / finger.timeDiff * 17 || 0;
-        this.scrollData.velY = -finger.yDiff / finger.timeDiff * 17 || 0;
+        if (finger.ofDateSel) {
+          this.dateSelector.scrollVel = -finger.yDiff / finger.timeDiff * 17 || 0;
+        } else {
+          this.scrollData.resnap = true;
+          this.scrollData.velX = -finger.xDiff / finger.timeDiff * 17 || 0;
+          this.scrollData.velY = -finger.yDiff / finger.timeDiff * 17 || 0;
+        }
       }
-      this.scrollingMode = 'auto';
+      if (!finger.ofDateSel) this.scrollingMode = 'auto';
       Array.from(e.changedTouches).forEach(t => {
         fingerData[t.identifier] = null;
       });
@@ -364,6 +394,7 @@ class DaysWrapper {
   set setScrollY(y) {
     this.scrollY = y;
     this.backToTop.style.transform = `translateY(${-Math.min(y - 200, 36 + 16)}px)`;
+    this.dateSelector.wrapper.style.transform = `translateY(${-y}px)`;
     this.onscroll();
   }
 
@@ -435,6 +466,7 @@ class DaysWrapper {
     this.headingDate.textContent = Formatter.date(dateObj.getMonth(), dateObj.getDate());
     this.headingDay.textContent = Formatter.weekday(dateObj.getDay());
     this.heading.style.transform = `translateX(${this.screenWidth + this.periodWidth * this._selected}px)`;
+    this.dateSelector.autoScroll = this.dateSelector.getScrollPos(s);
   }
 
 }
