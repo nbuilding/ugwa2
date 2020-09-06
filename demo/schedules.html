@@ -47,7 +47,7 @@
     <script src="../js/date-selector.js" charset="utf-8"></script>
   </head>
   <body class="dark roundish">
-    <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span>
+    <!-- <span class="body1 notenotenote">This demo uses alternate schedules generated from <a href="https://orbiit.github.io/gunn-web-app/lite/">Ugwita</a>. It won't do that in the final version.</span> -->
     <script type="text/javascript">
 if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)
   document.body.classList.add('ios');
@@ -55,8 +55,8 @@ if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)
 Prefs.applyTheme();
 
 const [altSchedules, selfDays] = (() => { // TEMP
-  let alts = localStorage.getItem('[gunn-web-app] lite.alts');
-  if (!alts) return {};
+  let alts = null; // localStorage.getItem('[gunn-web-app] lite.alts');
+  if (!alts) return [{}, []];
   alts = JSON.parse(alts);
   delete alts.lastGenerated;
   const selfDays = alts.self || [];
@@ -68,8 +68,9 @@ const [altSchedules, selfDays] = (() => { // TEMP
   return [alts, selfDays];
 })();
 
-const firstDay = new Date(2018, 7, 13);
-const lastDay = new Date(2019, 4, 31);
+const today = new Date();
+const firstDay = new Date(today.getFullYear(), today.getMonth() - 5, Math.random() * 31 + 1 | 0);
+const lastDay = new Date(today.getFullYear(), today.getMonth() + 5, Math.random() * 31 + 1 | 0);
 
 const wrapper = new DaysWrapper(firstDay, lastDay, dateObj => {
   const date = dateObj.getDate();
