@@ -82,17 +82,17 @@ function initialize() {
     },
     periods: section => {
       const showBreaks = new Switch('show brunch and lunch'),
-            showSELF = new Switch('show SELF'),
-            show0 = new Switch('show zero period'),
+//             showSELF = new Switch('show SELF'),
+//             show0 = new Switch('show zero period'),
             showStaff = new Switch('show staff periods'),
             switches = [showBreaks, showSELF, show0, showStaff];
       showBreaks.checked = Prefs.options.breaks;
-      showSELF.checked = Prefs.options.self;
-      show0.checked = Prefs.options.zero;
+//       showSELF.checked = Prefs.options.self;
+//       show0.checked = Prefs.options.zero;
       showStaff.checked = Prefs.options.staff;
       showBreaks.onchange = checked => { Prefs.options.breaks = checked; Prefs.savePrefs(); };
-      showSELF.onchange = checked => { Prefs.options.self = checked; Prefs.savePrefs(); };
-      show0.onchange = checked => { Prefs.options.zero = checked; Prefs.savePrefs(); };
+//       showSELF.onchange = checked => { Prefs.options.self = checked; Prefs.savePrefs(); };
+//       show0.onchange = checked => { Prefs.options.zero = checked; Prefs.savePrefs(); };
       showStaff.onchange = checked => { Prefs.options.staff = checked; Prefs.savePrefs(); };
       section.appendChild(createFragment(switches.map(s => s.wrapper)))
     },
