@@ -14,8 +14,7 @@
         margin: 16px;
         max-width: 500px;
       }
-      .period-customizer {
-        margin: 32px 0;
+      .period-customizer {s        margin: 32px 0;
       }
       .period-customizer .textfield.multi-line {
         margin-top: 16px;
@@ -90,13 +89,13 @@
             roundclasses = ['sharp', 'roundish', 'round']
             roundedness = new RadioGroup('Rounded corners', ['sharp', 'modestly round', 'overly round']),
             showBreaks = new Switch('show brunch and lunch'),
-            showSELF = new Switch('show SELF'),
+//             showSELF = new Switch('show SELF'),
             showH = new Switch('show period H'),
             showStaff = new Switch('show staff periods'),
             normalPds = new PeriodCustomizerSet(null, 'ABCDEFG'.split('').map(l => 'Period ' + l)),
             breaks = new PeriodCustomizerSet(showBreaks, ['Brunch', 'Lunch']),
             flex = new PeriodCustomizerSet(null, ['Flex']),
-            self = new PeriodCustomizerSet(showSELF, ['SELF']),
+//             self = new PeriodCustomizerSet(showSELF, ['SELF']),
             pdH = new PeriodCustomizerSet(showH, ['Period H']),
             staffPds = new PeriodCustomizerSet(showStaff, ['Staff collaboration', 'Staff meetings']),
             language = new Dropdown('Language', ['English (traditional)', 'English (simplified)', '█████'], 0),
