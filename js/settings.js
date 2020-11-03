@@ -81,7 +81,7 @@ function initialize() {
       };
     },
     periods: section => {
-      const showBreaks = new Switch('show brunch and lunch'),
+      const showBreaks = new Switch('show lunch'),
 //             showSELF = new Switch('show SELF'),
 //             show0 = new Switch('show zero period'),
             showStaff = new Switch('show staff periods'),
