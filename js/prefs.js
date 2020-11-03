@@ -17,9 +17,9 @@ const Prefs = {
     LUNCH: {name: 'Lunch', desc: '', colour: null},
     OFFICE_HOURS: {name: 'Office Hours', desc: '', colour: [96, 125, 139]},
     SELF: {name: 'SELF', desc: '', colour: [96, 125, 139]},
-    GUNN_TOGETHER: {name: 'Gunn Together', desc: '', colour: null, gt: true} // TODO: treat GT specially.
-//     STAFF_COLLAB: {name: 'Staff collaboration', desc: '', colour: [96, 125, 139]}, // staff stuff left out for now
-//     STAFF_MEETINGS: {name: 'Staff meetings', desc: '', colour: [96, 125, 139]}
+    GUNN_TOGETHER: {name: 'Gunn Together', desc: '', colour: null, gt: true}, // TODO: treat GT specially.
+    STAFF_COLLAB: {name: 'Staff collaboration', desc: '', colour: [96, 125, 139]}, // staff stuff left out for now
+    STAFF_MEETINGS: {name: 'Staff meetings', desc: '', colour: [96, 125, 139]}
   },
 
   options: {
