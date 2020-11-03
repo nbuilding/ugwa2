@@ -85,7 +85,7 @@ function initialize() {
 //             showSELF = new Switch('show SELF'),
 //             show0 = new Switch('show zero period'),
             showStaff = new Switch('show staff periods'),
-            switches = [showBreaks, showSELF, show0, showStaff];
+            switches = [showBreaks, showStaff];
       showBreaks.checked = Prefs.options.breaks;
 //       showSELF.checked = Prefs.options.self;
 //       show0.checked = Prefs.options.zero;
