@@ -28,7 +28,7 @@ const Prefs = {
     breaks: true,
     self: false,
     zero: false,
-    h: [false, false, false, false, false],
+    showH: false,
     staff: false
   },
 
