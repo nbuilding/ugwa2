@@ -44,8 +44,7 @@ const normalSchedules = [
     {period: "SELF", start: 665, end: 700},
     {period: "LUNCH", start: 700, end: 730},
     {period: "6", start: 740, end: 820},
-    {period: "7", start: 830, end: 905},
-    {period: "OFFICE_HOURS", start: 910, end: 940}
+    {period: "7", start: 830, end: 905}
   ],
   null // Saturday
 ];
