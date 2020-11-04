@@ -85,7 +85,8 @@ function initialize() {
 //             showSELF = new Switch('show SELF'),
 //             show0 = new Switch('show zero period'),
             showStaff = new Switch('show staff periods'),
-            switches = [showBreaks, showStaff];
+            showH = new Switch("show period 8"),
+            switches = [showBreaks, showStaff, showH];
       showBreaks.checked = Prefs.options.breaks;
 //       showSELF.checked = Prefs.options.self;
 //       show0.checked = Prefs.options.zero;
@@ -94,6 +95,7 @@ function initialize() {
 //       showSELF.onchange = checked => { Prefs.options.self = checked; Prefs.savePrefs(); };
 //       show0.onchange = checked => { Prefs.options.zero = checked; Prefs.savePrefs(); };
       showStaff.onchange = checked => { Prefs.options.staff = checked; Prefs.savePrefs(); };
+      showH.onchange = checked => { Prefs.options.showH = checked; Prefs.savePrefs(); };
       section.appendChild(createFragment(switches.map(s => s.wrapper)))
     },
     locales: section => {
