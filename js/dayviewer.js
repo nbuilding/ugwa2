@@ -30,7 +30,7 @@ class DayViewer {
     schedule = schedule !== null && schedule
       .filter(({period}) => (period !== 'BRUNCH' && period !== 'LUNCH' || Prefs.options.breaks)
                          && (period !== 'ZERO' || Prefs.options.zero)
-                         && (period !== 'H' || Prefs.options.h[weekday - 1])
+                         && (period !== 'H' || Prefs.options.showH)
                          && (period !== 'STAFF_COLLAB' && period !== 'STAFF_MEETINGS' || Prefs.options.staff));
 
     if (schedule === null || !schedule.length) {
