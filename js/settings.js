@@ -90,6 +90,7 @@ function initialize() {
       showBreaks.checked = Prefs.options.breaks;
 //       showSELF.checked = Prefs.options.self;
 //       show0.checked = Prefs.options.zero;
+      showH.checked = Prefs.options.showH;
       showStaff.checked = Prefs.options.staff;
       showBreaks.onchange = checked => { Prefs.options.breaks = checked; Prefs.savePrefs(); };
 //       showSELF.onchange = checked => { Prefs.options.self = checked; Prefs.savePrefs(); };
