@@ -9,6 +9,6 @@ async function silentPageSwitch(url) {
     buf += part.value;
   
   document.body
-    .parent //html
+    .parentElement //html
     .outerHTML = buf;
 }
